@@ -21,15 +21,15 @@ export const applyArchitecture: SystemArchitecture = {
       ],
       zones: [
         {
-          title: '1 · Inputs',
+          title: 'Inputs',
           nodeIds: ['node-spec', 'node-secrets', 'node-fleet'],
         },
         {
-          title: '2 · 3-Stage Delta-Driven Engine',
+          title: '3-Stage Delta-Driven Engine',
           nodeIds: ['node-phase-inspect', 'node-phase-delta', 'node-phase-plan'],
         },
         {
-          title: '3 · Target Fleet & Audit Telemetry',
+          title: 'Target Fleet & Audit Telemetry',
           nodeIds: ['node-infra', 'node-limani', 'node-logbook'],
         },
       ],
@@ -55,11 +55,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Parsed via OmegaConf with support for recursive includes, team workspace inheritance, and Soul tag aliases (e.g. pkgs -> system_packages).',
               'Packaged and distributed as a self-contained PYZ archive in /opt to prevent host environment pollution.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/apply.py',
-              'cli/src/chaos/lib/utils.py',
-              'cli/src/chaos/lib/args/dataclasses.py',
             ],
             codeSnippets: [
               {
@@ -90,10 +85,6 @@ export const applyArchitecture: SystemArchitecture = {
               'Mount directory uses strict POSIX permissions 0600 readable only by current UID.',
               'Subsystem handles Shamir threshold key combinations (e.g. 2 of 3 keys required) seamlessly.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/utils.py',
-              'cli/src/chaos/lib/secrets.py',
-            ],
           },
         },
         {
@@ -115,10 +106,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Dynamic inventory discovery is extensible through Boats plugins (e.g. AWS EC2, Proxmox VM).',
               'Target nodes execute with full root/sudo privileges dynamically without leaving permanent operational traces.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/apply.py',
-              'cli/src/chaos/lib/boats/base.py',
             ],
           },
         },
@@ -144,10 +131,6 @@ export const applyArchitecture: SystemArchitecture = {
               'All role logic executes locally on the control node; remote nodes only execute raw POSIX shell queries.',
               'Sensitive values in secrets are tracked and automatically masked from logs.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/roles/role.py',
-              'cli/src/chaos/lib/apply.py',
-            ],
           },
         },
         {
@@ -171,10 +154,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Deterministic and reproducible: identical context + specification always yields the exact same Delta.',
               'No network or I/O calls permitted during delta calculation.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/roles/role.py',
-              'cli/src/chaos/lib/args/dataclasses.py',
             ],
           },
         },
@@ -200,10 +179,6 @@ export const applyArchitecture: SystemArchitecture = {
               'Operations execute with rollback awareness where supported by OS backends.',
               'Streams real-time operation hashes, exit codes, and diffs to the Logbook queue.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/roles/role.py',
-              'cli/src/chaos/lib/apply.py',
-            ],
           },
         },
         {
@@ -226,9 +201,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Privilege escalation (sudo) is deferred to the final Pyinfra dispatch phase.',
               'Supports Arch Linux, Debian, Ubuntu, Alpine, Fedora, Proxmox VE, and container/VM instances.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/apply.py',
             ],
           },
         },
@@ -254,10 +226,6 @@ export const applyArchitecture: SystemArchitecture = {
               'Default chrima Soul stores in ~/.local/share/chaos/logbooks/logbook.db and ./chaos-logbook.json.',
               'Custom Limani Souls inherit from chaos.lib.limani.limani.Limani and register under chaos.limanis entry point.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/limani.py',
-              'cli/src/chaos/lib/limani/chrima.py',
-            ],
           },
         },
         {
@@ -281,9 +249,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Sensitive strings matching decrypted secrets are automatically sanitized to [SENSITIVE DATA FILTERED].',
               'Captures pre-operation and post-operation health snapshots for anomaly detection.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/logbook.py',
             ],
           },
         },
@@ -333,22 +298,6 @@ export const applyArchitecture: SystemArchitecture = {
           subtitle: 'Gathers target state. Strictly read-only query inspecting packages, files, or services via Pyinfra API.',
           tags: ['get_context()', 'Pyinfra Facts', 'Batched'],
           badges: ['Phase 1'],
-          details: {
-            howItWorks: 'The control node calls get_context() passing Pyinfra state, host, filtered Ch-obolo configuration, and decrypted secrets. Dispatches fact extractors (server.Packages, files.File, systemd.ServiceStatus) over SSH in a single batched sequence.',
-            whyThisWay: [
-              'Zero side-effects during inspection: cannot modify target host state.',
-              'Batched queries prevent iterative back-and-forth round-trips.',
-              'Executes in user space on the control node without needing a remote Python runtime.',
-            ],
-            codeSnippets: [
-              {
-                title: 'role.get_context Implementation',
-                lang: 'python',
-                code: 'def get_context(\n    self,\n    state: State,\n    host: Host,\n    chobolo: dict[str, Any] = {},\n    secrets: dict[str, Any] = {},\n) -> dict[str, Any]:\n    installed = host.get_fact(server.Packages) or {}\n    target_pkgs = chobolo.get("packages", [])\n    return {\n        "installed_pkgs": set(installed.keys()),\n        "desired_pkgs": set(target_pkgs),\n    }',
-              },
-            ],
-            relatedFiles: ['cli/src/chaos/lib/roles/role.py'],
-          },
         },
         {
           id: 'role-delta',
@@ -373,10 +322,6 @@ export const applyArchitecture: SystemArchitecture = {
                 lang: 'python',
                 code: 'def delta(self, context: dict[str, Any] = {}) -> Delta:\n    desired = context.get("desired_pkgs", set())\n    installed = context.get("installed_pkgs", set())\n    to_add = sorted(list(desired - installed))\n    to_remove = sorted(list(installed - desired))\n    return Delta(\n        to_add={"packages": to_add},\n        to_remove={"packages": to_remove},\n        metadata={},\n    )',
               },
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/roles/role.py',
-              'cli/src/chaos/lib/args/dataclasses.py',
             ],
           },
         },
@@ -403,10 +348,6 @@ export const applyArchitecture: SystemArchitecture = {
                 lang: 'python',
                 code: 'def plan(\n    self,\n    state: State,\n    host: Host,\n    delta: Delta = Delta(),\n) -> ResultPayload:\n    for pkg in delta.to_add.get("packages", []):\n        add_op(state, server.packages, name=f"Install {pkg}", packages=[pkg], present=True)\n    for pkg in delta.to_remove.get("packages", []):\n        add_op(state, server.packages, name=f"Remove {pkg}", packages=[pkg], present=False)\n    return ResultPayload(success=True, message=["Packages planned successfully"])',
               },
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/roles/role.py',
-              'cli/src/chaos/lib/args/dataclasses.py',
             ],
           },
         },
@@ -502,10 +443,6 @@ export const applyArchitecture: SystemArchitecture = {
               'Role entry point registration format: [project.entry-points."chaos.roles"] tag_name = "module.path:RoleClass".',
               'Managed through Ch-aOS Styx package manager.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/utils.py',
-              'cli/src/chaos/lib/apply.py',
-            ],
           },
         },
         {
@@ -527,9 +464,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Validates cache freshness against wheel installation timestamps.',
               'Mitigates startup I/O overhead on low-power devices and container environments.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/utils.py',
             ],
           },
         },
@@ -556,10 +490,6 @@ export const applyArchitecture: SystemArchitecture = {
                 code: 'def _load_role_eps(role_names: list[str]) -> ResultPayload[dict[str, Role]]:\n    role_eps = get_roleEps()\n    ep_map = {ep.name: ep for ep in role_eps}\n    loaded_roles = {}\n    for role_name in role_names:\n        if role_name in ep_map:\n            # Code compilation deferred until this exact call:\n            loaded_role_cls = ep_map[role_name].load()\n            loaded_roles[role_name] = loaded_role_cls()\n    return ResultPayload(success=True, data=loaded_roles)',
               },
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/apply.py',
-              'cli/src/chaos/lib/utils.py',
-            ],
           },
         },
         {
@@ -581,10 +511,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Aligns with Python PEP 810 (Explicit lazy imports) standardizing industry-wide deferred module loading.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/apply.py',
-              'cli/src/chaos/lib/roles/role.py',
-            ],
           },
         },
         {
@@ -605,9 +531,6 @@ export const applyArchitecture: SystemArchitecture = {
             ],
             technicalFacts: [
               'Enforced during installation via chaos styx plugin management.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/styx/styx.py',
             ],
           },
         },
@@ -663,9 +586,6 @@ export const applyArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Health checks capture 1-minute and 5-minute CPU load averages and memory utilization before and after operations.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/logbook.py',
-            ],
           },
         },
         {
@@ -685,9 +605,6 @@ export const applyArchitecture: SystemArchitecture = {
             ],
             technicalFacts: [
               'Replaces sensitive occurrences with the exact marker [SENSITIVE DATA FILTERED].',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/logbook.py',
             ],
           },
         },
@@ -709,10 +626,6 @@ export const applyArchitecture: SystemArchitecture = {
             ],
             technicalFacts: [
               'Implements graceful flush during teardown_pyinfra lifecycle phase.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/logbook.py',
-              'cli/src/chaos/lib/apply.py',
             ],
           },
         },
@@ -736,9 +649,6 @@ export const applyArchitecture: SystemArchitecture = {
               'Named after Chrima (Χρήμα - money/coin to pay Charon at the harbor Limani).',
               'Maintains complete historical runs index with human-readable run IDs (e.g. chaos-2026/01/26-21:29:13).',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/chrima.py',
-            ],
           },
         },
         {
@@ -758,9 +668,6 @@ export const applyArchitecture: SystemArchitecture = {
             ],
             technicalFacts: [
               'Base contract defines connect(), init_db(), create_run(), insert_snapshot(), insert_operation(), and get_run_summary_stats().',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/limani.py',
             ],
           },
         },
@@ -782,9 +689,6 @@ export const applyArchitecture: SystemArchitecture = {
             ],
             technicalFacts: [
               'Generates JSON reports compliant with versioned v1 telemetry schema.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/limani/logbook.py',
             ],
           },
         },

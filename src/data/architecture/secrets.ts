@@ -62,11 +62,6 @@ export const secretsArchitecture: SystemArchitecture = {
                 code: 'from chaos.lib.args.dataclasses import SecretsContext, ProviderConfigPayload\nfrom chaos.lib.secret_backends.utils import decrypt_secrets, get_sops_files\n\n# Configure context with Bitwarden provider alias\ncontext = SecretsContext(\n    team="infrastructure.production",\n    provider_config=ProviderConfigPayload(provider="bw.age"),\n    i_know_what_im_doing=True,\n)\n\nsecrets_file, sops_file, config = get_sops_files(\n    team=context.team,\n    secrets_file_override=context.secrets_file_override,\n    sops_file_override=context.sops_file_override,\n)\n\n# Decrypts directly into memory via ephemeral carriers\nplaintext_yaml = decrypt_secrets(secrets_file, sops_file, config, context)',
               },
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/args/dataclasses.py',
-              'cli/src/chaos/lib/secrets.py',
-              'cli/src/chaos/lib/secret_backends/utils.py',
-            ],
           },
         },
         {
@@ -88,10 +83,6 @@ export const secretsArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Resolved dynamically by get_sops_files() before any cryptographic engine execution.',
               'Caches file paths and global configurations via OmegaConf to eliminate redundant filesystem I/O.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/utils.py',
-              'cli/src/chaos/lib/team.py',
             ],
           },
         },
@@ -123,10 +114,6 @@ export const secretsArchitecture: SystemArchitecture = {
                 code: 'creation_rules:\n  - path_regex: secrets/.*\\.ya?ml$\n    shamir_threshold: 2\n    key_groups:\n      # Primary Ops group (Threshold: 2/3)\n      - age:\n          - "age1ql3z7hjy54pw3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p"\n          - "age1teamlead2hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p"\n          - "age1teamlead3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p"\n      # Security Audit / Break-Glass group (Threshold: 1/2)\n      - pgp:\n          - "1347065F348F37146A94F5BD1934C7EB07BFB4F4"\n          - "F78B92C1D42E3516A89012EF435678AB9012CDEF"',
               },
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/key_backends/factory.py',
-              'cli/src/chaos/lib/secrets.py',
-            ],
           },
         },
         {
@@ -150,13 +137,6 @@ export const secretsArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Supported backends: Bitwarden (bw, rbw, bws), 1Password (op), Doppler (dp), Infisical (in), and HashiCorp Vault / OpenBao.',
               'Supports one-way # NO-IMPORT distribution markers (-N flag) to prevent master keys from being persisted back to workstations.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/providers/base.py',
-              'cli/src/chaos/lib/secret_backends/providers/bitwarden.py',
-              'cli/src/chaos/lib/secret_backends/providers/onepassword.py',
-              'cli/src/chaos/lib/secret_backends/providers/doppler.py',
-              'cli/src/chaos/lib/secret_backends/providers/infisical.py',
             ],
           },
         },
@@ -182,11 +162,6 @@ export const secretsArchitecture: SystemArchitecture = {
               'Supports hybrid volatile carrier mechanisms: /dev/shm tmpfs mounts, dynamic RAM disks, Unix stream pipes (/dev/fd/X), and FIFOs.',
               'Cleanup is guaranteed via Python context manager exit stacks and finally blocks.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/utils.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/backend.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/age.py',
-            ],
           },
         },
         {
@@ -209,10 +184,6 @@ export const secretsArchitecture: SystemArchitecture = {
               'Supports YAML, JSON, and binary file formats with integrity validation.',
               'Integrates with KeyBackend factory for age, pgp, ssh, and vault transit engine.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/engines/sops.py',
-              'cli/src/chaos/lib/secret_backends/engines/engine.py',
-            ],
           },
         },
         {
@@ -234,10 +205,6 @@ export const secretsArchitecture: SystemArchitecture = {
               'Supports direct in-place editing of .sops.yaml via -s / --sops flag.',
               'Supports hierarchical team scoping via -t / --team flag.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secrets.py',
-              'cli/src/chaos/lib/secret_backends/engines/sops.py',
-            ],
           },
         },
         {
@@ -258,10 +225,6 @@ export const secretsArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Supports YAML (-y) and JSON (-j) output formatting for multi-key extraction.',
               'Allows piping extracted tokens directly into environment variables: export DB_PASS=$(chaos secrets cat db.pwd -v).',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secrets.py',
-              'cli/src/chaos/lib/secret_backends/utils.py',
             ],
           },
         },
@@ -285,10 +248,6 @@ export const secretsArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Automates batch re-encryption across team workspaces with -ikwid / -y flag.',
               'Integrates KeyBackend.validate_for_add() and validate_for_rem() for format verification.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secrets.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/factory.py',
             ],
           },
         },
@@ -344,19 +303,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Supports CLI session unlock (bw), high-performance Rust daemon (rbw), and machine-to-machine Secrets Manager (bws).',
           tags: ['bw CLI', 'rbw daemon', 'bws M2M', 'Audit Logs'],
           badges: ['Plugin'],
-          details: {
-            howItWorks: 'Extracts age/PGP keys or Vault transit tokens from Bitwarden item custom fields or secure notes. Supports standard Bitwarden CLI (bw), local cached Rust daemon (rbw), and machine-to-machine Bitwarden Secrets Manager (bws).',
-            whyThisWay: [
-              'Supports both rapid local iteration via rbw and fully automated CI/CD runners via bws service access tokens.',
-              'Bridges local file encryption with Bitwarden enterprise access policies, multi-factor authentication, and centralized event audit logs.',
-            ],
-            technicalFacts: [
-              'CLI Flags: -b, --from-bw <ITEM_ID> <KEY_TYPE>.',
-              'Subcommands: chaos secrets export bw and chaos secrets import bw.',
-              'Supports one-way # NO-IMPORT distribution markers to prevent accidental local storage.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/providers/bitwarden.py'],
-          },
         },
         {
           id: 'prov-op',
@@ -368,18 +314,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Dynamic key retrieval from 1Password vaults via op:// item URIs or 1Password Connect API.',
           tags: ['op CLI', 'op:// URIs', '1Password Connect', 'Biometrics'],
           badges: ['Plugin'],
-          details: {
-            howItWorks: 'Executes op read op://<vault>/<item>/<field> or queries 1Password Connect API, piping private key content directly into memory carriers without temporary files.',
-            whyThisWay: [
-              'Bridges local age/PGP encryption with 1Password enterprise RBAC, biometric authorization (TouchID/Windows Hello), and domain auditing.',
-            ],
-            technicalFacts: [
-              'CLI Flags: -o, --from-op <ITEM_ID> <KEY_TYPE>.',
-              'Item ID format: op://vault/item/field.',
-              'Subcommands: chaos secrets export op and chaos secrets import op.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/providers/onepassword.py'],
-          },
         },
         {
           id: 'prov-cloud',
@@ -402,10 +336,6 @@ export const secretsArchitecture: SystemArchitecture = {
               'Supports masked visibility export in Doppler (-v masked).',
               'Subcommands: chaos secrets export dp/in and chaos secrets import dp/in.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/providers/doppler.py',
-              'cli/src/chaos/lib/secret_backends/providers/infisical.py',
-            ],
           },
         },
         {
@@ -418,25 +348,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'GoF Strategy & Template Method base class enforcing setupEphemeralEnv(), readKeys(), and export_secrets() contracts.',
           tags: ['ABC', 'Template Method', 'Extensibility', 'Strategy Pattern'],
           badges: ['Core Pattern'],
-          details: {
-            howItWorks: 'Defines the universal provider contract. Uses the Template Method design pattern in setupEphemeralEnv(): automatically resolves ephemeral arguments, fetches keys via readKeys(item_id), parses formats via KeyBackend, and enters an ephemeral context. Subclasses are strictly prohibited from overriding setupEphemeralEnv() or import_secrets().',
-            whyThisWay: [
-              'Decoupled Key Management: Structural separation ensures the core orchestrator remains agnostic to provider APIs (Dependency Inversion Principle).',
-              'Extensibility (Open-Closed Principle): Introducing support for a new vault requires only implementing readKeys() and export_secrets().',
-            ],
-            technicalFacts: [
-              'Protected methods enforced via __init_subclass__: setupEphemeralEnv, import_secrets, name, _resolve_key_type.',
-              'Discovered dynamically via chaos.providers entry points in pyproject.toml using declarative REGISTRATION schemas.',
-            ],
-            codeSnippets: [
-              {
-                title: 'Provider Template Method Contract (Excerpt)',
-                lang: 'python',
-                code: 'class Provider(ABC):\n    @abstractmethod\n    def readKeys(self, item_id: str) -> str:\n        """Reads raw secret key content from external vault."""\n        raise NotImplementedError\n\n    @contextmanager\n    def setupEphemeralEnv(self) -> Generator[EphemeralEnvReturn]:\n        """Template Method: orchestrates retrieval, backend parsing, and RAM injection."""\n        item_id, key_type = self.get_ephemeral_key_args()\n        backend = get_key_backend(key_type)\n        raw_key = self.readKeys(item_id)\n        pub, sec, parsed = backend.parse_key_content(raw_key, self.name)\n        with backend.ephemeral_key_context(pub, sec, parsed) as res:\n            yield res',
-              },
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/providers/base.py'],
-          },
         },
         {
           id: 'prov-keybackend',
@@ -458,11 +369,6 @@ export const secretsArchitecture: SystemArchitecture = {
               'Abstract methods: parse_key_content(), ephemeral_key_context(), validate_for_add(), validate_for_rem(), concat().',
               'Supports key types: age, pgp, ssh, vault.',
             ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/key_backends/backend.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/age.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/vault.py',
-            ],
           },
         },
         {
@@ -475,20 +381,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Mounts /dev/shm tmpfs, creates pipe-based file descriptors (/dev/fd/X, FIFOs), and allocates temporary macOS RAM disks.',
           tags: ['/dev/shm', 'RAM Disks', 'setup_pipe', '/dev/fd/X', 'POSIX 0600'],
           badges: ['Zero-Disk'],
-          details: {
-            howItWorks: 'Allocates volatile in-memory storage for unsealed keys. Depending on OS and backend, mounts a POSIX tmpfs buffer at /dev/shm, dynamically initializes a macOS RAM disk (mac_ram_disk()), or creates Unix stream pipes (setup_pipe() yielding /dev/fd/<fd> on Linux; named FIFOs on macOS) with mode 0600 passed via pass_fds.',
-            whyThisWay: [
-              'Zero-Disk Guarantee: Unsealed master keys reside strictly in volatile RAM (/dev/shm, RAM disks, or pipes) and never hit physical storage.',
-              'Read-once pipe semantics and memory unlinks ensure keys cannot linger in user space after decryption.',
-              'Avoids passing secrets via environment variables, preventing unintended process environment leakage.',
-            ],
-            technicalFacts: [
-              'Linux: /dev/shm tmpfs mount or os.pipe() + os.fchmod(w, 0o600) + /dev/fd/<r>.',
-              'macOS: mac_ram_disk() or os.mkfifo() with daemon thread writer.',
-              'Closed and unlinked immediately in context manager finally blocks.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/utils.py'],
-          },
         },
         {
           id: 'prov-hcv',
@@ -500,18 +392,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'External token-based transit encryption backend for enterprise centralized key management.',
           tags: ['OpenBao', 'HCV Transit', 'Transit Engine', 'Token-Based'],
           badges: ['Cryptographic Backend'],
-          details: {
-            howItWorks: 'Integrates with OpenBao or HashiCorp Vault transit engine (e.g. sops-dev/decrypt/prod-key). Ch-aOS retrieves a scoped Vault token from an external provider (such as Bitwarden), binds it to an ephemeral memory carrier, and presents it to the transit API during SOPS decryption.',
-            whyThisWay: [
-              'Decouples key governance: secret storage is versioned in Git, while decryption authorization is enforced by enterprise Vault transit policies.',
-              'Allows independent revocation at either the provider level or the Vault transit backend.',
-            ],
-            technicalFacts: [
-              'Token reachability verified via /v1/sys/seal-status before execution.',
-              'Integrated with SOPS hc_vault creation rules.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/vault.py'],
-          },
         },
         {
           id: 'prov-runtime',
@@ -523,17 +403,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Spawns SOPS subprocess with sanitized environment, pass_fds, and memory carrier bindings.',
           tags: ['SOPS Exec', 'Sanitized Env', 'pass_fds', 'Clean Process'],
           badges: ['Subprocess'],
-          details: {
-            howItWorks: 'Spawns SOPS with SOPS_AGE_KEY_FILE or VAULT_ADDR bound to volatile memory paths (/dev/shm, /dev/fd/<r>, or RAM disk), passing descriptors via pass_fds.',
-            whyThisWay: [
-              'Guarantees that sensitive key material is restricted to process-bound memory carriers and never appears in child process environments or shell logs.',
-            ],
-            technicalFacts: [
-              'Decrypted data returned strictly in-memory in ResultPayload(data={"dec": ...}).',
-              'Ensures clean subprocess execution with sanitized environment variables.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/engines/sops.py'],
-          },
         },
         {
           id: 'prov-lifecycle',
@@ -554,10 +423,6 @@ export const secretsArchitecture: SystemArchitecture = {
             technicalFacts: [
               'Automated teardown triggered via Python context manager exit stacks.',
               'Guaranteed execution even in the event of SIGINT or unhandled exceptions.',
-            ],
-            relatedFiles: [
-              'cli/src/chaos/lib/secret_backends/providers/base.py',
-              'cli/src/chaos/lib/secret_backends/key_backends/age.py',
             ],
           },
         },
@@ -613,17 +478,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Centralized HashiCorp Vault / OpenBao transit keys managed under enterprise IAM policies.',
           tags: ['HCV Transit', 'OpenBao', 'Centralized IAM', 'Transit Engine'],
           badges: ['Keygroup', 'Remote'],
-          details: {
-            howItWorks: 'Enforces that decryption requires authorization from a remote HashiCorp Vault or OpenBao transit engine key, retrieved ephemerally via Ch-aOS providers.',
-            whyThisWay: [
-              'Distributes trust to an externally audited, RBAC-governed cryptographic backend.',
-              'Compromise of a local workstation or Git repository cannot decrypt secrets without authorized online access to the transit engine.',
-            ],
-            technicalFacts: [
-              'Configured in .sops.yaml under hc_vault creation rules.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/vault.py'],
-          },
         },
         {
           id: 'shamir-group-dev',
@@ -635,16 +489,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Workstation age keys or GPG keys belonging to active infrastructure engineers.',
           tags: ['age', 'GPG', 'Operator Keys', 'Workstation'],
           badges: ['Keygroup', 'Local'],
-          details: {
-            howItWorks: 'Supplies individual public keys belonging to engineers in .sops.yaml creation rules.',
-            whyThisWay: [
-              'Prevents external vault administrators from decrypting GitOps secrets unilaterally without participation from engineering team operators.',
-            ],
-            technicalFacts: [
-              'Supports modern X25519 age keys and GnuPG public key fingerprints.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/age.py', 'cli/src/chaos/lib/secret_backends/key_backends/pgp.py'],
-          },
         },
         {
           id: 'shamir-group-breakglass',
@@ -656,16 +500,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Offline backup keys held in cold storage for disaster recovery and provider outage resilience.',
           tags: ['Offline Backup', 'Cold Vault', 'Break-Glass', 'Disaster Recovery'],
           badges: ['Break-Glass', 'Cold Storage'],
-          details: {
-            howItWorks: 'Offline age keys stored in physically separated, cold-stored vaults (e.g. corporate safe, split offline backups).',
-            whyThisWay: [
-              'Mitigates availability risks in multi-party quorums: if an external secret provider is temporarily unavailable or destroyed, offline shares can be combined to recover infrastructure secrets.',
-            ],
-            technicalFacts: [
-              'Enables high availability without compromising threshold security.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/age.py'],
-          },
         },
         {
           id: 'shamir-policy',
@@ -677,16 +511,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Rules matching file paths to recipient keygroups with explicit Shamir threshold requirements.',
           tags: ['YAML Spec', 'creation_rules', 'Path Regex', 'Threshold M'],
           badges: ['Policy'],
-          details: {
-            howItWorks: 'Matches target secrets path regex and assigns required keygroups with threshold counts. Evaluated during encryption to split data keys and during decryption to collect required shares.',
-            whyThisWay: [
-              'Declarative GitOps policy: quorum requirements are version-controlled alongside application configurations.',
-            ],
-            technicalFacts: [
-              'Configured via creation_rules[i].shamir_threshold.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/factory.py'],
-          },
         },
         {
           id: 'shamir-eval',
@@ -698,16 +522,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Computes polynomial shares during encryption and evaluates Lagrange interpolation during decryption.',
           tags: ['Polynomial Math', 'Lagrange', 'Shamir Core', 'Decentralized'],
           badges: ['Crypto Core'],
-          details: {
-            howItWorks: 'Generates a random polynomial f(x) of degree (M-1) where f(0) is the secret data encryption key. During decryption, Lagrange polynomial interpolation reconstructs f(0) when at least M valid shares are presented.',
-            whyThisWay: [
-              'Pure mathematical quorum: eliminates reliance on a central HSM or coordination daemon.',
-            ],
-            technicalFacts: [
-              'AES-256 data key split into N shares with threshold M.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/engines/sops.py'],
-          },
         },
         {
           id: 'shamir-quorum',
@@ -719,16 +533,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Validates that the provided keys satisfy the threshold requirement for all active keygroups.',
           tags: ['Quorum Gate', 'Policy Check', 'Threshold Validation'],
           badges: ['Gate'],
-          details: {
-            howItWorks: 'Evaluates whether the set of supplied keys meets the minimum threshold requirement M across configured keygroups. Decryption succeeds only when all quorum conditions are fulfilled.',
-            whyThisWay: [
-              'Guarantees multi-party authorization: no single key compromise is sufficient to decrypt sensitive infrastructure secrets.',
-            ],
-            technicalFacts: [
-              'Enforced at the cryptographic engine level during SOPS payload unsealing.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/backend.py'],
-          },
         },
         {
           id: 'shamir-cli',
@@ -740,24 +544,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Configures threshold policies via chaos secrets set-shamir and SecretsSetShamirPayload.',
           tags: ['set-shamir', 'SecretsSetShamirPayload', 'handleSetShamir'],
           badges: ['CLI Tool', 'SDK'],
-          details: {
-            howItWorks: 'Updates the shamir_threshold attribute of creation rules in .sops.yaml and optionally re-encrypts all managed files across team workspaces.',
-            whyThisWay: [
-              'Enables dynamic policy tuning without manual YAML editing.',
-            ],
-            technicalFacts: [
-              'Usage: chaos secrets set-shamir <rule_index> <share_threshold> [-y].',
-              'Managed via handleSetShamir SDK handler.',
-            ],
-            codeSnippets: [
-              {
-                title: 'Programmatic Shamir Configuration (Python SDK)',
-                lang: 'python',
-                code: 'from chaos.lib.args.dataclasses import SecretsSetShamirPayload, SecretsContext\nfrom chaos.lib.secrets import handleSetShamir\n\n# Enforce a 2-of-N threshold on creation rule 0\npayload = SecretsSetShamirPayload(\n    index=0,\n    share=2,\n    context=SecretsContext(team="infra.prod", i_know_what_im_doing=True),\n    update_confirmed=True,\n)\n\nresult = handleSetShamir(payload)\nassert result.success',
-              },
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secrets.py'],
-          },
         },
         {
           id: 'shamir-dek',
@@ -769,17 +555,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'The 256-bit AES-GCM data key reassembled in volatile memory to decrypt file contents.',
           tags: ['AES-256-GCM', 'Ephemeral DEK', 'Envelope Encryption'],
           badges: ['Volatile'],
-          details: {
-            howItWorks: 'Reconstructed in volatile memory via Lagrange interpolation from collected shares. Used strictly in-memory to decrypt payload blocks.',
-            whyThisWay: [
-              'Envelope encryption limits key exposure: only the DEK is reconstructed in volatile memory; master keys remain safely in their respective stores.',
-            ],
-            technicalFacts: [
-              'Standard 256-bit AES-GCM symmetric key.',
-              'Never written to disk or swap storage.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/engines/sops.py'],
-          },
         },
         {
           id: 'shamir-disposal',
@@ -791,16 +566,6 @@ export const secretsArchitecture: SystemArchitecture = {
           subtitle: 'Scrubs reassembled DEK and in-memory carrier buffers immediately after block decryption completes.',
           tags: ['Zero-Persistence', 'Memory Scrub', 'Teardown'],
           badges: ['Disposal'],
-          details: {
-            howItWorks: 'Immediately after ciphertext blocks are decrypted into memory, the DEK and underlying carriers (/dev/shm, RAM disks, or pipes) are destroyed, closing all descriptors.',
-            whyThisWay: [
-              'Guarantees that unsealed key material exists only for the duration of the cryptographic operation.',
-            ],
-            technicalFacts: [
-              'All volatile resources scrubbed upon context manager exit.',
-            ],
-            relatedFiles: ['cli/src/chaos/lib/secret_backends/key_backends/backend.py'],
-          },
         },
       ],
       edges: [
