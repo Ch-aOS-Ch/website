@@ -15,7 +15,7 @@ const hasDrilldown = Boolean(node.go);
   data-node-id={node.id}
   data-go={node.go || ""}
   style={`grid-area: ${node.gridArea};`}
-  aria-label={`${node.title}. ${hasDrilldown ? 'Click to drill down into subsystem architecture' : 'Click to inspect architecture specifications in sidebar'}`}
+  aria-label={`${node.title}. ${hasDrilldown ? 'Click to check the subsystem architecture' : 'Click to inspect architecture specifications in sidebar'}`}
 >
   <!-- Card Header: Title on Left, Badges/Pills on Right -->
   <div class="flex items-start justify-between gap-3 mb-2">

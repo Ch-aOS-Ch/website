@@ -49,17 +49,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </svg>
         <span>Back to Overview</span>
       </button>
-
-      <!-- Switch to opposite architecture -->
-      <a
-        href={oppositeArchUrl}
-        class="arch-btn-switch inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all"
-      >
-        <span>{oppositeArchLabel}</span>
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </a>
     </div>
   </div>
 
@@ -1383,7 +1372,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         detailsHtml += `
           <div class="pt-4 arch-drawer-divider">
             <button type="button" class="btn-primary w-full py-2.5 px-4 text-xs font-bold text-center inline-flex items-center justify-center gap-2 cursor-pointer" data-drilldown="${node.go}">
-              <span>Drill Down into Subsystem Architecture</span>
+              <span>Check the Subsystem Architecture</span>
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
