@@ -2,7 +2,7 @@ import type { SystemArchitecture } from './types';
 
 export const secretsArchitecture: SystemArchitecture = {
   id: 'secrets',
-  title: 'Architecture · chaos secrets',
+  title: '',
   subtitle: 'Zero-Disk Ephemeral Vault, SOPS Orchestration & Shamir Threshold Policies',
   systemName: 'Ch-aOS Cryptographic Subsystem',
   description: 'Cryptographic lifecycle enforcing asymmetric key management, volatile in-memory key isolation (/dev/shm, RAM disks, and pipes), external vault bridges, and Shamir keygroup threshold policies — eliminating static plaintext keys from disk.',

@@ -2,7 +2,7 @@ import type { SystemArchitecture } from './types';
 
 export const applyArchitecture: SystemArchitecture = {
   id: 'apply',
-  title: 'Architecture · chaos apply',
+  title: '',
   subtitle: 'Declarative Role Execution, 3-Stage Lifecycle & Microkernel Lazy Dispatch',
   systemName: 'Ch-aOS Apply Core',
   description: 'The end-to-end execution pipeline: lazy module loading, declarative Ch-obolo state, centralized set-theoretic delta resolution, Pyinfra API batch dispatch, and Limani audit telemetry.',
