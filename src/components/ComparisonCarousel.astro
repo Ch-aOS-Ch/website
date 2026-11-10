@@ -727,7 +727,7 @@ const totalCount = comparisons.length;
                             type="button"
                             data-view-mode="code"
                             aria-pressed="false"
-                            class="chaos-toggle-pill px-2 py-1 sm:py-0.5 text-[11px] font-semibold border border-transparent cursor-pointer transition-all text-[#8FA39A] hover:text-[#E8F0EC]"
+                            class="chaos-toggle-pill px-2 py-1 sm:py-0.5 text-[11px] font-semibold border border-transparent cursor-pointer transition-all text-[#8E9EA0] hover:text-[#E8F0EC]"
                           >
                             {item.id === 'execution-observability' ? 'Python Soul' : 'Python Role'}
                           </button>
@@ -778,7 +778,7 @@ const totalCount = comparisons.length;
 
               <!-- Slide Bottom Summary Callout -->
               <div class="comp-summary-callout mt-5 sm:mt-8 p-3 sm:p-4 text-xs sm:text-sm font-sans flex items-center gap-2.5 sm:gap-3">
-                <span class="comp-summary-icon font-mono font-bold text-base shrink-0">✦</span>
+                <span class="comp-summary-icon font-mono font-bold text-base shrink-0">◆</span>
                 <span><strong class="font-mono">Architectural Value:</strong> {item.summary}</span>
               </div>
             </div>
@@ -821,16 +821,16 @@ const totalCount = comparisons.length;
     box-shadow: 0 0 6px var(--chaos-accent-mint);
   }
   [data-theme="light"] #comparison .comp-quick-tab {
-    background-color: #F1FAF5;
+    background-color: #DDF2E8;
     border-color: rgba(19, 122, 91, 0.2);
-    color: #4A6356;
+    color: #486156;
   }
   [data-theme="light"] #comparison .comp-quick-tab:hover {
     border-color: rgba(19, 122, 91, 0.5);
     color: #0E6E4F;
   }
   [data-theme="light"] #comparison .comp-quick-tab-active {
-    background-color: #E2F2E9;
+    background-color: #DDF2E8;
     border-color: #0E7A5A !important;
     color: #0E7A5A !important;
   }
@@ -881,7 +881,7 @@ const totalCount = comparisons.length;
     color: var(--chaos-text-primary);
   }
   [data-theme="light"] #comparison .comp-nav-btn:hover {
-    background-color: #D2E7DC;
+    background-color: #D4DFDA;
     color: var(--chaos-accent-mint);
   }
   #comparison .code-window-card {
@@ -897,7 +897,7 @@ const totalCount = comparisons.length;
     border: 1px solid var(--chaos-border-card);
   }
   [data-theme="light"] #comparison .comp-card-traditional {
-    background-color: #F9FCFA;
+    background-color: #F4F8F6;
   }
   #comparison .comp-trad-title {
     color: var(--chaos-text-secondary);
@@ -914,7 +914,7 @@ const totalCount = comparisons.length;
     color: var(--chaos-text-muted);
   }
   [data-theme="light"] #comparison .comp-trad-snippet-header {
-    background-color: #EAF3EE;
+    background-color: #E8F0EC;
     color: #5A7266;
   }
   #comparison .comp-card-chaos {
@@ -923,7 +923,7 @@ const totalCount = comparisons.length;
     box-shadow: 0 0 20px rgba(56, 217, 169, 0.06);
   }
   [data-theme="light"] #comparison .comp-card-chaos {
-    background-color: #F1FAF5;
+    background-color: #E1F0E8;
     border-color: rgba(19, 122, 91, 0.45);
     box-shadow: 0 8px 24px rgba(19, 122, 91, 0.08);
   }
@@ -944,7 +944,7 @@ const totalCount = comparisons.length;
     color: var(--chaos-accent-mint);
   }
   [data-theme="light"] #comparison .comp-chaos-snippet-header {
-    background-color: #EAF3EE;
+    background-color: #E8F0EC;
     color: #0E6E4F;
   }
   #comparison .chaos-view-toggle-group {
@@ -952,11 +952,11 @@ const totalCount = comparisons.length;
     border-color: var(--chaos-border-subtle);
   }
   [data-theme="light"] #comparison .chaos-view-toggle-group {
-    background-color: #DCECE4;
+    background-color: #D4DFDA;
     border-color: rgba(14, 122, 90, 0.25);
   }
   #comparison .chaos-toggle-pill {
-    color: #8FA39A;
+    color: #8E9EA0;
     border-color: transparent;
     background-color: transparent;
   }
@@ -970,7 +970,7 @@ const totalCount = comparisons.length;
     border-color: rgba(56, 217, 169, 0.5);
   }
   [data-theme="light"] #comparison .chaos-toggle-pill {
-    color: #4A6356;
+    color: #486156;
   }
   [data-theme="light"] #comparison .chaos-toggle-pill:hover {
     color: #0E7A5A;
@@ -1006,14 +1006,14 @@ const totalCount = comparisons.length;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
   }
-  #comparison .comp-code-box span[style*="6A737D" i],
-  #comparison .comp-code-box span[style*="6a737d" i],
+  #comparison .comp-code-box span[style*="64748B" i],
+  #comparison .comp-code-box span[style*="64748b" i],
   #comparison .comp-code-box span[style*="8B949E" i],
   #comparison .comp-code-box span[style*="8b949e" i],
-  #comparison .comp-code-box span[style*="--shiki-dark:#6A737D" i],
-  #comparison .comp-code-box span[style*="--shiki-dark:#6a737d" i],
-  #comparison .comp-code-box span[style*="--shiki-light:#6A737D" i],
-  #comparison .comp-code-box span[style*="--shiki-light:#6a737d" i] {
+  #comparison .comp-code-box span[style*="--shiki-dark:#64748B" i],
+  #comparison .comp-code-box span[style*="--shiki-dark:#64748b" i],
+  #comparison .comp-code-box span[style*="--shiki-light:#64748B" i],
+  #comparison .comp-code-box span[style*="--shiki-light:#64748b" i] {
     font-style: italic !important;
   }
   #comparison .comp-adv-container {
@@ -1035,8 +1035,8 @@ const totalCount = comparisons.length;
     font-family: var(--font-sans);
   }
   [data-theme="light"] #comparison .comp-summary-callout {
-    background-color: #E8F4EE;
-    color: #1A3328;
+    background-color: #E8F0EC;
+    color: #243830;
   }
   #comparison .comp-summary-icon {
     color: var(--chaos-accent-mint);
@@ -1049,7 +1049,7 @@ const totalCount = comparisons.length;
     background: rgba(12, 18, 16, 0.8);
   }
   [data-theme="light"] #comparison .comp-code-box::-webkit-scrollbar-track {
-    background: #F1FAF5;
+    background: #F4F8F6;
   }
   #comparison .comp-code-box::-webkit-scrollbar-thumb {
     background: var(--chaos-border-card);
@@ -1259,7 +1259,7 @@ const totalCount = comparisons.length;
             pill.classList.toggle('text-[#38D9A9]', isActive);
             pill.classList.toggle('border-[#38D9A9]/50', isActive);
             pill.classList.toggle('border-transparent', !isActive);
-            pill.classList.toggle('text-[#8FA39A]', !isActive);
+            pill.classList.toggle('text-[#8E9EA0]', !isActive);
             pill.classList.toggle('hover:text-[#E8F0EC]', !isActive);
           });
         };

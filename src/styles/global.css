@@ -145,7 +145,7 @@
 
   /* Neutrals & Contrast Layers */
   --sl-color-white: #E8F0EC;
-  --sl-color-gray-1: #F0F4F2;
+  --sl-color-gray-1: #E8F0EC;
   --sl-color-gray-2: #C1C9D6;
   --sl-color-gray-3: #8E9EA0;
   --sl-color-gray-4: #5A7266;
@@ -236,7 +236,7 @@
 
   /* Neutrals & Contrast Layers */
   --sl-color-white: #14241E;
-  --sl-color-gray-1: #1E332A;
+  --sl-color-gray-1: #18241F;
   --sl-color-gray-2: #243830;
   --sl-color-gray-3: #486156;
   --sl-color-gray-4: #728D80;
@@ -253,7 +253,7 @@
   --sl-color-bg: #F4F8F6;
   --sl-color-bg-nav: rgba(233, 240, 236, 0.95);
   --sl-color-bg-sidebar: #E9F0EC;
-  --sl-color-bg-inline-code: #D8EFE4;
+  --sl-color-bg-inline-code: #DDF2E8;
   --sl-color-hairline: rgba(169, 188, 179, 0.60);
   --sl-color-hairline-light: rgba(169, 188, 179, 0.85);
   --sl-color-hairline-shade: rgba(169, 188, 179, 0.60);
@@ -274,11 +274,11 @@
 
   --sl-color-orange: #A25904;
   --sl-color-orange-low: #FDF4D4;
-  --sl-color-orange-high: #7A4100;
+  --sl-color-orange-high: #A25904;
 
   --sl-color-red: #D22020;
   --sl-color-red-low: #FCE8EE;
-  --sl-color-red-high: #961515;
+  --sl-color-red-high: #D22020;
 
   /* Shadows (Light Mode) */
   --sl-shadow-sm: 0 1px 2px rgba(18, 38, 30, 0.05);
@@ -653,7 +653,7 @@ main li a:not(.btn-primary):not(.btn-secondary):not(.nav-action-btn):not(.sl-lin
 [data-theme="light"] .sl-markdown-content a:not(.btn-primary):not(.btn-secondary):not(.nav-action-btn):not(.sl-link-button):not(.sl-badge):hover,
 [data-theme="light"] main p a:not(.btn-primary):not(.btn-secondary):not(.nav-action-btn):not(.sl-link-button):not(.sl-badge):hover,
 [data-theme="light"] main li a:not(.btn-primary):not(.btn-secondary):not(.nav-action-btn):not(.sl-link-button):not(.sl-badge):hover {
-  color: #074531 !important;
+  color: #09523D !important;
 }
 
 /* Heading Anchor Links */
@@ -1441,8 +1441,8 @@ details.starlight-aside:not([open]) .starlight-aside__content {
 }
 
 [data-theme="light"] :not(pre) > code {
-  background-color: #D8EFE4 !important;
-  border-color: #95C3B1 !important;
+  background-color: #DDF2E8 !important;
+  border-color: #A9BCB3 !important;
   color: #0E6E4F !important;
 }
 
@@ -2042,10 +2042,10 @@ pre.astro-code span[style*="8B949E" i],
 pre.astro-code span[style*="8b949e" i],
 pre.astro-code span[style*="919F9F" i],
 pre.astro-code span[style*="919f9f" i],
-pre.astro-code span[style*="--shiki-dark:#6A737D" i],
-pre.astro-code span[style*="--shiki-dark:#6a737d" i],
-pre.astro-code span[style*="--shiki-light:#6A737D" i],
-pre.astro-code span[style*="--shiki-light:#6a737d" i],
+pre.astro-code span[style*="--shiki-dark:#64748B" i],
+pre.astro-code span[style*="--shiki-dark:#64748b" i],
+pre.astro-code span[style*="--shiki-light:#64748B" i],
+pre.astro-code span[style*="--shiki-light:#64748b" i],
 .astro-code .comment,
 .shiki .comment,
 .token.comment {
@@ -2227,7 +2227,7 @@ pre.astro-code span[style*="--shiki-light:#6a737d" i],
 }
 
 [data-theme="light"] .feature-link:hover {
-  color: #095C43 !important;
+  color: #09523D !important;
 }
 
 [data-theme="light"] .feature-link.text-\[\#F8A5C2\] {
@@ -2235,7 +2235,7 @@ pre.astro-code span[style*="--shiki-light:#6a737d" i],
 }
 
 [data-theme="light"] .feature-link.text-\[\#F8A5C2\]:hover {
-  color: #A31D4D !important;
+  color: #C92861 !important;
 }
 
 [data-theme="light"] .step-title,
@@ -2244,8 +2244,8 @@ pre.astro-code span[style*="--shiki-light:#6a737d" i],
   font-weight: 700 !important;
 }
 
-[data-theme="light"] span[class*="text-[#6E7787]"] {
-  color: #385549 !important;
+[data-theme="light"] span[class*="text-[#5A7266]"] {
+  color: #486156 !important;
 }
 
 /* Concentric Glass Panels - Dark (55%) & Light (35%) (0px Sharp Radius) */
@@ -2334,7 +2334,7 @@ button,
 
 [data-theme="light"] .btn-primary {
   background: #0E6E4F !important;
-  color: #FFFFFF !important;
+  color: #E8F0EC !important;
   box-shadow: 0 4px 18px rgba(14, 110, 79, 0.35);
   border-radius: 0px !important;
 }
@@ -2347,7 +2347,7 @@ button,
 
 [data-theme="light"] .btn-primary:hover {
   background: #09523D !important;
-  color: #FFFFFF !important;
+  color: #E8F0EC !important;
   box-shadow: 0 4px 18px rgba(9, 82, 61, 0.45);
 }
 
@@ -2381,8 +2381,8 @@ button,
 
 [data-theme="light"] .section-badge,
 [data-theme="light"] .architecture-tagline {
-  background-color: #D8EFE4 !important;
-  border-color: #95C3B1 !important;
+  background-color: #DDF2E8 !important;
+  border-color: #A9BCB3 !important;
   color: #0E6E4F !important;
   box-shadow: 0 1px 2px rgba(19, 122, 91, 0.08) !important;
 }
@@ -2464,12 +2464,12 @@ footer {
 
 [data-theme="light"] footer p,
 [data-theme="light"] footer span {
-  color: #4A6359 !important;
+  color: #486156 !important;
 }
 
 [data-theme="light"] footer div[class*="bg-[#18241F]"] {
   background-color: rgba(162, 220, 183, 0.45) !important;
-  border-color: #8FB8A9 !important;
+  border-color: #A9BCB3 !important;
   color: #14241E !important;
 }
 
@@ -2492,7 +2492,7 @@ footer {
   background: #3D524A;
 }
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: #8FA49A;
+  background: #728D80;
 }
 
 /* Strawberry Pink Accent Tokens & Helpers (Ch-obolos / Declarative State / Badges) */
@@ -2645,7 +2645,7 @@ footer {
 [data-theme="dark"] .tab-btn[aria-selected="false"],
 :root:not([data-theme="light"]) .tab-btn[aria-selected="false"],
 .tab-btn[aria-selected="false"] {
-  color: #9CA8B6 !important;
+  color: #8E9EA0 !important;
 }
 
 [data-theme="dark"] .tab-btn[aria-selected="false"]:hover,

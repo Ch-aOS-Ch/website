@@ -388,8 +388,8 @@ else:
               href={feat.link}
               class={`feature-link min-h-[44px] inline-flex items-center gap-2 text-sm font-semibold transition-colors group w-fit py-2 ${
                 feat.id === 'sops-secrets'
-                  ? 'text-[#F8A5C2] hover:text-[#E8F0EC] [data-theme=light]:text-[#C92861] [data-theme=light]:hover:text-[#8C143F]'
-                  : 'text-[#38D9A9] hover:text-[#E8F0EC] [data-theme=light]:text-[#0E7A5A] [data-theme=light]:hover:text-[#0A543E]'
+                  ? 'text-[#F8A5C2] hover:text-[#E8F0EC] [data-theme=light]:text-[#C92861] [data-theme=light]:hover:text-[#C92861]'
+                  : 'text-[#38D9A9] hover:text-[#E8F0EC] [data-theme=light]:text-[#0E7A5A] [data-theme=light]:hover:text-[#09523D]'
               }`}
             >
               <span>{feat.linkText}</span>
@@ -433,7 +433,7 @@ else:
                       aria-live="polite"
                     >
                       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <rect x="9" y="9" width="13" height="13"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                       </svg>
                       <span class="copy-label">Copy</span>
@@ -448,7 +448,7 @@ else:
                       role="tabpanel"
                       aria-labelledby={`tab-btn-${feat.id}-${tIdx}`}
                       tabindex="0"
-                      class={`tab-content focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded ${tIdx === 0 ? 'block' : 'hidden'}`}
+                      class={`tab-content focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] ${tIdx === 0 ? 'block' : 'hidden'}`}
                     >
                       <Code code={tab.code} lang={tab.lang as any} themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
                     </div>
@@ -479,7 +479,7 @@ else:
     border: 1px solid rgba(248, 165, 194, 0.6);
   }
   .tab-btn[aria-selected="false"] {
-    color: #9CA8B6;
+    color: #8E9EA0;
     border: 1px solid transparent;
   }
   .tab-btn[aria-selected="false"]:hover {
@@ -511,11 +511,11 @@ else:
     color: #243830 !important;
   }
   :global(html[data-theme="light"]) .code-encoding {
-    color: #385549 !important;
+    color: #486156 !important;
   }
   :global(html[data-theme="light"]) .copy-code-btn {
     background-color: rgba(225, 240, 232, 0.95) !important;
-    border-color: #9EC4B5 !important;
+    border-color: #A9BCB3 !important;
     color: #14241E !important;
   }
   :global(html[data-theme="light"]) .copy-code-btn:hover {

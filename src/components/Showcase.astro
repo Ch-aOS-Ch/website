@@ -516,7 +516,7 @@ users:
                   aria-live="polite"
                 >
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <rect x="9" y="9" width="13" height="13"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                   <span class="copy-label">Copy</span>
@@ -526,19 +526,19 @@ users:
 
             <!-- Code Pane with scroll strictly filling the card -->
             <div class="p-3 sm:p-6 font-mono text-xs sm:text-sm md:text-base leading-relaxed overflow-x-auto overflow-y-auto flex-1 min-h-0 text-[#E8F0EC]">
-              <div id="code-pane-k8s" role="tabpanel" aria-labelledby="tab-btn-k8s" tabindex="0" class="proof-code-pane block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+              <div id="code-pane-k8s" role="tabpanel" aria-labelledby="tab-btn-k8s" tabindex="0" class="proof-code-pane block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9]">
                 <Code code={k8sSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
               </div>
 
-              <div id="code-pane-secrets" role="tabpanel" aria-labelledby="tab-btn-secrets" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+              <div id="code-pane-secrets" role="tabpanel" aria-labelledby="tab-btn-secrets" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9]">
                 <Code code={secretsSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
               </div>
 
-              <div id="code-pane-workstation" role="tabpanel" aria-labelledby="tab-btn-workstation" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+              <div id="code-pane-workstation" role="tabpanel" aria-labelledby="tab-btn-workstation" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9]">
                 <Code code={workstationSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
               </div>
 
-              <div id="code-pane-full" role="tabpanel" aria-labelledby="tab-btn-full" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+              <div id="code-pane-full" role="tabpanel" aria-labelledby="tab-btn-full" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9]">
                 <Code code={fullChobolo} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
               </div>
             </div>
@@ -668,13 +668,13 @@ users:
   }
 
   [data-theme="light"] #why-it-exists .proof-badge-mint {
-    background-color: #D8EFE4;
-    border-color: #95C3B1;
+    background-color: #DDF2E8;
+    border-color: #137A5B;
   }
 
   [data-theme="light"] #why-it-exists .proof-badge-pink {
     background-color: #FCE8EE;
-    border-color: #F3B5C8;
+    border-color: #C92861;
   }
 
   /* Technical Specs Matrix Rows */
@@ -731,7 +731,7 @@ users:
   }
 
   #proof-tabs .tab-btn[aria-selected="false"] {
-    color: #9CA8B6;
+    color: #8E9EA0;
     border: 1px solid transparent;
   }
 

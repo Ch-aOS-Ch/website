@@ -1,0 +1,1466 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 2750" width="2400" height="2750">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap');
+      @import url('https://cdn.jsdelivr.net/npm/maple-mono-web@latest/dist/maple-mono.css');
+
+      * {
+        box-sizing: border-box;
+      }
+      text {
+        font-family: 'Gabriel Sans', 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .brand {
+        font-family: 'Gabriel Sans', 'Fira Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .mono {
+        font-family: 'Maple Mono', 'DejaVu Sans Mono', monospace;
+      }
+    </style>
+
+    <!-- Header Gradients -->
+    <linearGradient id="header-bg-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0C1210" />
+      <stop offset="100%" stop-color="#121916" />
+    </linearGradient>
+    <linearGradient id="header-bg-light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E9F0EC" />
+      <stop offset="100%" stop-color="#F4F8F6" />
+    </linearGradient>
+
+    <!-- Card Borders -->
+    <linearGradient id="card-border-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D524A" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#25342E" stop-opacity="0.4" />
+    </linearGradient>
+    <linearGradient id="card-border-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A9BCB3" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#D4DFDA" stop-opacity="0.5" />
+    </linearGradient>
+
+    <!-- Glass Surfaces -->
+    <linearGradient id="glass-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18241F" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#121916" stop-opacity="0.65" />
+    </linearGradient>
+    <linearGradient id="glass-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#E8F0EC" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- OKLab Brand Gradients -->
+    <linearGradient id="brand-oklab" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38D9A9" />
+      <stop offset="45%" stop-color="#63E6BE" />
+      <stop offset="100%" stop-color="#F8A5C2" />
+    </linearGradient>
+    <linearGradient id="brand-oklab-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E7A5A" />
+      <stop offset="45%" stop-color="#137A5B" />
+      <stop offset="100%" stop-color="#C92861" />
+    </linearGradient>
+
+    <!-- LIGHTING GRADIENTS (DARK MODE) -->
+    <linearGradient id="dark-spotlight-vertical" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#18362B" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#18362B" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#18362B" stop-opacity="0.0" />
+    </linearGradient>
+
+    <radialGradient id="dark-radial-glow" cx="50%" cy="100%" r="75%">
+      <stop offset="0%" stop-color="#38D9A9" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#124436" stop-opacity="0.45" />
+      <stop offset="85%" stop-color="#124436" stop-opacity="0.0" />
+    </radialGradient>
+
+    <linearGradient id="dark-horizon-line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38D9A9" stop-opacity="0.0" />
+      <stop offset="50%" stop-color="#38D9A9" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#38D9A9" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- LIGHTING GRADIENTS (LIGHT MODE) -->
+    <linearGradient id="light-spotlight-vertical" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#A2DCB7" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#A2DCB7" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#A2DCB7" stop-opacity="0.0" />
+    </linearGradient>
+
+    <radialGradient id="light-radial-glow" cx="50%" cy="100%" r="75%">
+      <stop offset="0%" stop-color="#137A5B" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#A2DCB7" stop-opacity="0.50" />
+      <stop offset="85%" stop-color="#A2DCB7" stop-opacity="0.0" />
+    </radialGradient>
+
+    <linearGradient id="light-horizon-line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#137A5B" stop-opacity="0.0" />
+      <stop offset="50%" stop-color="#137A5B" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#137A5B" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- Filters & Shadows -->
+    <filter id="subtle-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+    <filter id="subtle-shadow-light" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#12261E" flood-opacity="0.08" />
+    </filter>
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#38D9A9" flood-opacity="0.4" />
+    </filter>
+    <filter id="btn-glow-dark" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#38D9A9" flood-opacity="0.4" />
+    </filter>
+    <filter id="btn-glow-light" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#137A5B" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="2400" height="2750" fill="#F4F8F6" />
+
+  <!-- Background Grid Accent -->
+  <g opacity="0.06" stroke="#137A5B" stroke-width="1">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" />
+    </pattern>
+    <rect width="2400" height="2750" fill="url(#grid)" />
+  </g>
+
+  <!-- Bottom Horizon Glow Line -->
+  <rect x="0" y="2735" width="2400" height="15" fill="url(#light-horizon-line)" filter="url(#neon-glow)" />
+
+  <!-- ================= HEADER: OFFICIAL LOCKUP (WORDMARK FIRST, LOGO SECOND) ================= -->
+  <g transform="translate(0, 0)">
+    <rect width="2400" height="120" fill="url(#header-bg-light)" />
+    <line x1="0" y1="120" x2="2400" y2="120" stroke="#D4DFDA" stroke-width="1.5" />
+
+    <!-- Official Brand Lockup in Header: "Ch-aOS" [12px] [Logo] -->
+    <g transform="translate(60, 36)">
+      <text x="0" y="34" font-size="36" font-weight="800" fill="#14241E" letter-spacing="-0.5" class="brand">Ch-aOS</text>
+      <!-- 12px visual gap + Isometric Cube Logo -->
+      <g transform="translate(142, -4)">
+        <polygon points="28,4 48,14 28,24 8,14" fill="#38D9A9"/>
+        <path d="M 8 14 L 28 24 L 28 32 L 16 26 L 16 38 L 28 44 L 28 50 L 8 40 Z" fill="#63E6BE"/>
+        <path d="M 28 24 L 34 21 L 34 29 L 48 22 L 48 38 L 42 41 L 42 32 L 34 36 L 34 46 L 28 50 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
+      </g>
+    </g>
+
+    <line x1="280" y1="42" x2="280" y2="82" stroke="#D4DFDA" stroke-width="1.5" />
+
+    <text x="306" y="58" font-size="24" font-weight="700" fill="#137A5B" letter-spacing="-0.3">
+      Design System &amp; Brand Identity Specifications
+    </text>
+    <text x="306" y="86" font-size="14" font-weight="500" fill="#486156">
+      Official Brand Guidelines: Gabriel Sans, Monogram Anatomy, Lockups, Type Scale, Surfaces &amp; Lighting Architecture
+    </text>
+
+    <g transform="translate(2180, 44)">
+      <rect width="160" height="32" fill="#E8F0EC" stroke="#137A5B" stroke-width="1" />
+      <text x="80" y="21" font-size="12" font-weight="700" fill="#137A5B" text-anchor="middle" class="mono">v1.6 SPEC • LIGHT</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 1: BRAND & ACCENTS ================= -->
+  <g transform="translate(60, 155)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">1. Brand &amp; Accent Tokens<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Core highlights, CTAs, status indicators and interactive states (Dark &amp; Light Contrast Parity)</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Card 1: Accent Primary -->
+    <g transform="translate(0, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#38D9A9" />
+        <rect x="166" width="166" height="85" fill="#137A5B" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Primary</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #38D9A9</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #137A5B</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Primary Brand Core</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Primary CTAs, selection glow, active navigation &amp; tags</text>
+    </g>
+
+    <!-- Card 2: Accent Cyan (Interactive Hover Token) -->
+    <g transform="translate(384, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#7CFAD3" />
+        <rect x="166" width="166" height="85" fill="#09523D" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Cyan (Hover / Feedback)</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #7CFAD3</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #09523D</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">High-Contrast Hover &amp; Feedback</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Tactile response: brighter in dark, richer in light</text>
+    </g>
+
+    <!-- Card 3: Accent Pink -->
+    <g transform="translate(768, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#F8A5C2" />
+        <rect x="166" width="166" height="85" fill="#C92861" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Secondary (Pink)</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #F8A5C2</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #C92861</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Secondary Accent</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Secondary buttons, badges &amp; lockup right-face stroke</text>
+    </g>
+
+    <!-- Card 4: Accent Warning -->
+    <g transform="translate(1152, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#FFE066" />
+        <rect x="166" width="166" height="85" fill="#A25904" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Warning</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #FFE066</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #A25904</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Warning State</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Alerts, cautious operations &amp; pending state</text>
+    </g>
+
+    <!-- Card 5: Accent Error -->
+    <g transform="translate(1536, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#FFA8A8" />
+        <rect x="166" width="166" height="85" fill="#D22020" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Error</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #FFA8A8</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #D22020</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Error State</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Validation errors, critical failures &amp; danger actions</text>
+    </g>
+
+    <!-- Card 6: Accent Orange -->
+    <g transform="translate(1920, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#FFB885" />
+        <rect x="166" width="166" height="85" fill="#C0400D" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Accent Orange</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #FFB885</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #C0400D</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Numeric &amp; Telemetry</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Numeric metrics, step indicators &amp; secondary telemetry</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 2: SURFACES & LAYERS ================= -->
+  <g transform="translate(60, 445)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">2. Canvas &amp; Surface Architecture<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Layered depth hierarchy from deepest background to elevated modals</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Card 1: Canvas Base -->
+    <g transform="translate(0, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Canvas Base</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #121916</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #F4F8F6</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Primary Viewport</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Root html, body background &amp; terminal OSC 11 default</text>
+    </g>
+
+    <!-- Card 2: Canvas Deep -->
+    <g transform="translate(384, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#0C1210" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Canvas Deep</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #0C1210</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #E9F0EC</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Deep Structure</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Docs sidebar pane, footer bar &amp; root structure backing</text>
+    </g>
+
+    <!-- Card 3: Surface Base -->
+    <g transform="translate(768, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#18241F" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#DDF2E8" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Surface Base</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #18241F</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #DDF2E8</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Inner Substrate</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Badges, code container substrate &amp; chip backgrounds</text>
+    </g>
+
+    <!-- Card 4: Surface Panel -->
+    <g transform="translate(1152, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#1E2D27" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#E1F0E8" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Surface Panel</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #1E2D27</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #E1F0E8</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Card Panel</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Feature cards, secondary code cards &amp; TUI forms</text>
+    </g>
+
+    <!-- Card 5: Surface Elevated -->
+    <g transform="translate(1536, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#25342E" stroke="#3D524A" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#E8F0EC" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Surface Elevated</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #25342E</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #E8F0EC</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Elevated UI</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Active tabs, modal dialogs &amp; floating popovers</text>
+    </g>
+
+    <!-- Card 6: Surface Hover -->
+    <g transform="translate(1920, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#2E413A" stroke="#3D524A" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#D4DFDA" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="8" y="8" width="46" height="20" fill="#121916" fill-opacity="0.85" />
+        <text x="31" y="22" font-size="11" font-weight="700" fill="#E8F0EC" text-anchor="middle">DARK</text>
+        <rect x="278" y="8" width="46" height="20" fill="#E8F0EC" fill-opacity="0.9" />
+        <text x="301" y="22" font-size="11" font-weight="700" fill="#121916" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Surface Hover</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #2E413A</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #D4DFDA</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Interactive Reaction</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Row highlight, active cursor &amp; interactive menu hover</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 3: TYPOGRAPHY SYSTEM & MODULAR SCALE ================= -->
+  <g transform="translate(60, 735)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">3. Typography System &amp; Modular Type Scale (Gabriel Sans &amp; Maple Mono)<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Mathematical type scale, calibrated line-heights, letter-spacing tracking &amp; VS Code/Chroma syntax</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Card 1: Display & H1 Scale -->
+    <g transform="translate(0, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="85" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <text x="14" y="34" font-size="24" font-weight="800" fill="#14241E" letter-spacing="-0.5" class="brand">Display 52px <tspan font-size="10.5" font-weight="600" fill="#137A5B" class="mono">lh:1.12 ls:-0.03em</tspan></text>
+        <text x="14" y="64" font-size="18" font-weight="700" fill="#137A5B" letter-spacing="-0.4" class="brand">Heading 1 36px <tspan font-size="10" font-weight="500" fill="#486156" class="mono">lh:1.20 ls:-0.025em</tspan></text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Display &amp; H1 Scale</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Display: 52px (800) | H1: 36px (800)</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Font: Gabriel Sans (Geometric)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Hero &amp; Major Page Headers</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Landing display titles, major release banners &amp; page H1s</text>
+    </g>
+
+    <!-- Card 2: Section & Card Scale -->
+    <g transform="translate(384, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="85" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <text x="14" y="26" font-size="16" font-weight="700" fill="#14241E" letter-spacing="-0.3" class="brand">H2: Section Title 26px <tspan font-size="9.5" font-weight="600" fill="#137A5B" class="mono">lh:1.28</tspan></text>
+        <text x="14" y="48" font-size="13.5" font-weight="600" fill="#243830" letter-spacing="-0.2" class="brand">H3: Sub-Section 20px <tspan font-size="9" font-weight="500" fill="#486156" class="mono">lh:1.35</tspan></text>
+        <text x="14" y="70" font-size="12" font-weight="600" fill="#486156" letter-spacing="-0.15" class="brand">H4: Item Title 16px <tspan font-size="8.5" font-weight="500" fill="#0B7568" class="mono">lh:1.40</tspan></text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Section &amp; Card Hierarchy</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">H2: 26px (700) | H3: 20px (600)</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">H4: 16px (600) | TUI Header</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Structural Sectional Levels</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Feature cards, documentation sub-sections &amp; modal dialogs</text>
+    </g>
+
+    <!-- Card 3: Body & Content Rhythm -->
+    <g transform="translate(768, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="85" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <text x="14" y="24" font-size="12.5" font-weight="400" fill="#243830" class="brand">Body Base 15px (0.9375rem) lh:1.60</text>
+        <text x="14" y="46" font-size="11" font-weight="400" fill="#486156" class="brand">Caption 12px (0.75rem) lh:1.45 ls:+0.01em</text>
+        <text x="14" y="68" font-size="9.5" font-weight="700" fill="#137A5B" letter-spacing="1.2" class="brand">OVERLINE 11px (0.6875rem) ls:+0.08em</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Body, Caption &amp; Overline</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Body: 15px (400) | Cap: 12px</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Overline: 11px (700 UPPER)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Continuous Technical Reading</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Paragraphs, technical docs, tooltips &amp; suite overlines</text>
+    </g>
+
+    <!-- Card 4: Text on Solid Accent & Hyperlinks -->
+    <g transform="translate(1152, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#38D9A9" />
+        <rect x="166" width="166" height="85" fill="#137A5B" />
+        <text x="83" y="46" font-size="16" font-weight="800" fill="#121916" text-anchor="middle" class="brand">Solid CTA</text>
+        <text x="249" y="46" font-size="16" font-weight="800" fill="#E8F0EC" text-anchor="middle" class="brand">Solid CTA</text>
+        <text x="83" y="70" font-size="11" font-weight="700" fill="#121916" fill-opacity="0.6" text-anchor="middle">#121916</text>
+        <text x="249" y="70" font-size="11" font-weight="700" fill="#E8F0EC" fill-opacity="0.8" text-anchor="middle">#E8F0EC</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Text on Solid Accent</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #121916 (on Mint)</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #E8F0EC (on Pine)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Solid Foreground Token</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Links: #38D9A9 (Dark) / #0E6E4F underline (Light)</text>
+    </g>
+
+    <!-- Card 5: OKLab Perceptual Gradient -->
+    <g transform="translate(1536, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="url(#brand-oklab)" />
+        <rect x="166" width="166" height="85" fill="url(#brand-oklab-light)" />
+        <text x="83" y="48" font-size="18" font-weight="800" fill="#121916" text-anchor="middle" class="brand">Ch-aOS</text>
+        <text x="249" y="48" font-size="18" font-weight="800" fill="#E8F0EC" text-anchor="middle" class="brand">Ch-aOS</text>
+        <text x="83" y="70" font-size="10" font-weight="700" fill="#121916" fill-opacity="0.75" text-anchor="middle">in oklab 135deg</text>
+        <text x="249" y="70" font-size="10" font-weight="700" fill="#E8F0EC" fill-opacity="0.8" text-anchor="middle">in oklab 135deg</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">OKLab Brand Gradient</text>
+      <text x="16" y="150" font-size="12" font-weight="600" fill="#137A5B" class="mono">#38D9A9 → #63E6BE → #F8A5C2</text>
+      <text x="16" y="170" font-size="12" font-weight="600" fill="#0B7568" class="mono">linear-gradient(in oklab ...)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Perceptual Space</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Eliminates sRGB gray dead-zone between mint &amp; pink</text>
+    </g>
+
+    <!-- Card 6: Ch-aOS Syntax Highlighting (Strictly matching chaos.json & chaos-dark.json) -->
+    <g transform="translate(1920, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="85" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <text x="12" y="26" font-size="11" font-weight="700" fill="#7E22CE" class="mono">def <tspan fill="#BE185D">plan</tspan><tspan fill="#64748B">(</tspan><tspan fill="#334155">self</tspan><tspan fill="#64748B">) -&gt; </tspan><tspan fill="#0E7490">Result</tspan><tspan fill="#64748B">:</tspan></text>
+        <text x="12" y="46" font-size="11" font-weight="400" font-style="italic" fill="#64748B" class="mono">    # Ch-aOS declarative sync</text>
+        <text x="12" y="66" font-size="11" font-weight="600" fill="#DB2777" class="mono">    state<tspan fill="#6D28D9"> = </tspan><tspan fill="#E11D48">True</tspan><tspan fill="#64748B">; </tspan>port<tspan fill="#6D28D9"> = </tspan><tspan fill="#1D4ED8">22</tspan></text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Ch-aOS Syntax Highlighting (Light)</text>
+      <text x="16" y="150" font-size="12" font-weight="600" fill="#7E22CE" class="mono">Key: #7E22CE | Fn: #BE185D</text>
+      <text x="16" y="170" font-size="12" font-weight="600" fill="#BE185D" class="mono">Str: #0D9488 | Num: #1D4ED8</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">src/themes/chaos.json</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Official VS Code &amp; Chroma terminal light syntax highlighting</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 4: BORDERS & DIVIDERS ================= -->
+  <g transform="translate(60, 1025)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">4. Borders, Hairlines &amp; Outlines (Dark &amp; Light Parity)<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Stroke weights, frame definitions, translucent glass rims and interactive focus states</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Border 1: Border Dim -->
+    <g transform="translate(0, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="24" y="20" width="118" height="45" fill="none" stroke="#25342E" stroke-width="3" />
+        <rect x="190" y="20" width="118" height="45" fill="none" stroke="#D4DFDA" stroke-width="3" />
+        <text x="83" y="76" font-size="10" font-weight="700" fill="#8E9EA0" text-anchor="middle">DARK 3px</text>
+        <text x="249" y="76" font-size="10" font-weight="700" fill="#486156" text-anchor="middle">LIGHT 3px</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Border Dim</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #25342E</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #D4DFDA</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Subtle Dividers</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Internal lines, input borders &amp; quiet separators</text>
+    </g>
+
+    <!-- Border 2: Border Mid -->
+    <g transform="translate(384, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="24" y="20" width="118" height="45" fill="none" stroke="#5A7266" stroke-width="3" />
+        <rect x="190" y="20" width="118" height="45" fill="none" stroke="#728D80" stroke-width="3" />
+        <text x="83" y="76" font-size="10" font-weight="700" fill="#8E9EA0" text-anchor="middle">DARK 3px</text>
+        <text x="249" y="76" font-size="10" font-weight="700" fill="#486156" text-anchor="middle">LIGHT 3px</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Border Mid (Default)</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #5A7266</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #728D80</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Structural Framing</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Navbar border, table borders &amp; secondary container frames</text>
+    </g>
+
+    <!-- Border 3: Border Highlight -->
+    <g transform="translate(768, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="24" y="20" width="118" height="45" fill="none" stroke="#38D9A9" stroke-width="3" />
+        <rect x="190" y="20" width="118" height="45" fill="none" stroke="#137A5B" stroke-width="3" />
+        <text x="83" y="76" font-size="10" font-weight="700" fill="#38D9A9" text-anchor="middle">ACTIVE</text>
+        <text x="249" y="76" font-size="10" font-weight="700" fill="#137A5B" text-anchor="middle">ACTIVE</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Border Highlight</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #38D9A9 (0.7)</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #137A5B</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Active Focus State</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Interactive focus ring, card hover &amp; active tab indicator</text>
+    </g>
+
+    <!-- Border 4: Hairline Alpha -->
+    <g transform="translate(1152, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <line x1="24" y1="42" x2="142" y2="42" stroke="#3D524A" stroke-opacity="0.45" stroke-width="2" />
+        <line x1="190" y1="42" x2="308" y2="42" stroke="#A9BCB3" stroke-opacity="0.60" stroke-width="2" />
+        <text x="83" y="74" font-size="10" font-weight="700" fill="#8E9EA0" text-anchor="middle">α 0.45</text>
+        <text x="249" y="74" font-size="10" font-weight="700" fill="#486156" text-anchor="middle">α 0.60</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Hairline Alpha</text>
+      <text x="16" y="150" font-size="12" font-weight="600" fill="#137A5B" class="mono">Dark: rgba(61,82,74,0.45)</text>
+      <text x="16" y="170" font-size="12" font-weight="600" fill="#0B7568" class="mono">Light:rgba(169,188,179,0.60)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Docs Hairline Rule</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">--sl-color-hairline divider for Starlight docs content</text>
+    </g>
+
+    <!-- Border 5: Glass Outer Rim -->
+    <g transform="translate(1536, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#121916" />
+        <rect width="166" height="85" fill="#18241F" fill-opacity="0.6" stroke="rgba(61,82,74,0.55)" stroke-width="1.5" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" />
+        <rect x="166" width="166" height="85" fill="#E8F0EC" fill-opacity="0.5" stroke="rgba(158,196,181,0.55)" stroke-width="1.5" />
+        <text x="83" y="48" font-size="13" font-weight="700" fill="#38D9A9" text-anchor="middle">Glass Rim</text>
+        <text x="249" y="48" font-size="13" font-weight="700" fill="#137A5B" text-anchor="middle">Glass Rim</text>
+        <text x="83" y="70" font-size="10" font-weight="700" fill="#8E9EA0" text-anchor="middle">1px (55% alpha)</text>
+        <text x="249" y="70" font-size="10" font-weight="700" fill="#486156" text-anchor="middle">1px (55% alpha)</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Glass Outer Rim</text>
+      <text x="16" y="150" font-size="12" font-weight="600" fill="#137A5B" class="mono">Dark: rgba(61,82,74,0.55)</text>
+      <text x="16" y="170" font-size="12" font-weight="600" fill="#0B7568" class="mono">Light:rgba(158,196,181,0.55)</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Frosted Translucency</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Subtle outer border for glassmorphic card surfaces</text>
+    </g>
+
+    <!-- Border 6: Secondary Button Border -->
+    <g transform="translate(1920, 28)">
+      <rect width="360" height="240" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="166" height="85" fill="#1E2D27" stroke="#5A7266" stroke-width="1.5" />
+        <rect x="166" width="166" height="85" fill="#F4F8F6" />
+        <rect x="166" width="166" height="85" fill="#A2DCB7" fill-opacity="0.45" stroke="#728D80" stroke-width="1.5" />
+        <text x="83" y="48" font-size="14" font-weight="700" fill="#E8F0EC" text-anchor="middle">.btn-secondary</text>
+        <text x="249" y="48" font-size="14" font-weight="700" fill="#14241E" text-anchor="middle">.btn-secondary</text>
+        <text x="83" y="70" font-size="10" font-weight="700" fill="#8E9EA0" text-anchor="middle">DARK</text>
+        <text x="249" y="70" font-size="10" font-weight="700" fill="#486156" text-anchor="middle">LIGHT</text>
+      </g>
+      <text x="16" y="126" font-size="16" font-weight="700" fill="#14241E">Secondary Button Border</text>
+      <text x="16" y="150" font-size="13" font-weight="600" fill="#137A5B" class="mono">Dark:  #5A7266</text>
+      <text x="16" y="170" font-size="13" font-weight="600" fill="#0B7568" class="mono">Light: #728D80</text>
+      <line x1="16" y1="184" x2="344" y2="184" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="206" font-size="12" font-weight="500" fill="#243830">Sharp Button Border</text>
+      <text x="16" y="224" font-size="11" font-weight="400" fill="#486156">Outline for secondary actions and cancel options</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 5: LIGHTING & GLASS ARCHITECTURE ================= -->
+  <g transform="translate(60, 1315)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">5. Lighting System &amp; Frosted Glass Architecture<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Ascending vertical spotlights, clean surface gradients and frosted glass recipe</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Dark Mode Stage (1128px) -->
+    <g transform="translate(0, 28)">
+      <rect width="1128" height="280" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      
+      <!-- Stage Visual -->
+      <g transform="translate(18, 18)">
+        <rect width="440" height="244" fill="#121916" stroke="#25342E" stroke-width="1" />
+        <rect width="440" height="244" fill="url(#dark-spotlight-vertical)" />
+        
+        <!-- Live Glass Box in Dark Stage -->
+        <g transform="translate(40, 24)">
+          <rect width="360" height="120" fill="#18241F" fill-opacity="0.65" stroke="rgba(61,82,74,0.65)" stroke-width="1.5" />
+          <text x="18" y="30" font-size="14" font-weight="700" fill="#38D9A9">Dark Glass Panel</text>
+          <text x="18" y="52" font-size="11.5" font-weight="500" fill="#C1C9D6" class="mono">bg: rgba(24,36,31,0.55) | blur(16px)</text>
+          <text x="18" y="70" font-size="11.5" font-weight="500" fill="#8E9EA0" class="mono">border: 1px rgba(61,82,74,0.55)</text>
+          
+          <!-- Sharp Button with Neon Glow -->
+          <g transform="translate(18, 80)">
+            <rect width="110" height="28" fill="#38D9A9" filter="url(#btn-glow-dark)" />
+            <text x="55" y="18" font-size="11.5" font-weight="700" fill="#121916" text-anchor="middle" class="brand">Mint CTA</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Technical Breakdown (Dark) -->
+      <g transform="translate(480, 20)">
+        <text x="0" y="18" font-size="16" font-weight="700" fill="#137A5B">Dark Mode Lighting &amp; Glass Architecture</text>
+        
+        <text x="0" y="52" font-size="12.5" font-weight="600" fill="#14241E">1. Vertical Spotlight (240px Ascending):</text>
+        <text x="0" y="72" font-size="11.5" font-weight="500" fill="#243830" class="mono">linear-gradient(to top, #18362B 85%, #18362B 35%, transparent)</text>
+
+        <text x="0" y="108" font-size="12.5" font-weight="600" fill="#14241E">2. Frosted Glass Formula:</text>
+        <text x="0" y="128" font-size="11.5" font-weight="500" fill="#243830" class="mono">background: rgba(24, 36, 31, 0.55); backdrop-filter: blur(16px);</text>
+
+        <text x="0" y="164" font-size="12.5" font-weight="600" fill="#14241E">3. Button Emission Glow &amp; Drop-Shadow:</text>
+        <text x="0" y="184" font-size="11.5" font-weight="500" fill="#243830" class="mono">box-shadow: 0 4px 18px rgba(56,217,169,0.45) | filter: drop-shadow(0 2px 8px #38D9A9)</text>
+
+        <text x="0" y="220" font-size="12.5" font-weight="600" fill="#14241E">4. Glass Outer Rim Accent:</text>
+        <text x="0" y="240" font-size="11.5" font-weight="500" fill="#243830" class="mono">border: 1px rgba(61, 82, 74, 0.55); /* Pure Sharp 0px Frame */</text>
+      </g>
+    </g>
+
+    <!-- Light Mode Stage (1128px) -->
+    <g transform="translate(1152, 28)">
+      <rect width="1128" height="280" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      
+      <!-- Stage Visual -->
+      <g transform="translate(18, 18)">
+        <rect width="440" height="244" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        <rect width="440" height="244" fill="url(#light-spotlight-vertical)" />
+        
+        <!-- Live Glass Box in Light Stage -->
+        <g transform="translate(40, 24)">
+          <rect width="360" height="120" fill="#E8F0EC" fill-opacity="0.65" stroke="rgba(158,196,181,0.75)" stroke-width="1.5" />
+          <text x="18" y="30" font-size="14" font-weight="700" fill="#137A5B">Light Glass Panel</text>
+          <text x="18" y="52" font-size="11.5" font-weight="500" fill="#243830" class="mono">bg: rgba(255,255,255,0.45) | blur(16px)</text>
+          <text x="18" y="70" font-size="11.5" font-weight="500" fill="#486156" class="mono">border: 1px rgba(158,196,181,0.75)</text>
+          
+          <!-- Sharp Button with Shadow -->
+          <g transform="translate(18, 80)">
+            <rect width="110" height="28" fill="#137A5B" filter="url(#btn-glow-light)" />
+            <text x="55" y="18" font-size="11.5" font-weight="700" fill="#E8F0EC" text-anchor="middle" class="brand">Pine CTA</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Technical Breakdown (Light) -->
+      <g transform="translate(480, 20)">
+        <text x="0" y="18" font-size="16" font-weight="700" fill="#137A5B">Light Mode Lighting &amp; Glass Architecture</text>
+        
+        <text x="0" y="52" font-size="12.5" font-weight="600" fill="#14241E">1. Vertical Spotlight (240px Ascending):</text>
+        <text x="0" y="72" font-size="11.5" font-weight="500" fill="#243830" class="mono">linear-gradient(to top, #A2DCB7 85%, #A2DCB7 30%, transparent)</text>
+
+        <text x="0" y="108" font-size="12.5" font-weight="600" fill="#14241E">2. Frosted Glass Formula:</text>
+        <text x="0" y="128" font-size="11.5" font-weight="500" fill="#243830" class="mono">background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px);</text>
+
+        <text x="0" y="164" font-size="12.5" font-weight="600" fill="#14241E">3. Button Subtle Shadows:</text>
+        <text x="0" y="184" font-size="11.5" font-weight="500" fill="#243830" class="mono">box-shadow: 0 4px 18px rgba(19,122,91,0.35) | filter: drop-shadow(0 2px 8px #0E6E4F)</text>
+
+        <text x="0" y="220" font-size="12.5" font-weight="600" fill="#14241E">4. Glass Outer Rim Accent:</text>
+        <text x="0" y="240" font-size="11.5" font-weight="500" fill="#243830" class="mono">border: 1px rgba(158, 196, 181, 0.75); /* Pure Sharp 0px Frame */</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 6: PROCEDURAL WAVE BACKGROUNDS & 60/40 HORIZON ================= -->
+  <g transform="translate(60, 1645)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">6. Procedural Wave Backgrounds &amp; 60/40 Horizon Architecture<tspan dx="16" font-size="13" font-weight="400" fill="#486156">Polar logarithmic vortex wave field vs harmonic cross-wave field with 60/40 viewport gradient mask</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Stage 1: Dark Mode - Vortex Wave Field (1128px) -->
+    <g transform="translate(0, 28)">
+      <rect width="1128" height="300" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      
+      <!-- Visual Ocean Diagram -->
+      <g transform="translate(18, 18)">
+        <rect width="440" height="264" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- 40% Upper Darkening Mask Header -->
+        <rect width="440" height="105" fill="#121916" />
+        <line x1="0" y1="105" x2="440" y2="105" stroke="#38D9A9" stroke-dasharray="4 4" stroke-width="1" opacity="0.5" />
+        <text x="220" y="45" font-size="12" font-weight="700" fill="#38D9A9" text-anchor="middle">Top 40% Mask: Clean Text Zone</text>
+        <text x="220" y="65" font-size="10.5" font-weight="400" fill="#8E9EA0" text-anchor="middle">100% Solid Darkening for Hero Title &amp; Navbar</text>
+
+        <!-- 60% Lower Voxel Maelstrom Ocean -->
+        <g transform="translate(0, 105)">
+          <ellipse cx="220" cy="110" rx="190" ry="42" fill="none" stroke="#1A2A22" stroke-width="2" />
+          <ellipse cx="220" cy="110" rx="140" ry="30" fill="none" stroke="#2D4537" stroke-width="2" />
+          <ellipse cx="220" cy="110" rx="90" ry="20" fill="none" stroke="#38D9A9" stroke-width="2.5" />
+          <ellipse cx="220" cy="110" rx="40" ry="10" fill="#0C1210" stroke="#63E6BE" stroke-width="2" />
+          <circle cx="220" cy="110" r="8" fill="#050B08" />
+          <text x="220" y="145" font-size="10" font-weight="700" fill="#38D9A9" text-anchor="middle">Vortex Center (offset translate-y-36)</text>
+        </g>
+      </g>
+
+      <!-- Technical Breakdown (Dark Ocean) -->
+      <g transform="translate(480, 20)">
+        <text x="0" y="18" font-size="16" font-weight="700" fill="#137A5B">Dark Mode: Polar Logarithmic Vortex Surface</text>
+        
+        <text x="0" y="52" font-size="12.5" font-weight="600" fill="#14241E">1. Polar Logarithmic Wave Field:</text>
+        <text x="0" y="70" font-size="11.5" font-weight="500" fill="#137A5B" class="mono">z = 36 * sin(dist * 0.42 - angle * 2.5) * max(0.22, 1 - dist/42)</text>
+
+        <text x="0" y="100" font-size="12.5" font-weight="600" fill="#14241E">2. Vortex Center Offset:</text>
+        <text x="0" y="118" font-size="11.5" font-weight="500" fill="#243830" class="mono">translate-y-28 sm:translate-y-40 scale-[1.08] (anchors center to bottom 3rd)</text>
+
+        <text x="0" y="148" font-size="12.5" font-weight="600" fill="#14241E">3. Viewport Horizon Mask (60/40 Ratio):</text>
+        <text x="0" y="166" font-size="11.5" font-weight="500" fill="#243830" class="mono">[mask-image:linear-gradient(to_top,black_0%,rgba(0,0,0,0.55)_45%,transparent_60%)]</text>
+
+        <text x="0" y="196" font-size="12.5" font-weight="600" fill="#14241E">4. Column Extrusion Depth (140px+):</text>
+        <text x="0" y="214" font-size="11.5" font-weight="500" fill="#243830" class="mono">Prevents inter-voxel clipping and viewport background bleed-through</text>
+
+        <text x="0" y="244" font-size="12.5" font-weight="600" fill="#14241E">5. Implementation Target:</text>
+        <text x="0" y="262" font-size="11.5" font-weight="500" fill="#243830" class="mono">Three.js / WebGL dynamic voxel canvas in BackgroundGrid.astro</text>
+      </g>
+    </g>
+
+    <!-- Stage 2: Light Mode - Cross-Wave Field (1128px) -->
+    <g transform="translate(1152, 28)">
+      <rect width="1128" height="300" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      
+      <!-- Visual Ocean Diagram -->
+      <g transform="translate(18, 18)">
+        <rect width="440" height="264" fill="#F4F8F6" stroke="#D4DFDA" stroke-width="1" />
+        
+        <!-- 40% Upper Mask Header -->
+        <rect width="440" height="105" fill="#F4F8F6" />
+        <line x1="0" y1="105" x2="440" y2="105" stroke="#137A5B" stroke-dasharray="4 4" stroke-width="1" opacity="0.5" />
+        <text x="220" y="45" font-size="12" font-weight="700" fill="#137A5B" text-anchor="middle">Top 40% Mask: Clean Reading Zone</text>
+        <text x="220" y="65" font-size="10.5" font-weight="400" fill="#486156" text-anchor="middle">Smooth Sage Dissolve for High Contrast Reading</text>
+
+        <!-- 60% Lower Voxel Storm Surge Waves -->
+        <g transform="translate(0, 105)">
+          <path d="M 10 35 Q 80 5 150 35 T 290 35 T 430 35" fill="none" stroke="#728D80" stroke-width="2" />
+          <path d="M 10 75 Q 80 45 150 75 T 290 75 T 430 75" fill="none" stroke="#137A5B" stroke-width="2.5" />
+          <path d="M 10 115 Q 80 85 150 115 T 290 115 T 430 115" fill="none" stroke="#A9BCB3" stroke-width="2" />
+          <text x="220" y="145" font-size="10" font-weight="700" fill="#137A5B" text-anchor="middle">Multidirectional Cross-Wave Interference</text>
+        </g>
+      </g>
+
+      <!-- Technical Breakdown (Light Ocean) -->
+      <g transform="translate(480, 20)">
+        <text x="0" y="18" font-size="16" font-weight="700" fill="#137A5B">Light Mode: Harmonic Cross-Wave Surface</text>
+        
+        <text x="0" y="52" font-size="12.5" font-weight="600" fill="#14241E">1. Harmonic Cross-Wave Field Formula:</text>
+        <text x="0" y="70" font-size="11.5" font-weight="500" fill="#137A5B" class="mono">z = 26 * copysign(|w1|^1.3, w1) + 16 * cos(w2) + 14 * chop</text>
+
+        <text x="0" y="100" font-size="12.5" font-weight="600" fill="#14241E">2. Non-Centralized Wave Interference:</text>
+        <text x="0" y="118" font-size="11.5" font-weight="500" fill="#243830" class="mono">Superposition of multidirectional wave frequencies without central focus</text>
+
+        <text x="0" y="148" font-size="12.5" font-weight="600" fill="#14241E">3. Palette Gradient Blending:</text>
+        <text x="0" y="166" font-size="11.5" font-weight="500" fill="#243830" class="mono">Pine Crests (#137A5B) transition into Sage Troughs (#C6DECE / #E0EFE8)</text>
+
+        <text x="0" y="196" font-size="12.5" font-weight="600" fill="#14241E">4. Column Extrusion Depth (140px+):</text>
+        <text x="0" y="214" font-size="11.5" font-weight="500" fill="#243830" class="mono">Prevents viewport background bleed-through in light mode</text>
+
+        <text x="0" y="244" font-size="12.5" font-weight="600" fill="#14241E">5. Implementation Target:</text>
+        <text x="0" y="262" font-size="11.5" font-weight="500" fill="#243830" class="mono">generate_backgrounds.py procedural voxel mesh generator</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 7: BRAND ANATOMY, SHAPE LANGUAGE & OFFICIAL LOCKUPS ================= -->
+  <g transform="translate(60, 1995)">
+    <text x="0" y="0" font-size="19" font-weight="700" fill="#14241E" letter-spacing="-0.2">7. Shape Language, Brand Monogram Anatomy &amp; Official Lockup Suite<tspan dx="16" font-size="13" font-weight="400" fill="#486156">The "Ch" Sculpted Monogram, Wordmark-First Lockup, Banner Architecture and Pure Sharp 0px Geometry</tspan></text>
+    <line x1="0" y1="12" x2="2280" y2="12" stroke="#D4DFDA" stroke-width="1" />
+
+    <!-- Card 1: Tier 0 - Pure Sharp Actions & CTAs -->
+    <g transform="translate(0, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="12" y="12" width="130" height="24" fill="#38D9A9" />
+        <text x="77" y="28" font-size="11" font-weight="700" fill="#121916" text-anchor="middle" class="brand">.btn-primary (0px)</text>
+        <rect x="152" y="12" width="168" height="24" fill="#18241F" stroke="#3D524A" stroke-width="1" />
+        <circle cx="164" cy="24" r="3" fill="#38D9A9" />
+        <text x="238" y="28" font-size="10" font-weight="600" fill="#38D9A9" text-anchor="middle" class="mono">.section-badge (0px)</text>
+        <line x1="12" y1="46" x2="12" y2="66" stroke="#38D9A9" stroke-width="3" />
+        <text x="24" y="60" font-size="10.5" font-weight="700" fill="#137A5B" class="mono">TUI: NormalBorder() left bar │</text>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">Tier 0: Pure Sharp (0px)</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Radius: 0px (Brutalist Unix)</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#0B7568" class="mono">TUI: gloss.NormalBorder()</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Unix Terminal Precision</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Web: .btn-primary, .btn-secondary, code, asides (0px)</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• TUI: Sidebar active item indicator bar (│)</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• STRICT: Buttons and cards are NEVER rounded</text>
+    </g>
+
+    <!-- Card 2: Tier 1 - Pure Sharp Surfaces & Frames (0px) -->
+    <g transform="translate(384, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <rect x="12" y="12" width="130" height="24" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        <text x="77" y="28" font-size="10.5" font-weight="600" fill="#243830" text-anchor="middle" class="mono">0px Sharp Input</text>
+        <path d="M 160 36 L 160 12 L 310 12 L 310 36 Z" fill="#E9F0EC" stroke="#137A5B" stroke-width="1.5" />
+        <text x="235" y="26" font-size="10.5" font-weight="700" fill="#137A5B" text-anchor="middle" class="mono">│ Tab │</text>
+        <rect x="12" y="44" width="308" height="22" fill="#E9F0EC" stroke="#137A5B" stroke-width="1" />
+        <text x="166" y="59" font-size="10" font-weight="600" fill="#137A5B" text-anchor="middle" class="mono">Frame R=0px | All Rects Straight</text>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">Tier 1: Pure Sharp Surfaces (0px)</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Zero Radius Across All Frames</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#0B7568" class="mono">TUI: gloss.NormalBorder()</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Brutalist Precision</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Web: Search inputs, cards &amp; code boxes (0px)</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• TUI: Modal dialogs, error frames &amp; active tabs (0px)</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• Strict rule: All rectangular UI elements are 100% straight</text>
+    </g>
+
+    <!-- Card 3: Tier 3 & 4 - Status Dots & Shell Sync -->
+    <g transform="translate(768, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        
+        <!-- Left: Status Dots (Tier 3) -->
+        <g transform="translate(14, 14)">
+          <circle cx="16" cy="14" r="7" fill="#38D9A9" filter="url(#btn-glow-dark)" />
+          <circle cx="16" cy="14" r="3" fill="#E8F0EC" />
+          <text x="16" y="32" font-size="8.5" font-weight="700" fill="#38D9A9" text-anchor="middle" class="mono">Mint</text>
+
+          <circle cx="52" cy="14" r="7" fill="#F8A5C2" />
+          <circle cx="52" cy="14" r="3" fill="#E8F0EC" />
+          <text x="52" y="32" font-size="8.5" font-weight="700" fill="#F8A5C2" text-anchor="middle" class="mono">Pink</text>
+
+          <circle cx="88" cy="14" r="4.5" fill="#5A7266" />
+          <text x="88" y="32" font-size="8.5" font-weight="600" fill="#8E9EA0" text-anchor="middle" class="mono">• TUI</text>
+
+          <text x="52" y="47" font-size="8.5" font-weight="600" fill="#8E9EA0" text-anchor="middle" class="mono">9999px (Dots)</text>
+        </g>
+
+        <!-- Vertical Divider -->
+        <line x1="126" y1="10" x2="126" y2="65" stroke="#D4DFDA" stroke-width="1" />
+
+        <!-- Right: Diagonal Split OSC 11 Tint Circle + Spec -->
+        <g transform="translate(138, 8)">
+          <g transform="translate(28, 29)">
+            <!-- Top-Left (Dark Mode #121916) -->
+            <path d="M -12.73 12.73 A 18 18 0 0 1 12.73 -12.73 Z" fill="#121916" stroke="#38D9A9" stroke-width="0.5" />
+            <!-- Bottom-Right (Light Mode #F6FAF8) -->
+            <path d="M -12.73 12.73 A 18 18 0 0 0 12.73 -12.73 Z" fill="#F6FAF8" stroke="#137A5B" stroke-width="0.5" />
+            <circle cx="0" cy="0" r="18" fill="none" stroke="#5A7266" stroke-width="1.2" />
+            <line x1="-12.73" y1="12.73" x2="12.73" y2="-12.73" stroke="#5A7266" stroke-width="1.2" />
+            <text x="-6.5" y="-3" font-size="7.5" font-weight="800" fill="#38D9A9" text-anchor="middle" class="mono">D</text>
+            <text x="6.5" y="9" font-size="7.5" font-weight="800" fill="#137A5B" text-anchor="middle" class="mono">L</text>
+          </g>
+
+          <g transform="translate(56, 4)">
+            <text x="0" y="11" font-size="10" font-weight="700" fill="#137A5B" class="mono">OSC 11 Tint</text>
+            <text x="0" y="25" font-size="8.5" font-weight="600" fill="#243830" class="mono">Dark:  #121916</text>
+            <text x="0" y="38" font-size="8.5" font-weight="600" fill="#0B7568" class="mono">Light: #F6FAF8</text>
+            <text x="0" y="51" font-size="8" font-weight="500" fill="#486156" class="mono">\x1b]11;bg\x1b\</text>
+          </g>
+        </g>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">Tier 3 &amp; 4: Dots &amp; OSC 11</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Dots: 9999px | Hook: OSC 11</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#0B7568" class="mono">TUI: GetTerminalBgHex()</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Status &amp; Shell Tint Sync</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Web: .badge-dot, .architecture-dot, beacons</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• TUI: ui_helpers.go bullet (" • ") &amp; ● / ○ glyphs</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• Shell: Synchronizes Kitty, Alacritty &amp; Ghostty bg</text>
+    </g>
+
+    <!-- Card 4: Brand Monogram Anatomy - Sculpted "Ch" Cube -->
+    <g transform="translate(1152, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        
+        <g transform="translate(40, 6)">
+          <polygon points="30,4 52,16 30,28 8,16" fill="#38D9A9"/>
+          <path d="M 8 16 L 30 28 L 30 36 L 16 30 L 16 43 L 30 49 L 30 57 L 8 45 Z" fill="#63E6BE"/>
+          <path d="M 30 28 L 36 24 L 36 33 L 52 25 L 52 43 L 45 47 L 45 36 L 36 41 L 36 52 L 30 57 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
+        </g>
+
+        <g transform="translate(125, 12)">
+          <text x="0" y="12" font-size="10" font-weight="700" fill="#38D9A9" class="mono">◆ Top: Upper Face (#38D9A9)</text>
+          <text x="0" y="28" font-size="10" font-weight="700" fill="#63E6BE" class="mono">◀ Left: Glyph "C" (#63E6BE)</text>
+          <text x="0" y="44" font-size="10" font-weight="700" fill="#F8A5C2" class="mono">▶ Right: Glyph "h" (#F8A5C2)</text>
+          <text x="0" y="58" font-size="9" font-weight="500" fill="#486156">Isometric Axonometric Form</text>
+        </g>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">The Sculpted "Ch" Cube</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Angle: Exact 30° Axonometric</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#F8A5C2" class="mono">Official Brand Monogram</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Sculpted Monogram Anatomy</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Visual representation of the "Ch" suite prefix</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• Solid volumetric block uniting "C" + "h"</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• Used as standalone icon, favicon &amp; seal</text>
+    </g>
+
+    <!-- Card 5: Official Brand Lockup (Wordmark FIRST, Logo SECOND) -->
+    <g transform="translate(1536, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        
+        <g transform="translate(56, 16)">
+          <rect x="-8" y="-4" width="232" height="52" fill="none" stroke="#137A5B" stroke-dasharray="3 3" stroke-width="1" opacity="0.4" />
+          
+          <text x="12" y="32" font-size="26" font-weight="800" fill="#14241E" letter-spacing="-0.5" class="brand">Ch-aOS</text>
+          <line x1="112" y1="10" x2="112" y2="38" stroke="#137A5B" stroke-width="1" opacity="0.6" />
+          <text x="112" y="47" font-size="7.5" font-weight="700" fill="#137A5B" text-anchor="middle" class="mono">12px</text>
+          
+          <g transform="translate(126, 4)">
+            <polygon points="18,3 32,10 18,17 4,10" fill="#38D9A9"/>
+            <path d="M 4 10 L 18 17 L 18 22 L 10 18 L 10 26 L 18 30 L 18 35 L 4 28 Z" fill="#63E6BE"/>
+            <path d="M 18 17 L 22 15 L 22 20 L 32 16 L 32 27 L 28 29 L 28 23 L 22 26 L 22 32 L 18 35 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.2" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">Official Brand Lockup</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Order: Ch-aOS [12px] [Logo]</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#0B7568" class="mono">Clear Space: 1X Boundary</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Strict Signature Sequence</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Wordmark FIRST, Sculpted Monogram SECOND</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• 12px precise gap between name and cube</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• Minimum lockup width: 120px | Min height: 24px</text>
+    </g>
+
+    <!-- Card 6: Suite Banner & Title Hierarchy -->
+    <g transform="translate(1920, 28)">
+      <rect width="360" height="260" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="75" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+        
+        <g transform="translate(24, 18)">
+          <text x="0" y="12" font-size="11" font-weight="700" fill="#137A5B" letter-spacing="1.5" class="brand">Ch-aOS suite</text>
+          <text x="0" y="38" font-size="22" font-weight="800" fill="#14241E" letter-spacing="0.5" class="brand">PELAGO</text>
+        </g>
+        
+        <g transform="translate(210, 18)">
+          <text x="0" y="9.5" font-size="9.5" font-weight="600" fill="#486156" class="mono">Root format:</text>
+          <text x="0" y="28" font-size="15" font-weight="800" fill="#0B7568" class="brand">Ch-aOS</text>
+          <text x="0" y="44" font-size="11" font-weight="600" fill="#486156" class="mono">or "chaos"</text>
+        </g>
+      </g>
+      <text x="16" y="116" font-size="15" font-weight="700" fill="#14241E">Suite Banner Architecture</text>
+      <text x="16" y="136" font-size="12" font-weight="600" fill="#137A5B" class="mono">Overline: "Ch-aOS suite"</text>
+      <text x="16" y="152" font-size="12" font-weight="600" fill="#F8A5C2" class="mono">Display: [APPLICATION NAME]</text>
+      <line x1="16" y1="164" x2="344" y2="164" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="184" font-size="11" font-weight="500" fill="#243830">Product &amp; Tool Naming System</text>
+      <text x="16" y="200" font-size="10" font-weight="400" fill="#486156">• Root: directly "Ch-aOS" (official) or "chaos"</text>
+      <text x="16" y="216" font-size="10" font-weight="400" fill="#486156">• Apps: Overline + App Name (Pelago, Styx, Ramble)</text>
+      <text x="16" y="232" font-size="10" font-weight="400" fill="#486156">• Unified brand hierarchy across Web, CLI &amp; TUI</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 8: UI COMPONENT KIT & INTERACTIVE STATE MATRIX ================= -->
+  <g transform="translate(0, 2330)">
+    <text x="60" y="0" font-size="20" font-weight="700" fill="#14241E" letter-spacing="0.5">8. UI Component Kit &amp; Interactive State Matrix</text>
+    <text x="60" y="24" font-size="13" font-weight="400" fill="#486156">Deterministic Micro-Interactions &amp; Dual-Theme Contrast Parity • Strict 0px Sharp Edges</text>
+
+    <!-- Card 1: Buttons & Action Triggers -->
+    <g transform="translate(60, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage -->
+        <rect width="166" height="114" fill="#121916" />
+        <rect x="6" y="5" width="32" height="12" fill="#18241F" />
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#38D9A9" text-anchor="middle" class="brand">DARK</text>
+        
+        <g transform="translate(6, 20)">
+          <!-- Primary Rest -->
+          <rect width="72" height="22" fill="#38D9A9" />
+          <text x="36" y="15" font-size="9" font-weight="700" fill="#0C1210" text-anchor="middle" class="brand">Deploy</text>
+          
+          <!-- Primary Hover -->
+          <rect x="78" width="74" height="22" fill="#7CFAD3" filter="url(#glow-green)" />
+          <text x="115" y="15" font-size="9" font-weight="700" fill="#0C1210" text-anchor="middle" class="brand">Hover</text>
+          
+          <!-- Focus Ring -->
+          <rect x="-2" y="27" width="76" height="26" fill="none" stroke="#7CFAD3" stroke-width="1.5" opacity="0.7" />
+          <rect y="29" width="72" height="22" fill="#38D9A9" />
+          <text x="36" y="44" font-size="8.5" font-weight="700" fill="#0C1210" text-anchor="middle" class="brand">Focus Ring</text>
+          
+          <!-- Secondary -->
+          <rect x="78" y="29" width="74" height="22" fill="#18241F" stroke="#3D524A" stroke-width="1" />
+          <text x="115" y="44" font-size="8.5" font-weight="600" fill="#E8F0EC" text-anchor="middle" class="brand">Secondary</text>
+          
+          <!-- Ghost & Disabled -->
+          <rect y="58" width="72" height="22" fill="#1E2D27" />
+          <text x="36" y="73" font-size="8.5" font-weight="600" fill="#C1C9D6" text-anchor="middle" class="brand">Ghost</text>
+          
+          <rect x="78" y="58" width="74" height="22" fill="#18241F" stroke="#25342E" stroke-width="1" opacity="0.45" />
+          <text x="115" y="73" font-size="8.5" font-weight="600" fill="#5A7266" text-anchor="middle" class="brand">Disabled</text>
+        </g>
+        
+        <!-- Light Mode Stage -->
+        <rect x="166" width="166" height="114" fill="#F4F8F6" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="294" y="5" width="32" height="12" fill="#E8F0EC" />
+        <text x="310" y="14" font-size="7" font-weight="700" fill="#137A5B" text-anchor="middle" class="brand">LIGHT</text>
+        
+        <g transform="translate(172, 20)">
+          <!-- Primary Rest -->
+          <rect width="72" height="22" fill="#137A5B" />
+          <text x="36" y="15" font-size="9" font-weight="700" fill="#E8F0EC" text-anchor="middle" class="brand">Deploy</text>
+          
+          <!-- Primary Hover -->
+          <rect x="78" width="74" height="22" fill="#09523D" />
+          <text x="115" y="15" font-size="9" font-weight="700" fill="#E8F0EC" text-anchor="middle" class="brand">Hover</text>
+          
+          <!-- Focus Ring -->
+          <rect x="-2" y="27" width="76" height="26" fill="none" stroke="#0B7568" stroke-width="1.5" opacity="0.8" />
+          <rect y="29" width="72" height="22" fill="#137A5B" />
+          <text x="36" y="44" font-size="8.5" font-weight="700" fill="#E8F0EC" text-anchor="middle" class="brand">Focus Ring</text>
+          
+          <!-- Secondary -->
+          <rect x="78" y="29" width="74" height="22" fill="#E9F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="115" y="44" font-size="8.5" font-weight="600" fill="#14241E" text-anchor="middle" class="brand">Secondary</text>
+          
+          <!-- Ghost & Disabled -->
+          <rect y="58" width="72" height="22" fill="#D4DFDA" />
+          <text x="36" y="73" font-size="8.5" font-weight="600" fill="#243830" text-anchor="middle" class="brand">Ghost</text>
+          
+          <rect x="78" y="58" width="74" height="22" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" opacity="0.6" />
+          <text x="115" y="73" font-size="8.5" font-weight="600" fill="#728D80" text-anchor="middle" class="brand">Disabled</text>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Buttons &amp; Action Triggers</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  #38D9A9 (Rest) / #7CFAD3 (Hover)</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: #137A5B (Rest) / #09523D (Hover)</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Action Elevation &amp; 0px Sharp Precision</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• Rest -&gt; Hover: 150ms with high-contrast shift</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• Active: scale(0.98) with physical depression</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• Accessible sharp focus ring with 2px translucent offset</text>
+    </g>
+
+    <!-- Card 2: Form Controls & Text Inputs -->
+    <g transform="translate(432, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage -->
+        <rect width="166" height="114" fill="#121916" />
+        <rect x="6" y="5" width="32" height="12" fill="#18241F" />
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#38D9A9" text-anchor="middle" class="brand">DARK</text>
+        
+        <g transform="translate(6, 20)">
+          <!-- Rest / Placeholder -->
+          <rect width="154" height="24" fill="#0C1210" stroke="#25342E" stroke-width="1" />
+          <text x="8" y="16" font-size="8.5" font-weight="400" fill="#5A7266" class="mono">search fleet.yml...</text>
+          
+          <!-- Focused -->
+          <rect x="-1.5" y="27.5" width="157" height="27" fill="none" stroke="#38D9A9" stroke-width="1" opacity="0.35" />
+          <rect y="29" width="154" height="24" fill="#0C1210" stroke="#38D9A9" stroke-width="1.2" />
+          <text x="8" y="45" font-size="8.5" font-weight="500" fill="#E8F0EC" class="mono">fleet:east-01<tspan fill="#38D9A9">|</tspan></text>
+          
+          <!-- Error -->
+          <rect y="58" width="154" height="24" fill="#1A1215" stroke="#F8A5C2" stroke-width="1" />
+          <text x="8" y="74" font-size="8.5" font-weight="500" fill="#FFA8A8" class="mono">invalid chobolo.yml</text>
+        </g>
+        
+        <!-- Light Mode Stage -->
+        <rect x="166" width="166" height="114" fill="#F4F8F6" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="294" y="5" width="32" height="12" fill="#E8F0EC" />
+        <text x="310" y="14" font-size="7" font-weight="700" fill="#137A5B" text-anchor="middle" class="brand">LIGHT</text>
+        
+        <g transform="translate(172, 20)">
+          <!-- Rest / Placeholder -->
+          <rect width="154" height="24" fill="#E8F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="8" y="16" font-size="8.5" font-weight="400" fill="#728D80" class="mono">search fleet.yml...</text>
+          
+          <!-- Focused -->
+          <rect x="-1.5" y="27.5" width="157" height="27" fill="none" stroke="#137A5B" stroke-width="1" opacity="0.30" />
+          <rect y="29" width="154" height="24" fill="#E8F0EC" stroke="#137A5B" stroke-width="1.2" />
+          <text x="8" y="45" font-size="8.5" font-weight="500" fill="#14241E" class="mono">fleet:east-01<tspan fill="#137A5B">|</tspan></text>
+          
+          <!-- Error -->
+          <rect y="58" width="154" height="24" fill="#FCE8EE" stroke="#C92861" stroke-width="1" />
+          <text x="8" y="74" font-size="8.5" font-weight="500" fill="#C92861" class="mono">invalid chobolo.yml</text>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Form Controls &amp; Inputs</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  #25342E Line / #38D9A9 Focus Ring</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: #A9BCB3 Line / #137A5B Focus Ring</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Input Ergonomics &amp; Sharp Corners</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• Focus: glowing halo with 30-35% opacity spread</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• Error validation: strawberry pink border &amp; tint</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• 100% straight orthogonal boxes without border radius</text>
+    </g>
+
+    <!-- Card 3: Selection Controls (Toggles & Checks) -->
+    <g transform="translate(804, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage -->
+        <rect width="166" height="114" fill="#121916" />
+        <rect x="6" y="5" width="32" height="12" fill="#18241F" />
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#38D9A9" text-anchor="middle" class="brand">DARK</text>
+        
+        <g transform="translate(6, 20)">
+          <!-- Switch Off & On (Sharp Rectangular Switches) -->
+          <rect y="2" width="30" height="16" fill="#25342E" />
+          <rect x="2" y="4" width="12" height="12" fill="#8E9EA0" />
+          <text x="36" y="14" font-size="8.5" font-weight="500" fill="#8E9EA0" class="mono">Dry-run</text>
+          
+          <rect x="80" y="2" width="30" height="16" fill="#38D9A9" filter="url(#glow-green)" />
+          <rect x="96" y="4" width="12" height="12" fill="#0C1210" />
+          <text x="116" y="14" font-size="8.5" font-weight="600" fill="#E8F0EC" class="mono">Apply</text>
+          
+          <!-- Checkbox Checked & Unchecked -->
+          <rect y="30" width="14" height="14" fill="#38D9A9" />
+          <polyline points="3,37 6,41 11,34" fill="none" stroke="#0C1210" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter" />
+          <text x="20" y="41" font-size="8.5" font-weight="500" fill="#C1C9D6" class="mono">Enforce</text>
+          
+          <rect x="80" y="30" width="14" height="14" fill="#121916" stroke="#3D524A" stroke-width="1" />
+          <text x="100" y="41" font-size="8.5" font-weight="400" fill="#8E9EA0" class="mono">Strict</text>
+          
+          <!-- Radio Selected & Unselected -->
+          <circle cx="7" cy="67" r="7" fill="#121916" stroke="#38D9A9" stroke-width="1.2" />
+          <circle cx="7" cy="67" r="3.5" fill="#38D9A9" />
+          <text x="20" y="70" font-size="8.5" font-weight="500" fill="#C1C9D6" class="mono">Primary</text>
+          
+          <circle cx="87" cy="67" r="7" fill="#121916" stroke="#3D524A" stroke-width="1" />
+          <text x="100" y="70" font-size="8.5" font-weight="400" fill="#8E9EA0" class="mono">Replica</text>
+        </g>
+        
+        <!-- Light Mode Stage -->
+        <rect x="166" width="166" height="114" fill="#F4F8F6" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="294" y="5" width="32" height="12" fill="#E8F0EC" />
+        <text x="310" y="14" font-size="7" font-weight="700" fill="#137A5B" text-anchor="middle" class="brand">LIGHT</text>
+        
+        <g transform="translate(172, 20)">
+          <!-- Switch Off & On -->
+          <rect y="2" width="30" height="16" fill="#D4DFDA" />
+          <rect x="2" y="4" width="12" height="12" fill="#728D80" />
+          <text x="36" y="14" font-size="8.5" font-weight="500" fill="#728D80" class="mono">Dry-run</text>
+          
+          <rect x="80" y="2" width="30" height="16" fill="#137A5B" />
+          <rect x="96" y="4" width="12" height="12" fill="#E8F0EC" />
+          <text x="116" y="14" font-size="8.5" font-weight="600" fill="#14241E" class="mono">Apply</text>
+          
+          <!-- Checkbox Checked & Unchecked -->
+          <rect y="30" width="14" height="14" fill="#137A5B" />
+          <polyline points="3,37 6,41 11,34" fill="none" stroke="#E8F0EC" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter" />
+          <text x="20" y="41" font-size="8.5" font-weight="500" fill="#243830" class="mono">Enforce</text>
+          
+          <rect x="80" y="30" width="14" height="14" fill="#E8F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="100" y="41" font-size="8.5" font-weight="400" fill="#728D80" class="mono">Strict</text>
+          
+          <!-- Radio Selected & Unselected -->
+          <circle cx="7" cy="67" r="7" fill="#E8F0EC" stroke="#137A5B" stroke-width="1.2" />
+          <circle cx="7" cy="67" r="3.5" fill="#137A5B" />
+          <text x="20" y="70" font-size="8.5" font-weight="500" fill="#243830" class="mono">Primary</text>
+          
+          <circle cx="87" cy="67" r="7" fill="#E8F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="100" y="70" font-size="8.5" font-weight="400" fill="#728D80" class="mono">Replica</text>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Selection &amp; Toggles</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  Switch #38D9A9 / Check #38D9A9</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: Switch #137A5B / Check #137A5B</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Binary &amp; Multi-State Selectors</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• High-contrast checkmark &amp; radio dot geometry</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• 120ms smooth physical transition on toggle</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• 0px brutalist sharp switch tracks and knobs</text>
+    </g>
+
+    <!-- Card 4: Badges, Status Chips & Matrix -->
+    <g transform="translate(1176, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage -->
+        <rect width="166" height="114" fill="#121916" />
+        <rect x="6" y="5" width="32" height="12" fill="#18241F" />
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#38D9A9" text-anchor="middle" class="brand">DARK</text>
+        
+        <g transform="translate(6, 20)">
+          <!-- Live & Syncing (0px Sharp Badges) -->
+          <rect width="68" height="20" fill="#18362B" stroke="#38D9A9" stroke-width="1" />
+          <circle cx="8" cy="10" r="3" fill="#38D9A9" filter="url(#glow-green)" />
+          <text x="18" y="13.5" font-size="8" font-weight="700" fill="#38D9A9" class="brand">LIVE</text>
+          
+          <rect x="74" width="80" height="20" fill="#332A15" stroke="#FFE066" stroke-width="1" />
+          <circle cx="82" cy="10" r="3" fill="#FFE066" />
+          <text x="92" y="13.5" font-size="8" font-weight="700" fill="#FFE066" class="brand">SYNCING</text>
+          
+          <!-- Halted & Standby -->
+          <rect y="28" width="68" height="20" fill="#381A22" stroke="#F8A5C2" stroke-width="1" />
+          <circle cx="8" cy="38" r="3" fill="#F8A5C2" />
+          <text x="18" y="41.5" font-size="8" font-weight="700" fill="#F8A5C2" class="brand">HALTED</text>
+          
+          <rect x="74" y="28" width="80" height="20" fill="#18241F" stroke="#5A7266" stroke-width="1" />
+          <text x="114" y="41.5" font-size="8" font-weight="700" fill="#8E9EA0" text-anchor="middle" class="brand">STANDBY</text>
+          
+          <!-- Chips -->
+          <rect y="56" width="68" height="18" fill="#18241F" stroke="#3D524A" stroke-width="1" />
+          <text x="34" y="68.5" font-size="8" font-weight="600" fill="#63E6BE" text-anchor="middle" class="mono">v1.2.0</text>
+          
+          <rect x="74" y="56" width="80" height="18" fill="#18241F" stroke="#3D524A" stroke-width="1" />
+          <text x="114" y="68.5" font-size="8" font-weight="600" fill="#C1C9D6" text-anchor="middle" class="mono">aarch64</text>
+        </g>
+        
+        <!-- Light Mode Stage -->
+        <rect x="166" width="166" height="114" fill="#F4F8F6" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="294" y="5" width="32" height="12" fill="#E8F0EC" />
+        <text x="310" y="14" font-size="7" font-weight="700" fill="#137A5B" text-anchor="middle" class="brand">LIGHT</text>
+        
+        <g transform="translate(172, 20)">
+          <!-- Live & Syncing -->
+          <rect width="68" height="20" fill="#DDF2E8" stroke="#137A5B" stroke-width="1" />
+          <circle cx="8" cy="10" r="3" fill="#137A5B" />
+          <text x="18" y="13.5" font-size="8" font-weight="700" fill="#137A5B" class="brand">LIVE</text>
+          
+          <rect x="74" width="80" height="20" fill="#FDF4D4" stroke="#A25904" stroke-width="1" />
+          <circle cx="82" cy="10" r="3" fill="#A25904" />
+          <text x="92" y="13.5" font-size="8" font-weight="700" fill="#A25904" class="brand">SYNCING</text>
+          
+          <!-- Halted & Standby -->
+          <rect y="28" width="68" height="20" fill="#FCE8EE" stroke="#C92861" stroke-width="1" />
+          <circle cx="8" cy="38" r="3" fill="#C92861" />
+          <text x="18" y="41.5" font-size="8" font-weight="700" fill="#C92861" class="brand">HALTED</text>
+          
+          <rect x="74" y="28" width="80" height="20" fill="#E9F0EC" stroke="#728D80" stroke-width="1" />
+          <text x="114" y="41.5" font-size="8" font-weight="700" fill="#486156" text-anchor="middle" class="brand">STANDBY</text>
+          
+          <!-- Chips -->
+          <rect y="56" width="68" height="18" fill="#E9F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="34" y="68.5" font-size="8" font-weight="600" fill="#0B7568" text-anchor="middle" class="mono">v1.2.0</text>
+          
+          <rect x="74" y="56" width="80" height="18" fill="#E9F0EC" stroke="#A9BCB3" stroke-width="1" />
+          <text x="114" y="68.5" font-size="8" font-weight="600" fill="#243830" text-anchor="middle" class="mono">aarch64</text>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Badges &amp; Status Matrix</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  Live #38D9A9 / Sync #FFE066 / Fail #F8A5C2</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: Live #137A5B / Sync #A25904 / Fail #C92861</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Semantic Telemetry Indicators (Sharp 0px)</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• Glowing status nodes for real-time states</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• Strict straight corners (0px) aligned with Ch-aOS brutalism</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• Accessible color parity tuned for dark &amp; light</text>
+    </g>
+
+    <!-- Card 5: Interactive Surface Cards & Tabs -->
+    <g transform="translate(1548, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage -->
+        <rect width="166" height="114" fill="#121916" />
+        <rect x="6" y="5" width="32" height="12" fill="#18241F" />
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#38D9A9" text-anchor="middle" class="brand">DARK</text>
+        
+        <g transform="translate(6, 20)">
+          <!-- Tab Bar -->
+          <rect width="154" height="24" fill="#0C1210" stroke="#1E2D27" stroke-width="1" />
+          <rect x="2" y="2" width="72" height="20" fill="#1E2D27" />
+          <line x1="8" y1="21" x2="68" y2="21" stroke="#38D9A9" stroke-width="1.5" />
+          <text x="38" y="15" font-size="8.5" font-weight="700" fill="#E8F0EC" text-anchor="middle" class="brand">Overview</text>
+          <text x="114" y="15" font-size="8.5" font-weight="500" fill="#8E9EA0" text-anchor="middle" class="brand">Clusters</text>
+          
+          <!-- Card Hover Preview -->
+          <rect y="32" width="154" height="52" fill="url(#glass-dark)" stroke="#38D9A9" stroke-width="1" />
+          <text x="8" y="48" font-size="8.5" font-weight="600" fill="#38D9A9" class="mono">▲ Hover: -2px lift</text>
+          <text x="8" y="62" font-size="8" font-weight="400" fill="#8E9EA0">Mint top highlight border</text>
+          <text x="8" y="74" font-size="8" font-weight="400" fill="#8E9EA0">Frosted blur(16px) glass</text>
+        </g>
+        
+        <!-- Light Mode Stage -->
+        <rect x="166" width="166" height="114" fill="#F4F8F6" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <rect x="294" y="5" width="32" height="12" fill="#E8F0EC" />
+        <text x="310" y="14" font-size="7" font-weight="700" fill="#137A5B" text-anchor="middle" class="brand">LIGHT</text>
+        
+        <g transform="translate(172, 20)">
+          <!-- Tab Bar -->
+          <rect width="154" height="24" fill="#E9F0EC" stroke="#D4DFDA" stroke-width="1" />
+          <rect x="2" y="2" width="72" height="20" fill="#E8F0EC" />
+          <line x1="8" y1="21" x2="68" y2="21" stroke="#137A5B" stroke-width="1.5" />
+          <text x="38" y="15" font-size="8.5" font-weight="700" fill="#14241E" text-anchor="middle" class="brand">Overview</text>
+          <text x="114" y="15" font-size="8.5" font-weight="500" fill="#728D80" text-anchor="middle" class="brand">Clusters</text>
+          
+          <!-- Card Hover Preview -->
+          <rect y="32" width="154" height="52" fill="#E8F0EC" stroke="#137A5B" stroke-width="1" />
+          <text x="8" y="48" font-size="8.5" font-weight="600" fill="#137A5B" class="mono">▲ Hover: -2px lift</text>
+          <text x="8" y="62" font-size="8" font-weight="400" fill="#486156">Teal top highlight border</text>
+          <text x="8" y="74" font-size="8" font-weight="400" fill="#486156">Clean light elevated plate</text>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Surface Cards &amp; Tabs</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  Active Tab #38D9A9 / Glass Lift</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: Active Tab #137A5B / Surface Lift</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Structural Navigation &amp; 0px Corners</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• Segmented tab container with tactile active plate</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• Card hover reveals directional top accent border</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• Pure sharp geometry across all elevation tiers</text>
+    </g>
+
+    <!-- Card 6: Terminal Action Bar & Copy Feedback (Strictly matching chaos.json & chaos-dark.json) -->
+    <g transform="translate(1920, 38)">
+      <rect width="360" height="290" fill="url(#glass-light)" stroke="url(#card-border-light)" stroke-width="1.5" filter="url(#subtle-shadow-light)" />
+      <g transform="translate(14, 14)">
+        <rect width="332" height="114" fill="#121916" stroke="#25342E" stroke-width="1" />
+        
+        <!-- Dark Mode Stage (Tokens from chaos-dark.json) -->
+        <rect width="166" height="114" fill="#0C1210" />
+        <g transform="translate(6, 6)">
+          <circle cx="4" cy="5" r="2.5" fill="#F8A5C2" />
+          <circle cx="12" cy="5" r="2.5" fill="#FFE066" />
+          <circle cx="20" cy="5" r="2.5" fill="#38D9A9" />
+          <text x="28" y="7.5" font-size="6.5" font-weight="600" fill="#64748B" class="mono">chaos cli</text>
+          
+          <rect x="96" y="-1" width="54" height="14" fill="#18362B" stroke="#38D9A9" stroke-width="0.8" />
+          <text x="123" y="9" font-size="6.5" font-weight="700" fill="#38D9A9" text-anchor="middle" class="mono">✓ Copied!</text>
+          
+          <g transform="translate(2, 22)">
+            <text x="0" y="8" font-size="7" font-weight="400" fill="#64748B" class="mono">$ </text>
+            <text x="8" y="8" font-size="7" font-weight="600" fill="#A855F7" class="mono">chaos</text>
+            <text x="32" y="8" font-size="7" font-weight="500" fill="#EC4899" class="mono"> provision up</text>
+            
+            <text x="0" y="20" font-size="6.8" font-weight="500" fill="#CBD5E1" class="mono">stack</text>
+            <text x="24" y="20" font-size="6.8" font-weight="500" fill="#14B8A6" class="mono"> proj</text>
+            <text x="46" y="20" font-size="6.8" font-weight="500" fill="#C084FC" class="mono"> -A</text>
+            <text x="60" y="20" font-size="6.8" font-weight="500" fill="#14B8A6" class="mono"> role</text>
+            
+            <text x="0" y="32" font-size="6.5" font-weight="400" fill="#C084FC" class="mono">-f <tspan fill="#14B8A6">fleet.yml</tspan> <tspan fill="#C084FC">-c</tspan> <tspan fill="#14B8A6">chobolo.yml</tspan></text>
+            
+            <text x="0" y="46" font-size="6.8" font-weight="600" fill="#38D9A9" class="mono">✔ <tspan fill="#9399B3">[</tspan><tspan fill="#14B8A6">fleet.yml</tspan><tspan fill="#9399B3">]</tspan> <tspan fill="#CBD5E1">synchronized</tspan></text>
+            <text x="0" y="58" font-size="6.5" font-weight="400" fill="#64748B" class="mono">applied stack in <tspan fill="#60A5FA">184</tspan>ms</text>
+          </g>
+        </g>
+        
+        <!-- Light Mode Stage (Tokens from chaos.json) -->
+        <rect x="166" width="166" height="114" fill="#E9F0EC" />
+        <line x1="166" y1="0" x2="166" y2="114" stroke="#A9BCB3" stroke-width="1" />
+        <g transform="translate(172, 6)">
+          <circle cx="4" cy="5" r="2.5" fill="#C92861" />
+          <circle cx="12" cy="5" r="2.5" fill="#A25904" />
+          <circle cx="20" cy="5" r="2.5" fill="#137A5B" />
+          <text x="28" y="7.5" font-size="6.5" font-weight="600" fill="#64748B" class="mono">chaos cli</text>
+          
+          <rect x="96" y="-1" width="54" height="14" fill="#DDF2E8" stroke="#137A5B" stroke-width="0.8" />
+          <text x="123" y="9" font-size="6.5" font-weight="700" fill="#137A5B" text-anchor="middle" class="mono">✓ Copied!</text>
+          
+          <g transform="translate(2, 22)">
+            <text x="0" y="8" font-size="7" font-weight="400" fill="#64748B" class="mono">$ </text>
+            <text x="8" y="8" font-size="7" font-weight="600" fill="#7E22CE" class="mono">chaos</text>
+            <text x="32" y="8" font-size="7" font-weight="500" fill="#BE185D" class="mono"> provision up</text>
+            
+            <text x="0" y="20" font-size="6.8" font-weight="500" fill="#334155" class="mono">stack</text>
+            <text x="24" y="20" font-size="6.8" font-weight="500" fill="#0D9488" class="mono"> proj</text>
+            <text x="46" y="20" font-size="6.8" font-weight="500" fill="#6D28D9" class="mono"> -A</text>
+            <text x="60" y="20" font-size="6.8" font-weight="500" fill="#0D9488" class="mono"> role</text>
+            
+            <text x="0" y="32" font-size="6.5" font-weight="400" fill="#6D28D9" class="mono">-f <tspan fill="#0D9488">fleet.yml</tspan> <tspan fill="#6D28D9">-c</tspan> <tspan fill="#0D9488">chobolo.yml</tspan></text>
+            
+            <text x="0" y="46" font-size="6.8" font-weight="600" fill="#137A5B" class="mono">✔ <tspan fill="#64748B">[</tspan><tspan fill="#0D9488">fleet.yml</tspan><tspan fill="#64748B">]</tspan> <tspan fill="#334155">synchronized</tspan></text>
+            <text x="0" y="58" font-size="6.5" font-weight="400" fill="#64748B" class="mono">applied stack in <tspan fill="#1D4ED8">184</tspan>ms</text>
+          </g>
+        </g>
+      </g>
+      
+      <text x="16" y="152" font-size="15" font-weight="700" fill="#14241E">Terminal Action Bar</text>
+      <text x="16" y="172" font-size="11.5" font-weight="600" fill="#137A5B" class="mono">Dark:  #0C1210 Bar / #38D9A9 Feedback</text>
+      <text x="16" y="188" font-size="11.5" font-weight="600" fill="#0B7568" class="mono">Light: #E9F0EC Bar / #137A5B Feedback</text>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#D4DFDA" stroke-width="1" />
+      <text x="16" y="220" font-size="11" font-weight="500" fill="#243830">Developer CLI Copy Experience</text>
+      <text x="16" y="236" font-size="10" font-weight="400" fill="#486156">• Syntax highlights follow chaos.json &amp; chaos-dark.json</text>
+      <text x="16" y="252" font-size="10" font-weight="400" fill="#486156">• Instant tactile feedback on command click</text>
+      <text x="16" y="268" font-size="10" font-weight="400" fill="#486156">• 0px straight Unix CLI chrome &amp; status badges</text>
+    </g>
+  </g>
+
+  <!-- ================= FOOTER ================= -->
+  <g transform="translate(60, 2710)">
+    <text x="0" y="0" font-size="12.5" font-weight="500" fill="#486156">
+      Ch-aOS Design System &amp; Brand Guidelines Architecture • Generated from <tspan fill="#243830" class="mono">Gabriel Sans</tspan>, <tspan fill="#243830" class="mono">website/src/styles/global.css</tspan>, <tspan fill="#243830" class="mono">src/themes/chaos.json</tspan>, <tspan fill="#243830" class="mono">src/themes/chaos-dark.json</tspan>, <tspan fill="#243830" class="mono">tui/views/theme.go</tspan> &amp; <tspan fill="#243830" class="mono">ui_helpers.go</tspan>
+    </text>
+  </g>
+</svg>

@@ -121,12 +121,12 @@ void main() {
         // MODO CLARO:
         // Cores da paleta: Verde luminoso / Menta (#137A5B / #63E6BE / #A2DCB7)
         // ==============================================================
-        vec3 edge_green = vec3(0.35, 0.88, 0.65); // #5AE0A6
-        vec3 center_mint = vec3(0.58, 0.98, 0.80); // #94FACC
+        vec3 edge_green = vec3(0.35, 0.88, 0.65); // #38D9A9
+        vec3 center_mint = vec3(0.58, 0.98, 0.80); // #63E6BE
         vec3 glass_color = mix(edge_green, center_mint, beam_core);
 
         // Cor de spotlight para as bordas: verde vivo e bem visível
-        vec3 border_color = vec3(0.08, 0.65, 0.46); // #14A675
+        vec3 border_color = vec3(0.08, 0.65, 0.46); // #137A5B
         vec3 lit_border = mix(border_color, vec3(0.40, 0.95, 0.75), border_beam);
 
         // Alpha da superfície de vidro + intensidade do spotlight de borda
@@ -145,7 +145,7 @@ void main() {
         // Usando screen blend. Fora do feixe, RGB é estritamente 0 (100% transparente).
         // ==============================================================
         vec3 mint_base = vec3(0.22, 0.85, 0.66); // #38D9A9
-        vec3 highlight = vec3(0.70, 1.0, 0.90); // #B3FFE6
+        vec3 highlight = vec3(0.70, 1.0, 0.90); // #7CFAD3
         vec3 lit_color = mix(mint_base, highlight, beam_core * 0.75);
 
         // Cor do spotlight na borda: mint radiante (#38D9A9 / #7CFAD3)

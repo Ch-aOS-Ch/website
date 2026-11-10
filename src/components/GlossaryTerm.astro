@@ -50,7 +50,7 @@ const entry: GlossaryEntry = GLOSSARY[termKey.toLowerCase()] || {
           </span>
           <button
             type="button"
-            class="term-close-btn p-1 -mr-1 text-slate-400 hover:text-[#38D9A9] focus:outline-none transition-colors rounded cursor-pointer"
+            class="term-close-btn p-1 -mr-1 text-slate-400 hover:text-[#38D9A9] focus:outline-none transition-colors cursor-pointer"
             aria-label="Close glossary definition"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -125,10 +125,10 @@ const entry: GlossaryEntry = GLOSSARY[termKey.toLowerCase()] || {
   /* Popover Card Styles - Light Mode */
   :global([data-theme="light"] .glossary-card),
   :global(html[data-theme="light"] .glossary-card) {
-    background-color: #FFFFFF !important;
+    background-color: #E8F0EC !important;
     color: #14241E !important;
     border: 1px solid #A2DCB7 !important;
-    box-shadow: 0 10px 30px -4px rgba(20, 36, 30, 0.18), 0 4px 12px -2px rgba(20, 36, 30, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(18, 38, 30, 0.08) !important;
   }
   :global([data-theme="light"] .glossary-card .card-header),
   :global(html[data-theme="light"] .glossary-card .card-header) {
@@ -140,7 +140,7 @@ const entry: GlossaryEntry = GLOSSARY[termKey.toLowerCase()] || {
   }
   :global([data-theme="light"] .glossary-card .term-definition),
   :global(html[data-theme="light"] .glossary-card .term-definition) {
-    color: #2C3E35 !important;
+    color: #243830 !important;
   }
   :global([data-theme="light"] .glossary-card .card-footer),
   :global(html[data-theme="light"] .glossary-card .card-footer) {
