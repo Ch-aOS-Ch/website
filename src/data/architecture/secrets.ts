@@ -21,15 +21,15 @@ export const secretsArchitecture: SystemArchitecture = {
       ],
       zones: [
         {
-          title: '1 · CLI Entry & Policy Scope',
+          title: 'CLI Entry & Policy Scope',
           nodeIds: ['node-cli', 'node-team-scope', 'node-sops-config'],
         },
         {
-          title: '2 · Zero-Disk Ephemeral Key Core',
+          title: 'Zero-Disk Ephemeral Key Core',
           nodeIds: ['node-provider-bridge', 'node-ram-mount', 'node-crypto-engine'],
         },
         {
-          title: '3 · Operations & Tool Handlers',
+          title: 'Operations & Tool Handlers',
           nodeIds: ['node-sub-edit', 'node-sub-cat', 'node-sub-rotate'],
         },
       ],
