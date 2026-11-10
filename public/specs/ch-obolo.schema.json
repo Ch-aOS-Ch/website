@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaos.dexmachina.com/schemas/ch-obolo.schema.json",
+  "title": "Ch-obolo Declarative System State Schema",
+  "description": "Specification for Ch-aOS Ch-obolo YAML files declaring system configurations and state.",
+  "type": "object",
+  "required": [
+    "hostname"
+  ],
+  "properties": {
+    "hostname": {
+      "type": "string",
+      "description": "The target machine hostname."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "System timezone, e.g. 'America/Sao_Paulo' or 'UTC'."
+    },
+    "locale": {
+      "type": "string",
+      "description": "System default locale, e.g. 'en_US.UTF-8' or 'pt_BR.UTF-8'."
+    },
+    "users": {
+      "type": "array",
+      "description": "List of declarative user accounts to manage on the system.",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Username."
+          },
+          "shell": {
+            "type": "string",
+            "default": "/bin/bash",
+            "description": "User login shell."
+          },
+          "sudo": {
+            "type": "boolean",
+            "default": false,
+            "description": "Grant passwordless or standard sudo."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Supplementary user groups (e.g. wheel, docker)."
+          },
+          "ssh_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Authorized SSH public keys for this user."
+          }
+        }
+      }
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Official repository package list to enforce."
+    },
+    "aurPkgs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AUR package list (Arch Linux / Ch-aronte core)."
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Systemd unit / service name."
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable service on boot."
+          },
+          "running": {
+            "type": "boolean",
+            "default": true,
+            "description": "Ensure service is currently running."
+          }
+        }
+      },
+      "description": "System services lifecycle enforcement."
+    },
+    "dotfiles": {
+      "type": "object",
+      "description": "Soul-specific dotfile configurations (e.g. chaos-dots).",
+      "properties": {
+        "repo": {
+          "type": "string",
+          "description": "Git repository URL with user dotfiles."
+        },
+        "target_dir": {
+          "type": "string",
+          "description": "Target clone destination."
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,887 @@
+---
+// Showcase.astro
+// "Why It Exists" philosophy & Real-World ch-obolo proof
+import { Code } from 'astro:components';
+import { chaosThemes } from '../themes/index.mjs';
+import GlossaryTerm from './GlossaryTerm.astro';
+
+const fullChobolo = `# ~/.config/chaos/ch-obolo.yml (Real daily-driver configuration)
+fleet:
+  hosts:
+    "@local":
+      tags:
+        - workstation
+
+  restrictions:
+    black_tags:
+      rke2:
+        - workstation
+      ssh_keys:
+        - workstation
+
+# 1. Bare-metal Proxmox VM provisioning & K8s cluster specs
+pelago:
+  - name: "k8s-test-hw"
+    isle: "chaosmox"
+    config:
+      cluster_name: "k8s-dev"
+      target_node: "lappis5"
+      admin_user: "chaos"
+      template_id: "9009"
+      clone_full: true
+      ssh_public_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHr... [redacted]
+        - ~/.ssh/ssh-ed25519_chaos_imported.pub
+
+      etcd:
+        count: 1
+        cores: 2
+        memory: 4096
+        disks:
+          - size: 40
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+
+      control_plane:
+        count: 1
+        cores: 2
+        memory: 4096
+        disks:
+          - size: 40
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+
+      worker:
+        count: 1
+        cores: 4
+        memory: 16384
+        disks:
+          - size: 100
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+          - size: 50
+            interface: "scsi1"
+            datastore_id: "local-lvm"
+
+rke2:
+  version: "v1.35.6+rke2r1"
+  secrets_encryption: true
+
+# 2. In-memory zero-disk secret templating via SOPS (the actual Secrets are stored in external SOPS file)
+secrets:
+  sec_mode: sops
+  templates:
+    - from: ssh_priv.j2
+      to: ".ssh/id_ed25519"
+      owner: dexmachina
+      mode: 0600
+      escape: false
+      vars: [ssh]
+
+    - from: wg0_conf.j2
+      to: "/etc/wireguard/wg0.conf"
+      owner: root
+      mode: 0600
+      escape: false
+      vars: [wg]
+
+# 3. Workstation, dotfiles, repos & declarative systemd services
+hostname: Dionysus
+bootloader: grub
+
+dotfiles:
+  - url: "https://github.com/Dexmachi/dotfiles.git"
+    branch: "main"
+    user: dexmachina
+    links:
+      - { from: .config, to: . }
+      - { from: zsh, to: ., open: true }
+      - { from: ramble, to: .local/share/chaos/ramble }
+
+repos:
+  third_party:
+    - name: cachyos-core-v3
+      include: /etc/pacman.d/cachyos-v3-mirrorlist
+      distribution: "arch"
+
+services:
+  - name: NetworkManager.service
+  - name: bluetooth.service
+  - name: sshd
+  - name: docker
+    dense_service: true
+    on_boot: false
+  - name: thinkfan.service
+    on_boot: false
+  - name: throttled
+    dense_service: true
+    on_boot: false
+
+users:
+  - name: "dexmachina"
+    shell: "zsh"
+    sudo: true
+    groups: [wheel, input, fido, tss, docker]
+
+aurPackages:
+  - 1password-cli
+  - doppler-cli-bin
+  - bws-bin
+  - pyinfra
+  - maple-mono-nf-cn
+  - hyprshade
+  # ... and 40+ more curated packages`;
+
+const k8sSnippet = `# 1. Multi-Node RKE2 Cluster Provisioning on Proxmox
+pelago:
+  - name: "k8s-test-hw"
+    isle: "chaosmox"
+    config:
+      cluster_name: "k8s-dev"
+      target_node: "lappis5"
+      admin_user: "chaos"
+      template_id: "9009"
+      clone_full: true
+      ssh_public_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHr... [redacted]
+        - ~/.ssh/ssh-ed25519_chaos_imported.pub
+
+      etcd:
+        count: 1
+        cores: 2
+        memory: 4096
+        disks:
+          - size: 40
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+
+      control_plane:
+        count: 1
+        cores: 2
+        memory: 4096
+        disks:
+          - size: 40
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+
+      worker:
+        count: 1
+        cores: 4
+        memory: 16384
+        disks:
+          - size: 100
+            interface: "scsi0"
+            datastore_id: "local-lvm"
+          - size: 50
+            interface: "scsi1"
+            datastore_id: "local-lvm"
+
+rke2:
+  version: "v1.35.6+rke2r1"
+  secrets_encryption: true`;
+
+const secretsSnippet = `# 2. In-Memory SOPS Secret Templates
+# The Ch-obolo declares the template mapping; actual secrets live in external SOPS-encrypted files
+secrets:
+  sec_mode: sops
+  templates:
+    - from: ssh_priv.j2
+      to: ".ssh/id_ed25519"
+      owner: dexmachina
+      mode: 0600
+      escape: false
+      vars:
+        - ssh
+
+    - from: ssh_pub.j2
+      to: ".ssh/id_ed25519.pub"
+      owner: dexmachina
+      mode: 0600
+      escape: false
+      vars:
+        - ssh
+
+    - from: wg0_conf.j2
+      to: "/etc/wireguard/wg0.conf"
+      owner: root
+      mode: 0600
+      escape: false
+      vars:
+        - wg`;
+
+const workstationSnippet = `# 3. Daily-driver Arch Linux & Dotfiles
+hostname: Dionysus
+bootloader: grub
+
+dotfiles:
+  - url: "https://github.com/Dexmachi/dotfiles.git"
+    branch: "main"
+    user: dexmachina
+    links:
+      - from: bookmarks
+        to: .
+      - from: .config
+        to: .
+      - from: zsh
+        to: .
+        open: true
+      - from: ramble
+        to: .local/share/chaos/ramble
+
+services:
+  - name: NetworkManager.service
+  - name: bluetooth.service
+  - name: sshd
+  - name: thinkfan.service
+    on_boot: false
+  - name: docker
+    dense_service: true
+    on_boot: false
+  - name: throttled
+    dense_service: true
+    on_boot: false
+
+users:
+  - name: "dexmachina"
+    shell: "zsh"
+    sudo: true
+    groups:
+      - wheel
+      - input
+      - fido
+      - tss
+      - docker`;
+---
+
+<section id="why-it-exists" class="py-12 sm:py-20 relative scroll-mt-6 sm:scroll-mt-8">
+  <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 space-y-12 sm:space-y-16">
+
+    <!-- Section Intro Narrative -->
+    <div class="max-w-4xl text-left">
+      <h2 class="showcase-section-title text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-[#E8F0EC] leading-[1.15] mb-5">
+        Why Does <span class="gradient-brand-text font-bold">Ch-aOS</span> Exist?
+      </h2>
+
+      <div class="showcase-story text-sm sm:text-base text-[#C1C9D6] leading-relaxed space-y-3 font-sans">
+        <p class="showcase-story-lead">
+        Originally, I just wanted a way to declaratively manage my own workstation. It started as a pile of shell scripts and Ansible playbooks, but that (obviously) didn't scale well. Instead of adopting an entirely different operating paradigm I couldn't understand at the time, I started hacking away on my own, keeping things simple and easy to reason about.
+        </p>
+        <p class="showcase-story-note text-xs sm:text-sm text-[#8E9EA0] font-mono leading-relaxed">
+        What began as a simple Arch installer quickly grew into maintaining my entire daily workstation, and eventually scaled to provisioning bare-metal lab servers and bootstrapping full Kubernetes clusters from raw machines. This is the result of that journey, built with the kind of DX and security that only a self-made tool can offer. Because of its origin, the entire suite is, and will forever remain, open-source under the MPL-2.0 license.
+        </p>
+      </div>
+    </div>
+
+    <!-- Synchronized Interactive Showcase (Card on Left, Code on Right) -->
+    <div>
+      
+      <!-- Context Header Bar placed above the window -->
+      <div class="mb-4 px-0.5">
+        <h3 class="showcase-context-title text-sm sm:text-lg font-bold font-sans tracking-tight text-[#E8F0EC]">
+          Things I've been able to do with Ch-aOS
+        </h3>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+
+        <!-- Left Column: Synchronized Feature Details Card -->
+        <div class="lg:col-span-5 w-full h-auto lg:h-[540px] lg:max-h-[540px]">
+          
+          <!-- Card 1: Proxmox & RKE2 -->
+          <div id="card-proof-k8s" class="proof-card showcase-narrative-card backdrop-blur-md rounded-none p-5 sm:p-7 h-auto lg:h-[540px] lg:max-h-[540px] flex flex-col justify-between overflow-y-auto block">
+            <div>
+              <div class="proof-badge-mint inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-[#38D9A9] bg-[#38D9A9]/10 border border-[#38D9A9]/40 mb-3.5 shadow-sm">
+                <span>Bare-Metal Hypervisor & Kubernetes</span>
+              </div>
+
+              <h3 class="proof-card-title text-xl sm:text-2xl font-bold tracking-tight text-[#E8F0EC] mb-3 leading-snug">
+                From Bare-Metal Proxmox to Production RKE2 Cluster
+              </h3>
+
+              <p class="proof-card-desc text-xs sm:text-sm text-[#C1C9D6] leading-relaxed mb-5">
+                <GlossaryTerm termKey="pelago" /> provisions virtualized infrastructure using the <code class="text-[#38D9A9]">chaosmox</code> <GlossaryTerm termKey="isle" display="Isle" /> on bare-metal node <code class="text-[#38D9A9]">lappis5</code>. It defines dedicated etcd, control-plane, and worker VMs with multiple SCSI storage disks on Proxmox LVM. Once VMs are online, the RKE2 engine performs an automated, end-to-end bootstrap with native secrets encryption — executed in a single continuous pipeline without bash glue scripts.
+              </p>
+
+              <!-- Technical Specs Matrix -->
+              <div class="space-y-2 mb-6 font-mono text-xs">
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Node Topology:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">etcd (4GB), CP (4GB), Worker (16GB)</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Storage Engine:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">Multi-disk SCSI on Proxmox local-lvm</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Bootstrap Flow:</span>
+                  <span class="proof-spec-accent-mint text-[#38D9A9] font-semibold">RKE2 v1.35.6 + secrets encryption</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[#3D524A]/30 proof-chip-container flex flex-wrap gap-1.5 shrink-0">
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Proxmox VE</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">chaosmox Isle</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">RKE2 Kubernetes</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Zero-Glue Pipelines</span>
+            </div>
+          </div>
+
+          <!-- Card 2: RAM Secrets -->
+          <div id="card-proof-secrets" class="proof-card showcase-narrative-card backdrop-blur-md rounded-none p-5 sm:p-7 h-auto lg:h-[540px] lg:max-h-[540px] flex flex-col justify-between overflow-y-auto hidden">
+            <div>
+              <div class="proof-badge-pink inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-[#F8A5C2] bg-[#F8A5C2]/10 border border-[#F8A5C2]/40 mb-3.5 shadow-sm">
+                <span>Zero-Disk Ephemeral Security</span>
+              </div>
+
+              <h3 class="proof-card-title text-xl sm:text-2xl font-bold tracking-tight text-[#E8F0EC] mb-3 leading-snug">
+                In-Memory Secret Templating
+              </h3>
+
+              <p class="proof-card-desc text-xs sm:text-sm text-[#C1C9D6] leading-relaxed mb-5">
+                Secrets never live inside the <GlossaryTerm termKey="ch-obolo" />. Sensitive infrastructure and operating system credentials reside in external SOPS-encrypted files; the Ch-obolo declares only template targets and variable references. Ch-aOS pulls master Age/PGP encryption keys exclusively into temporary volatile memory (<code class="text-[#F8A5C2]">/dev/shm</code>). Templates (such as private ED25519 SSH keys and Wireguard tunnel configs with strict 0600 permissions) are rendered directly in RAM from SOPS encrypted payloads, and volatile RAM is wiped immediately upon completion.
+              </p>
+
+              <!-- Technical Specs Matrix -->
+              <div class="space-y-2 mb-6 font-mono text-xs">
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Secret Storage:</span>
+                  <span class="proof-spec-accent-pink text-[#F8A5C2] font-semibold">Strictly external SOPS file; zero secrets in ch-obolo</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Memory Lifecycle:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">Strictly volatile /dev/shm (RAM-only)</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Supported Vaults:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">Bitwarden, 1Pass, Doppler, Infisical, Vault</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[#3D524A]/30 proof-chip-container flex flex-wrap gap-1.5 shrink-0">
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">SOPS encryption</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">RAM-disk /dev/shm</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Bitwarden / rbw</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Zero-Disk Secrets</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Arch & Dotfiles -->
+          <div id="card-proof-workstation" class="proof-card showcase-narrative-card backdrop-blur-md rounded-none p-5 sm:p-7 h-auto lg:h-[540px] lg:max-h-[540px] flex flex-col justify-between overflow-y-auto hidden">
+            <div>
+              <div class="proof-badge-mint inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-[#38D9A9] bg-[#38D9A9]/10 border border-[#38D9A9]/40 mb-3.5 shadow-sm">
+                <span>Complete Operating System Lifecycle</span>
+              </div>
+
+              <h3 class="proof-card-title text-xl sm:text-2xl font-bold tracking-tight text-[#E8F0EC] mb-3 leading-snug">
+                Total Declarative OS & Daily-Driver Workstation
+              </h3>
+
+              <p class="proof-card-desc text-xs sm:text-sm text-[#C1C9D6] leading-relaxed mb-5">
+                This goes far beyond dotfile symlinking. Ch-aOS declaratively manages an entire Arch Linux installation from the ground up: GRUB bootloader, third-party CachyOS mirror lists, core base system packages, over 40+ curated AUR utilities, user accounts with specific group permissions, and critical hardware services (<code class="text-[#38D9A9]">thinkfan</code>, <code class="text-[#38D9A9]">throttled</code>, <code class="text-[#38D9A9]">nvidia-hibernate</code>, <code class="text-[#38D9A9]">docker</code>). Dotfiles are cloned and symlinked idempotently from Git.
+              </p>
+
+              <!-- Technical Specs Matrix -->
+              <div class="space-y-2 mb-6 font-mono text-xs">
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">System Core:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">GRUB, CachyOS repos & base packages</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Hardware Daemon:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">thinkfan, throttled, nvidia power management</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">AUR & Dotfiles:</span>
+                  <span class="proof-spec-accent-mint text-[#38D9A9] font-semibold">paru/yay packages + idempotent symlinks</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[#3D524A]/30 proof-chip-container flex flex-wrap gap-1.5 shrink-0">
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Arch Linux</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">GRUB Bootloader</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Systemd Hardware</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Dotfiles Symlinks</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Full ch-obolo.yml -->
+          <div id="card-proof-full" class="proof-card showcase-narrative-card backdrop-blur-md rounded-none p-5 sm:p-7 h-auto lg:h-[540px] lg:max-h-[540px] flex flex-col justify-between overflow-y-auto hidden">
+            <div>
+              <div class="proof-badge-pink inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-[#F8A5C2] bg-[#F8A5C2]/10 border border-[#F8A5C2]/40 mb-3.5 shadow-sm">
+                <span>Unified Orchestration</span>
+              </div>
+
+              <h3 class="proof-card-title text-xl sm:text-2xl font-bold tracking-tight text-[#E8F0EC] mb-3 leading-snug">
+                One Unified Workflow for Fleets, Desktops & Clusters
+              </h3>
+
+              <p class="proof-card-desc text-xs sm:text-sm text-[#C1C9D6] leading-relaxed mb-5">
+                The core innovation of Ch-aOS is eliminating tool fragmentation across cloud provisioning, workstation setup, fleet operations, and secret management. <GlossaryTerm termKey="pelago" /> IaC and host configuration roles live in the same declarative <GlossaryTerm termKey="ch-obolo" /> for seamless hand-off without glue scripts. Fleets can be declared inline or connected via external fleet files and dynamic <GlossaryTerm termKey="boats" />, while all sensitive credentials remain strictly external in encrypted SOPS files.
+              </p>
+
+              <!-- Technical Specs Matrix -->
+              <div class="space-y-2 mb-6 font-mono text-xs">
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Pelago + Configs:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">Coexist in Ch-obolo for zero-glue hand-off</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Fleet Topology:</span>
+                  <span class="proof-spec-value text-[#E8F0EC] font-semibold">Inline or external fleet files / dynamic Boats</span>
+                </div>
+                <div class="proof-spec-row p-2.5 bg-[#121916]/60 border border-[#3D524A]/40 flex items-center justify-between">
+                  <span class="proof-spec-label text-[#8E9EA0]">Secret Boundary:</span>
+                  <span class="proof-spec-accent-pink text-[#F8A5C2] font-semibold">Strictly external SOPS file; zero disk leaks</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[#3D524A]/30 proof-chip-container flex flex-wrap gap-1.5 shrink-0">
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Pelago + CM Unified</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Decoupled Fleet / Boats</span>
+              <span class="proof-chip text-[11px] font-mono px-2 py-0.5 bg-[#121916]/80 text-[#8E9EA0] border border-[#3D524A]/50">Zero Glue Scripts</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Synchronized Code Window -->
+        <div class="lg:col-span-7 w-full h-auto lg:h-[540px] lg:max-h-[540px]">
+          <div class="code-window-card backdrop-blur-md rounded-none shadow-2xl overflow-hidden h-auto lg:h-[540px] lg:max-h-[540px] flex flex-col">
+            
+            <!-- Code window header strictly following website pattern -->
+            <div class="code-window-header flex items-center justify-between gap-2 px-2.5 sm:px-5 py-2 sm:py-3 border-b border-[#3D524A]/40 shrink-0">
+              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto no-scrollbar py-0.5 scroll-smooth snap-x snap-mandatory">
+                <div class="flex items-center gap-1 sm:gap-1.5 bg-[#121916]/60 p-0.5 sm:p-1 rounded-none border border-[#3D524A]/60 text-xs sm:text-[13px] font-mono shrink-0 proof-tabs-box" id="proof-tabs" role="tablist" aria-label="Use case examples">
+                  <button 
+                    type="button" 
+                    role="tab"
+                    id="tab-btn-k8s"
+                    aria-selected="true"
+                    aria-controls="code-pane-k8s"
+                    tabindex="0"
+                    data-target="k8s" 
+                    class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap snap-center"
+                  >
+                    Proxmox & RKE2
+                  </button>
+                  <button 
+                    type="button" 
+                    role="tab"
+                    id="tab-btn-secrets"
+                    aria-selected="false"
+                    aria-controls="code-pane-secrets"
+                    tabindex="-1"
+                    data-target="secrets" 
+                    class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap snap-center"
+                  >
+                    RAM Secrets
+                  </button>
+                  <button 
+                    type="button" 
+                    role="tab"
+                    id="tab-btn-workstation"
+                    aria-selected="false"
+                    aria-controls="code-pane-workstation"
+                    tabindex="-1"
+                    data-target="workstation" 
+                    class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap snap-center"
+                  >
+                    Arch & Dotfiles
+                  </button>
+                  <button 
+                    type="button" 
+                    role="tab"
+                    id="tab-btn-full"
+                    aria-selected="false"
+                    aria-controls="code-pane-full"
+                    tabindex="-1"
+                    data-target="full" 
+                    class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap snap-center"
+                  >
+                    ch-obolo.yml
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  class="copy-code-btn flex items-center justify-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 min-h-[44px] sm:min-h-0 text-xs font-mono cursor-pointer rounded-none relative z-10"
+                  title="Copy active code"
+                  aria-label="Copy active code"
+                  aria-live="polite"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span class="copy-label">Copy</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Code Pane with scroll strictly filling the card -->
+            <div class="p-3 sm:p-6 font-mono text-xs sm:text-sm md:text-base leading-relaxed overflow-x-auto overflow-y-auto flex-1 min-h-0 text-[#E8F0EC]">
+              <div id="code-pane-k8s" role="tabpanel" aria-labelledby="tab-btn-k8s" tabindex="0" class="proof-code-pane block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+                <Code code={k8sSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+              </div>
+
+              <div id="code-pane-secrets" role="tabpanel" aria-labelledby="tab-btn-secrets" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+                <Code code={secretsSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+              </div>
+
+              <div id="code-pane-workstation" role="tabpanel" aria-labelledby="tab-btn-workstation" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+                <Code code={workstationSnippet} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+              </div>
+
+              <div id="code-pane-full" role="tabpanel" aria-labelledby="tab-btn-full" tabindex="0" class="proof-code-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+                <Code code={fullChobolo} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style is:global>
+  .code-window-card pre,
+  .code-window-card code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* ========================================================= */
+  /* SHOWCASE SECTION - SEMANTIC TOKEN STYLING                */
+  /* ========================================================= */
+
+  #why-it-exists .showcase-section-title {
+    color: var(--chaos-text-primary);
+  }
+
+  #why-it-exists .showcase-story-lead {
+    color: var(--chaos-text-secondary);
+  }
+
+  #why-it-exists .showcase-story-note {
+    color: var(--chaos-text-muted);
+  }
+
+  /* Context Header */
+  #why-it-exists .showcase-context-title {
+    color: var(--chaos-text-primary);
+  }
+
+  #why-it-exists .showcase-context-sub {
+    color: var(--chaos-text-secondary);
+  }
+
+  #why-it-exists .showcase-context-code {
+    color: var(--chaos-accent-mint);
+    background-color: rgba(56, 217, 169, 0.1);
+    border-radius: 0px;
+  }
+
+  [data-theme="light"] #why-it-exists .showcase-context-code {
+    background-color: rgba(14, 110, 79, 0.1);
+  }
+
+  #why-it-exists .showcase-context-dot {
+    background-color: var(--chaos-accent-mint);
+    box-shadow: 0 0 8px var(--chaos-border-accent);
+  }
+
+  /* Card Containers */
+  #why-it-exists .showcase-narrative-card {
+    background-color: rgba(18, 26, 22, 0.42);
+    border: 1px solid var(--chaos-border-subtle);
+  }
+
+  [data-theme="light"] #why-it-exists .showcase-narrative-card {
+    background-color: rgba(244, 248, 246, 0.72);
+    border: 1px solid var(--chaos-border-subtle);
+  }
+
+  #why-it-exists .code-window-card {
+    background-color: var(--chaos-surface-card);
+    border: 1px solid var(--chaos-border-card);
+  }
+
+  #why-it-exists .code-window-header {
+    background-color: var(--chaos-surface-card-header);
+    border-bottom: 1px solid var(--chaos-border-card);
+  }
+
+  /* Left Synchronized Cards: Title & Description */
+  #why-it-exists .proof-card-title {
+    color: var(--chaos-text-primary);
+  }
+
+  #why-it-exists .proof-card-desc {
+    color: var(--chaos-text-secondary);
+  }
+
+  #why-it-exists .proof-card-desc code {
+    color: var(--chaos-accent-mint);
+  }
+
+  #why-it-exists .proof-card-desc code.text-\[\#F8A5C2\] {
+    color: var(--chaos-accent-pink);
+  }
+
+  [data-theme="light"] #why-it-exists .proof-card-desc code {
+    background-color: rgba(14, 110, 79, 0.1);
+  }
+
+  [data-theme="light"] #why-it-exists .proof-card-desc code.text-\[\#F8A5C2\] {
+    background-color: rgba(201, 40, 97, 0.1);
+  }
+
+  /* Badges Mint & Pink */
+  #why-it-exists .proof-badge-mint {
+    color: var(--chaos-accent-mint);
+    border-color: var(--chaos-border-accent);
+  }
+
+  #why-it-exists .proof-dot-mint {
+    background-color: var(--chaos-accent-mint);
+    box-shadow: 0 0 6px var(--chaos-border-accent);
+  }
+
+  #why-it-exists .proof-badge-pink {
+    color: var(--chaos-accent-pink);
+    border-color: var(--chaos-border-pink);
+  }
+
+  #why-it-exists .proof-dot-pink {
+    background-color: var(--chaos-accent-pink);
+    box-shadow: 0 0 6px var(--chaos-border-pink);
+  }
+
+  [data-theme="light"] #why-it-exists .proof-badge-mint {
+    background-color: #D8EFE4;
+    border-color: #95C3B1;
+  }
+
+  [data-theme="light"] #why-it-exists .proof-badge-pink {
+    background-color: #FCE8EE;
+    border-color: #F3B5C8;
+  }
+
+  /* Technical Specs Matrix Rows */
+  #why-it-exists .proof-spec-row {
+    background-color: var(--chaos-surface-spec-row);
+    border-color: var(--chaos-border-subtle);
+  }
+
+  #why-it-exists .proof-spec-label {
+    color: var(--chaos-text-muted);
+  }
+
+  #why-it-exists .proof-spec-value {
+    color: var(--chaos-text-primary);
+  }
+
+  #why-it-exists .proof-spec-accent-mint {
+    color: var(--chaos-accent-mint);
+  }
+
+  #why-it-exists .proof-spec-accent-pink {
+    color: var(--chaos-accent-pink);
+  }
+
+  /* Chip / Pill Tags */
+  #why-it-exists .proof-chip-container {
+    border-top-color: var(--chaos-border-subtle);
+  }
+
+  #why-it-exists .proof-chip {
+    background-color: var(--chaos-surface-card-alt);
+    color: var(--chaos-text-muted);
+    border: 1px solid var(--chaos-border-subtle);
+  }
+
+  [data-theme="light"] #why-it-exists .proof-chip {
+    color: var(--chaos-text-primary);
+    border-color: var(--chaos-border-card);
+    font-weight: 600;
+  }
+
+
+
+  /* Tab Carousel Selector Box & Buttons */
+  #why-it-exists #proof-tabs {
+    background-color: var(--chaos-surface-spec-row);
+    border-color: var(--chaos-border-card);
+  }
+
+  #proof-tabs .tab-btn[aria-selected="true"] {
+    color: #E8F0EC;
+    background-color: #25342E;
+    border: 1px solid rgba(248, 165, 194, 0.6);
+  }
+
+  #proof-tabs .tab-btn[aria-selected="false"] {
+    color: #9CA8B6;
+    border: 1px solid transparent;
+  }
+
+  #proof-tabs .tab-btn[aria-selected="false"]:hover {
+    color: #F8A5C2;
+  }
+
+  [data-theme="light"] #proof-tabs .tab-btn[aria-selected="true"] {
+    color: #C92861 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #C92861 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(201, 40, 97, 0.12);
+  }
+
+  [data-theme="light"] #proof-tabs .tab-btn[aria-selected="false"] {
+    color: #486156 !important;
+  }
+
+  [data-theme="light"] #proof-tabs .tab-btn[aria-selected="false"]:hover {
+    color: #C92861 !important;
+  }
+
+  /* Copy Code Button */
+  #why-it-exists .copy-code-btn {
+    background-color: var(--chaos-surface-card-header);
+    border: 1px solid var(--chaos-border-card);
+    color: var(--chaos-text-secondary);
+  }
+
+  #why-it-exists .copy-code-btn:hover {
+    background-color: var(--chaos-surface-card-alt);
+    border-color: var(--chaos-border-accent);
+    color: var(--chaos-accent-mint);
+  }
+
+  [data-theme="light"] #why-it-exists .copy-code-btn {
+    background-color: rgba(225, 240, 232, 0.95);
+    border-color: var(--chaos-border-card);
+    color: var(--chaos-text-primary);
+  }
+
+  [data-theme="light"] #why-it-exists .copy-code-btn:hover {
+    background-color: #D4DFDA;
+    border-color: var(--chaos-border-accent);
+    color: var(--chaos-accent-mint);
+  }
+
+</style>
+
+<script>
+  function setupProofSync() {
+    const tabButtons = document.querySelectorAll<HTMLButtonElement>('#proof-tabs .tab-btn');
+    const codePanes = document.querySelectorAll<HTMLElement>('.proof-code-pane');
+    const detailCards = document.querySelectorAll<HTMLElement>('.proof-card');
+    const tabsContainer = document.getElementById('proof-tabs');
+
+    function activateProofTab(button: HTMLButtonElement) {
+      const targetKey = button.getAttribute('data-target');
+
+      // 1. Update button active states with WAI-ARIA
+      tabButtons.forEach(btn => {
+        const isSelected = btn === button;
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        btn.setAttribute('tabindex', isSelected ? '0' : '-1');
+      });
+
+      // Ensure active tab is smoothly centered on mobile viewports
+      button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+      // 2. Synchronize code pane
+      codePanes.forEach(pane => {
+        if (pane.id === `code-pane-${targetKey}`) {
+          pane.classList.remove('hidden');
+          pane.classList.add('block');
+        } else {
+          pane.classList.remove('block');
+          pane.classList.add('hidden');
+        }
+      });
+
+      // 3. Synchronize feature detail card on the left
+      detailCards.forEach(card => {
+        if (card.id === `card-proof-${targetKey}`) {
+          card.classList.remove('hidden');
+          card.classList.add('block');
+        } else {
+          card.classList.remove('block');
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activateProofTab(button);
+      });
+    });
+
+    if (tabsContainer && !tabsContainer.dataset.keyboardBound) {
+      tabsContainer.dataset.keyboardBound = 'true';
+      tabsContainer.addEventListener('keydown', (e: KeyboardEvent) => {
+        const tabs = Array.from(tabButtons);
+        const currentIndex = tabs.findIndex(tab => tab === document.activeElement);
+        if (currentIndex === -1) return;
+
+        let nextIndex = -1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nextIndex = (currentIndex + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          nextIndex = 0;
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          nextIndex = tabs.length - 1;
+        }
+
+        if (nextIndex !== -1) {
+          tabs[nextIndex].focus();
+          activateProofTab(tabs[nextIndex]);
+        }
+      });
+    }
+
+    const copyBtn = document.querySelector<HTMLButtonElement>('#why-it-exists .copy-code-btn');
+    if (copyBtn && !copyBtn.dataset.listenerAttached) {
+      copyBtn.dataset.listenerAttached = 'true';
+      copyBtn.addEventListener('click', () => {
+        const activePane = document.querySelector<HTMLElement>('#why-it-exists .proof-code-pane.block');
+        const codeElement = activePane ? activePane.querySelector('code') || activePane : null;
+        if (codeElement) {
+          const text = codeElement.innerText || codeElement.textContent || '';
+          navigator.clipboard.writeText(text.trim());
+          const label = copyBtn.querySelector('.copy-label');
+          if (label) {
+            const originalText = label.textContent;
+            label.textContent = 'Copied!';
+            setTimeout(() => {
+              label.textContent = originalText;
+            }, 1500);
+          }
+        }
+      });
+    }
+  }
+
+  setupProofSync();
+  document.addEventListener('astro:page-load', setupProofSync);
+</script>

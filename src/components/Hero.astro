@@ -1,0 +1,222 @@
+---
+// Hero.astro
+// Panoramic Header with Full-Width Headline, "What is Ch-aOS?" Subtitle, GlossaryTerm integration, Exact CodeCarousel and "Zero Exceptions" Subtext
+import CodeCarousel from './CodeCarousel.astro';
+import GlossaryTerm from './GlossaryTerm.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<section class="relative w-full flex flex-col justify-center min-h-0 sm:min-h-[calc(100vh-4.5rem)] pt-6 sm:pt-10 lg:pt-14 pb-14 sm:pb-16 overflow-hidden">
+  <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 w-full">
+    
+    <!-- Sweeping Top Header: Full-width spanning headline with gradient brand accent -->
+    <div class="w-full mb-6 sm:mb-8 border-b border-[#3D524A]/40 [data-theme=light]:border-[#95C3B1]/40 pb-4 sm:pb-6">
+      <h1 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[63px] font-extrabold tracking-[-0.03em] text-[#E8F0EC] leading-[1.08] w-full text-left">
+        Tame the chaotic tides of infrastructure with <span class="gradient-brand-text font-bold">Ch-aOS</span>.
+      </h1>
+    </div>
+
+    <!-- Dual Column Layout: items-center for balanced vertical centering -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
+      
+      <!-- Left Column: Vertically Centered against CodeCarousel -->
+      <div class="lg:col-span-5 flex flex-col items-start text-left justify-center py-2 sm:py-4">
+        
+        <p class="hero-subtitle text-base sm:text-lg lg:text-[19px] text-[#C1C9D6] leading-relaxed mb-5 font-normal text-pretty">
+          <GlossaryTerm termKey="ch-aos" /> is an open-source <span class="hero-accent-text font-semibold">Python SDK and CLI suite</span> that unifies Infrastructure as Code, agentless Configuration Management, and Secret Management into a single programmable workflow. The same declarative spec that configures your own machine, manages entire fleets, and provisions clusters on-prem or in the cloud.
+        </p>
+
+        <!-- Action Controls -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto mb-6 sm:mb-7">
+          <a
+            href={`${base}/getting-started/`}
+            class="btn-primary inline-flex items-center justify-center text-sm sm:text-base py-3.5 px-7 font-semibold"
+          >
+            Get Started
+            <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+
+          <a
+            href={`${base}/core-concepts/`}
+            class="btn-secondary inline-flex items-center justify-center text-sm sm:text-base py-3.5 px-7 font-semibold"
+          >
+            Core Concepts
+          </a>
+        </div>
+
+        <!-- Zero Exceptions: Permanent Open-Source Subtext (Aligned with Showcase note tokens) -->
+        <div class="hero-open-source-wrapper pt-4 border-t border-[#3D524A]/30 w-full">
+          <p class="hero-open-source-note text-xs sm:text-sm font-mono leading-relaxed">
+            100% open-source under the MPL-2.0 license.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Exact CodeCarousel Component -->
+      <div class="lg:col-span-7 w-full">
+        <CodeCarousel />
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Scroll Down Indicator to Showcase -->
+  <a
+    href="#why-it-exists"
+    id="scroll-indicator"
+    aria-label="Scroll to Origins & Real-World Proof"
+    class="scroll-indicator absolute bottom-2 left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center p-2 text-[#38D9A9] [data-theme=light]:text-[#137A5B] hover:scale-110 transition-all duration-300 group z-10 cursor-pointer"
+  >
+    <svg class="w-6 h-6 sm:w-7 sm:h-7 scroll-indicator-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 4v14M19 12l-7 7-7-7"/>
+    </svg>
+  </a>
+</section>
+
+<style>
+  :global(html[data-theme="light"]) .hero-title {
+    color: #14241E !important;
+  }
+  
+  .hero-what-title {
+    color: var(--chaos-text-primary, #E8F0EC);
+  }
+
+  :global(html[data-theme="light"]) .hero-what-title {
+    color: #14241E !important;
+  }
+
+  :global(html[data-theme="light"]) .hero-subtitle {
+    color: #243830 !important;
+  }
+
+  .hero-tagline {
+    color: #38D9A9;
+    transition: color 150ms ease;
+  }
+
+  :global(html[data-theme="light"]) .hero-tagline {
+    color: #0E7A5A !important;
+  }
+
+  .hero-accent-text {
+    color: #38D9A9;
+    transition: color 150ms ease;
+  }
+
+  :global(html[data-theme="light"]) .hero-accent-text {
+    color: #009165 !important;
+  }
+
+  /* Open-Source Subtext Token Parity with Showcase .showcase-story-note */
+  .hero-open-source-note {
+    color: var(--chaos-text-muted, #8E9EA0);
+  }
+
+  :global(html[data-theme="light"]) .hero-open-source-note {
+    color: var(--chaos-text-muted, #3D524A) !important;
+  }
+
+  :global(html[data-theme="light"]) .hero-open-source-wrapper {
+    border-color: rgba(158, 196, 181, 0.45) !important;
+  }
+
+  /* Scroll Indicator */
+  .scroll-indicator {
+    color: #38D9A9;
+    background: transparent !important;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 150ms ease;
+  }
+
+  .scroll-indicator svg {
+    filter: drop-shadow(0 2px 8px rgba(56, 217, 169, 0.35));
+    transition: filter 150ms ease;
+  }
+
+  .scroll-indicator-arrow {
+    animation: indicatorGlide 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes indicatorGlide {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(5px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-indicator-arrow {
+      animation: none !important;
+    }
+  }
+
+  .scroll-indicator:hover {
+    color: #63E6BE;
+  }
+
+  :global(html[data-theme="light"]) .scroll-indicator {
+    color: #137A5B !important;
+  }
+
+  :global(html[data-theme="light"]) .scroll-indicator svg {
+    filter: drop-shadow(0 2px 8px rgba(19, 122, 91, 0.35)) !important;
+  }
+
+  :global(html[data-theme="light"]) .scroll-indicator:hover {
+    color: #0B5C43 !important;
+  }
+</style>
+
+<script>
+  function setupScrollIndicator() {
+    const indicator = document.getElementById('scroll-indicator');
+    if (!indicator) return;
+
+    let isScrolled = false;
+    let ticking = false;
+
+    function update() {
+      const scrolled = window.scrollY > 40;
+      if (scrolled !== isScrolled) {
+        isScrolled = scrolled;
+        if (isScrolled) {
+          indicator?.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+          indicator?.classList.remove('opacity-100', 'translate-y-0');
+        } else {
+          indicator?.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+          indicator?.classList.add('opacity-100', 'translate-y-0');
+        }
+      }
+      ticking = false;
+    }
+
+    function handleScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    update();
+
+    indicator.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById('why-it-exists');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  setupScrollIndicator();
+  document.addEventListener('astro:page-load', setupScrollIndicator);
+</script>

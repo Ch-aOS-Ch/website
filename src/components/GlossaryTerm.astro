@@ -1,0 +1,399 @@
+---
+// GlossaryTerm.astro
+// Centralized inline micro-glossary term with responsive mobile-ready popover
+import { GLOSSARY, type GlossaryEntry } from '../data/glossary';
+
+interface Props {
+  termKey: string;
+  display?: string;
+  theme?: 'mint' | 'pink';
+}
+
+const { termKey, display } = Astro.props;
+const entry: GlossaryEntry = GLOSSARY[termKey.toLowerCase()] || {
+  term: display || termKey,
+  definition: 'Ch-aOS technical term.',
+  theme: 'mint',
+};
+---
+
+<span
+  class="glossary-term inline-block relative cursor-pointer font-medium term-mint"
+  data-term-key={termKey}
+  role="button"
+  tabindex="0"
+  aria-haspopup="dialog"
+  aria-expanded="false"
+  aria-label={`Glossary term: ${display || entry.term}`}
+>
+  <span class="glossary-term-word border-b border-dotted transition-colors">
+    {display || entry.term}
+  </span>
+
+  <!-- Tooltip popover template with fixed/portal positioning via floating script -->
+  <template class="glossary-popover-template">
+    <div class="glossary-card w-[calc(100vw-24px)] max-w-xs sm:w-80 p-3.5 text-xs font-sans rounded-none shadow-2xl leading-relaxed card-mint">
+      <div class="card-header flex items-center justify-between gap-2 pb-2 mb-2 border-b">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="term-title font-mono font-bold text-sm">
+            {entry.term}
+          </span>
+          {entry.pronunciation && (
+            <span class="term-pronunciation text-[10px] font-mono truncate">
+              ({entry.pronunciation})
+            </span>
+          )}
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="term-badge text-[10px] font-mono uppercase px-1.5 py-0.5 border shrink-0">
+            Concept
+          </span>
+          <button
+            type="button"
+            class="term-close-btn p-1 -mr-1 text-slate-400 hover:text-[#38D9A9] focus:outline-none transition-colors rounded cursor-pointer"
+            aria-label="Close glossary definition"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="term-definition text-xs leading-normal mb-2">
+        {entry.definition}
+      </p>
+
+      {(entry.comparison || entry.analogy) && (
+        <div class="card-footer pt-2 border-t text-[11px] font-mono">
+          <span class="font-semibold">Analogy: </span>
+          <span class="comparison-text">{entry.comparison || entry.analogy}</span>
+        </div>
+      )}
+    </div>
+  </template>
+</span>
+
+<style>
+  /* Term Inline Word Colors - Always Mint */
+  .term-mint .glossary-term-word,
+  .term-pink .glossary-term-word {
+    color: #38D9A9;
+    border-color: #38D9A9;
+  }
+
+  :global(html[data-theme="light"]) .term-mint .glossary-term-word,
+  :global(html[data-theme="light"]) .term-pink .glossary-term-word {
+    color: #0E7A5A !important;
+    border-color: #0E7A5A !important;
+  }
+
+  /* Popover Card Styles - Dark Mode Defaults */
+  :global(.glossary-card) {
+    background-color: #121916;
+    color: #E8F0EC;
+    border: 1px solid #3D524A;
+  }
+  :global(.glossary-card .card-header) {
+    border-color: rgba(61, 82, 74, 0.4);
+  }
+  :global(.glossary-card .term-pronunciation) {
+    color: #8E9EA0;
+  }
+  :global(.glossary-card .term-definition) {
+    color: #C1C9D6;
+  }
+  :global(.glossary-card .card-footer) {
+    border-color: rgba(61, 82, 74, 0.3);
+    color: #8E9EA0;
+  }
+  :global(.glossary-card.card-mint .term-title),
+  :global(.glossary-card.card-pink .term-title) {
+    color: #38D9A9;
+  }
+  :global(.glossary-card.card-mint .term-badge),
+  :global(.glossary-card.card-pink .term-badge) {
+    color: #38D9A9;
+    border-color: rgba(56, 217, 169, 0.4);
+    background-color: rgba(56, 217, 169, 0.1);
+  }
+  :global(.glossary-card .term-close-btn:hover) {
+    color: #38D9A9;
+  }
+
+  /* Popover Card Styles - Light Mode */
+  :global([data-theme="light"] .glossary-card),
+  :global(html[data-theme="light"] .glossary-card) {
+    background-color: #FFFFFF !important;
+    color: #14241E !important;
+    border: 1px solid #A2DCB7 !important;
+    box-shadow: 0 10px 30px -4px rgba(20, 36, 30, 0.18), 0 4px 12px -2px rgba(20, 36, 30, 0.1) !important;
+  }
+  :global([data-theme="light"] .glossary-card .card-header),
+  :global(html[data-theme="light"] .glossary-card .card-header) {
+    border-color: rgba(162, 220, 183, 0.6) !important;
+  }
+  :global([data-theme="light"] .glossary-card .term-pronunciation),
+  :global(html[data-theme="light"] .glossary-card .term-pronunciation) {
+    color: #486156 !important;
+  }
+  :global([data-theme="light"] .glossary-card .term-definition),
+  :global(html[data-theme="light"] .glossary-card .term-definition) {
+    color: #2C3E35 !important;
+  }
+  :global([data-theme="light"] .glossary-card .card-footer),
+  :global(html[data-theme="light"] .glossary-card .card-footer) {
+    border-color: rgba(162, 220, 183, 0.4) !important;
+    color: #486156 !important;
+  }
+  :global([data-theme="light"] .glossary-card.card-mint .term-title),
+  :global(html[data-theme="light"] .glossary-card.card-mint .term-title),
+  :global([data-theme="light"] .glossary-card.card-pink .term-title),
+  :global(html[data-theme="light"] .glossary-card.card-pink .term-title) {
+    color: #0E7A5A !important;
+  }
+  :global([data-theme="light"] .glossary-card.card-mint .term-badge),
+  :global(html[data-theme="light"] .glossary-card.card-mint .term-badge),
+  :global([data-theme="light"] .glossary-card.card-pink .term-badge),
+  :global(html[data-theme="light"] .glossary-card.card-pink .term-badge) {
+    color: #0E7A5A !important;
+    border-color: rgba(14, 122, 90, 0.4) !important;
+    background-color: rgba(162, 220, 183, 0.3) !important;
+  }
+  :global([data-theme="light"] .glossary-card .term-close-btn:hover),
+  :global(html[data-theme="light"] .glossary-card .term-close-btn:hover) {
+    color: #0E7A5A !important;
+  }
+</style>
+
+<script>
+  let activeTerm: HTMLElement | null = null;
+  let isPinned = false;
+  let hideTimeout: any = null;
+  let overlay: HTMLElement | null = null;
+
+  function ensureOverlay(): HTMLElement {
+    if (!overlay || !document.body.contains(overlay)) {
+      let existing = document.getElementById('chaos-glossary-overlay');
+      if (existing) {
+        overlay = existing;
+      } else {
+        overlay = document.createElement('div');
+        overlay.id = 'chaos-glossary-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'false');
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.className = 'fixed z-[9999] pointer-events-none opacity-0 transition-opacity duration-150 ease-out hidden';
+        overlay.style.top = '0px';
+        overlay.style.left = '0px';
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('mouseenter', () => {
+          clearTimeout(hideTimeout);
+        });
+        overlay.addEventListener('mouseleave', () => {
+          if (!isPinned) {
+            hideTimeout = setTimeout(() => hidePopover(), 150);
+          }
+        });
+      }
+    }
+    return overlay;
+  }
+
+  function positionPopover(term: HTMLElement, ov: HTMLElement) {
+    const card = ov.firstElementChild as HTMLElement;
+    if (!card) return;
+
+    const rect = term.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const cardWidth = cardRect.width;
+    const cardHeight = cardRect.height;
+    const padding = 12;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Horizontal centering constrained within the viewport
+    let left = rect.left + (rect.width / 2) - (cardWidth / 2);
+    if (left < padding) left = padding;
+    if (left + cardWidth > viewportWidth - padding) {
+      left = Math.max(padding, viewportWidth - cardWidth - padding);
+    }
+
+    // Adaptive vertical positioning
+    const gap = 8;
+    const spaceAbove = rect.top - padding;
+    const spaceBelow = viewportHeight - rect.bottom - padding;
+
+    let top: number;
+    if (spaceAbove >= cardHeight && spaceAbove >= spaceBelow) {
+      top = rect.top - cardHeight - gap;
+    } else if (spaceBelow >= cardHeight) {
+      top = rect.bottom + gap;
+    } else if (spaceAbove >= cardHeight) {
+      top = rect.top - cardHeight - gap;
+    } else {
+      if (spaceAbove > spaceBelow) {
+        top = Math.max(padding, rect.top - cardHeight - gap);
+      } else {
+        top = Math.min(viewportHeight - cardHeight - padding, rect.bottom + gap);
+      }
+    }
+
+    ov.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
+  }
+
+  function hidePopover(force: boolean = false) {
+    if (!overlay) return;
+    if (!force && isPinned) return;
+
+    clearTimeout(hideTimeout);
+    overlay.classList.remove('opacity-100', 'pointer-events-auto');
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+
+    setTimeout(() => {
+      if (overlay && overlay.classList.contains('opacity-0')) {
+        overlay.classList.add('hidden');
+      }
+    }, 150);
+
+    if (activeTerm) {
+      activeTerm.setAttribute('aria-expanded', 'false');
+      activeTerm.removeAttribute('aria-controls');
+      activeTerm = null;
+    }
+    isPinned = false;
+  }
+
+  function showPopover(term: HTMLElement, pinned: boolean = false) {
+    const ov = ensureOverlay();
+    clearTimeout(hideTimeout);
+
+    // If already open and pinned on this same term, clicking toggles it closed
+    if (activeTerm === term && isPinned && pinned) {
+      hidePopover(true);
+      return;
+    }
+
+    const template = term.querySelector<HTMLTemplateElement>('.glossary-popover-template');
+    if (!template) return;
+
+    if (activeTerm && activeTerm !== term) {
+      activeTerm.setAttribute('aria-expanded', 'false');
+      activeTerm.removeAttribute('aria-controls');
+    }
+
+    ov.innerHTML = template.innerHTML;
+    ov.classList.remove('hidden');
+
+    // Sync light/dark theme attribute
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    ov.setAttribute('data-theme', currentTheme);
+
+    // Close button inside the card
+    const closeBtn = ov.querySelector<HTMLButtonElement>('.term-close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hidePopover(true);
+      });
+    }
+
+    const card = ov.firstElementChild as HTMLElement;
+    if (!card) return;
+
+    // Offscreen measurement before positioning
+    ov.style.transform = 'translate3d(-9999px, -9999px, 0)';
+    positionPopover(term, ov);
+
+    ov.classList.remove('pointer-events-none', 'opacity-0');
+    ov.classList.add('pointer-events-auto', 'opacity-100');
+
+    activeTerm = term;
+    activeTerm.setAttribute('aria-expanded', 'true');
+    activeTerm.setAttribute('aria-controls', 'chaos-glossary-overlay');
+    isPinned = pinned;
+  }
+
+  function setupGlossaryPopovers() {
+    ensureOverlay();
+
+    const terms = document.querySelectorAll<HTMLElement>('.glossary-term');
+    terms.forEach(term => {
+      if (term.dataset.popoverBound) return;
+      term.dataset.popoverBound = 'true';
+
+      // Desktop hover
+      term.addEventListener('mouseenter', () => {
+        if (!isPinned) {
+          showPopover(term, false);
+        }
+      });
+
+      term.addEventListener('mouseleave', () => {
+        if (!isPinned) {
+          hideTimeout = setTimeout(() => hidePopover(), 150);
+        }
+      });
+
+      // Click / touch on mobile and desktop
+      term.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showPopover(term, true);
+      });
+
+      // Keyboard accessibility
+      term.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showPopover(term, true);
+        }
+      });
+    });
+
+    // Register global listeners once
+    if (!(window as any).__chaosGlossaryGlobalEventsBound) {
+      (window as any).__chaosGlossaryGlobalEventsBound = true;
+
+      // Clicking outside closes the popover
+      document.addEventListener('click', (e) => {
+        const target = e.target as Node | null;
+        if (!target) return;
+        if (overlay && overlay.contains(target)) return;
+        if (activeTerm && activeTerm.contains(target)) return;
+        hidePopover(true);
+      });
+
+      // ESC closes the popover
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          hidePopover(true);
+        }
+      });
+
+      // Reposition pinned popover on scroll (unless scrolled offscreen); close unpinned hover popovers
+      window.addEventListener('scroll', () => {
+        if (!activeTerm) return;
+        if (isPinned && overlay) {
+          const rect = activeTerm.getBoundingClientRect();
+          if (rect.bottom < 0 || rect.top > window.innerHeight) {
+            hidePopover(true);
+          } else {
+            positionPopover(activeTerm, overlay);
+          }
+        } else {
+          hidePopover(true);
+        }
+      }, { passive: true });
+
+      // Resize closes the popover
+      window.addEventListener('resize', () => {
+        hidePopover(true);
+      });
+    }
+  }
+
+  setupGlossaryPopovers();
+  document.addEventListener('astro:page-load', setupGlossaryPopovers);
+</script>

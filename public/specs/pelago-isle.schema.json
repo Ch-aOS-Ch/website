@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaos.dexmachina.com/schemas/pelago-isle.schema.json",
+  "title": "Pelago Isle Infrastructure Blueprint Schema",
+  "description": "Specification for Pelago IaC (Infrastructure as Code) blueprints in Ch-aOS.",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": [
+        "pelago.chaos/v1",
+        "pelago.chaos/v1alpha1"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "Isle",
+        "FleetIsle"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "description": "Cloud or hypervisor provider (e.g., aws, proxmox, hcv, digitalocean)."
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "resources"
+      ],
+      "properties": {
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "type"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "description": "Resource type (e.g., compute.instance, network.vpc, storage.bucket)."
+              },
+              "properties": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

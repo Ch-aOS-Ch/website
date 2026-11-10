@@ -1,0 +1,616 @@
+---
+// AlternatingFeatures.astro
+// Alternating technical feature showcases with official Ch-aOS palette (#121916, #38D9A9, #3D524A, #C1C9D6, #E8F0EC)
+import { Code } from 'astro:components';
+import { chaosThemes } from '../themes/index.mjs';
+import GlossaryTerm from './GlossaryTerm.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+interface FeatureTab {
+  label: string;
+  lang: string;
+  code: string;
+}
+
+interface Feature {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  link: string;
+  linkText: string;
+  tabs: FeatureTab[];
+}
+
+const features: Feature[] = [
+  {
+    id: "chobolos-roles",
+    category: "Ch-obolos and Roles",
+    title: "Strict separation of declarative YAML data and idempotent Python execution.",
+    description: "Ch-aOS decouples system state declarations from execution logic. The Ch-obolo declares the desired end state of systems and fleets in clean YAML, while Roles are Python classes that implement the idempotent operations via Pyinfra.",
+    link: `${base}/core-concepts/`,
+    linkText: "Core Concepts Documentation",
+    tabs: [
+      {
+        label: "ch-obolo.yml",
+        lang: "yaml",
+        code: `# ch-obolos/edge-gateway.yml
+fleet:
+  parallelism: 4
+  hosts:
+    edge-gw-01:
+      ssh_hostname: "10.20.0.1"
+      ssh_user: "ops"
+
+# Declarative service & tunnel state
+systemd_units:
+  enable:
+    - "wg-quick@wg0.service"
+    - "nftables.service"
+  restart_on_drift: true
+
+wireguard:
+  interface: "wg0"
+  address: "10.99.0.1/24"
+  listen_port: 51820`
+      },
+      {
+        label: "roles/systemd_units.py",
+        lang: "python",
+        code: `from chaos.lib.roles.role import Role
+from chaos.lib.args.dataclasses import Delta, ResultPayload
+from pyinfra.api.operation import add_op
+from pyinfra.operations import systemd
+from pyinfra.facts.systemd import SystemdEnabled
+
+class SystemdUnitsRole(Role):
+    """Canonical 3-stage SDK lifecycle: get_context -> delta -> plan"""
+    def __init__(self):
+        super().__init__(name="systemd_units", necessary_chobolo_keys=["systemd_units"])
+
+    def get_context(self, state, host, chobolo: dict = {}, secrets: dict = {}):
+        return {"enabled": host.get_fact(SystemdEnabled)}
+
+    def delta(self, context: dict = {}) -> Delta:
+        desired = set(self.chobolo.get("systemd_units", {}).get("enable", []))
+        enabled = {u for u, is_on in context.get("enabled", {}).items() if is_on}
+        return Delta(to_add={"units": sorted(desired - enabled)})
+
+    def plan(self, state, host, delta: Delta) -> ResultPayload:
+        for unit in delta.to_add.get("units", []):
+            add_op(
+                state, systemd.service,
+                name=f"Enable and start {unit}",
+                service=unit, running=True, enabled=True, _sudo=True
+            )
+        return ResultPayload(success=True, message=["Systemd units planned"])`
+      }
+    ]
+  },
+  {
+    id: "pelago-iac",
+    category: "Pelago",
+    title: "Four unified provisioning models in the same declarative Ch-obolo.",
+    description: `Pelago (Ch-aOS Archipelago) unifies cloud infrastructure provisioning via Pulumi Automation API and automatic configuration management. It supports 4 declaration methods: Python classes, pure YAML, and inline or external HCL.`,
+    link: `${base}/advanced/pelago/`,
+    linkText: "Pelago Documentation",
+    tabs: [
+      {
+        label: "1. Isles",
+        lang: "yaml",
+        code: `# 1. Isle (Composite infrastructure soul)
+pelago:
+  - name: "web-server"
+    isle: "aws-ec2"
+    config:
+      instance_type: "t3.medium"
+      ami: "ami-0c55b159cbfafe1f0"
+      key_name: "deployer-key"
+    exports:
+      hosts:
+        web-server:
+          ssh_hostname: "\${web-server.publicIp}"
+          ssh_user: "ubuntu"
+          ssh_port: 22`
+      },
+      {
+        label: "2. Native Pulumi",
+        lang: "yaml",
+        code: `# 2. Native Pulumi Resource
+pelago:
+  - name: "prod-vpc"
+    type: "aws:ec2:Vpc"
+    properties:
+      cidrBlock: "10.0.0.0/16"
+      enableDnsHostnames: true
+      tags:
+        Name: "production-vpc"
+
+  - name: "storage-bucket"
+    type: "aws:s3:Bucket"
+    properties:
+      bucket: "chaos-assets-prod"
+      acl: "private"`
+      },
+      {
+        label: "3. Terraform Module",
+        lang: "yaml",
+        code: `# 3. Terraform (hcl_path:)
+pelago:
+  - name: "proxmox-cluster"
+    module: "./infra/terraform/proxmox"
+    inputs:
+      node_name: "pve-01"
+      api_token: "\${secrets:pve_token}" # Injected 100% in-memory via gRPC`
+      },
+      {
+        label: "4. Inline HCL",
+        lang: "yaml",
+        code: `# 4. Inline HCL (Zero-Disk Secret Guarantee via gRPC inputs)
+pelago:
+  - name: "cloudflare-dns"
+    hcl: |
+      variable "zone_id" { type = string }
+      variable "api_token" { type = string }
+      resource "cloudflare_record" "api" {
+        zone_id = var.zone_id
+        name    = "api"
+        content = "198.51.100.24"
+        type    = "A"
+        ttl     = 300
+      }
+    inputs:
+      zone_id: "023e105f4ecef8ad9ca31a8372d0c353"
+      api_token: "\${secrets:cf_token}"`
+      }
+    ]
+  },
+  {
+    id: "fleet-boats",
+    category: "Fleet & Dynamic Boats",
+    title: "Agentless multi-host orchestration with tag-based restrictions and Boat providers.",
+    description: "Orchestrate entire fleets over parallel SSH with fine-grained restrictions (allow_tags, black_tags, allow_list, black_list). For auto-scaling clusters and cloud VMs, implement Boat classes (chaos.boats) to dynamically query external cloud APIs and merge discovered hosts into the active fleet.",
+    link: `${base}/advanced/fleet/`,
+    linkText: "Fleet & Boats Documentation",
+    tabs: [
+      {
+        label: "fleet.yml & Restrictions",
+        lang: "yaml",
+        code: `fleet:
+  parallelism: 8
+
+  # Dynamic inventory provider
+  boats:
+    - provider: "my-cloud-boat"
+      config:
+        region: "us-east-1"
+        tag_key: "Environment"
+        tag_value: "production"
+
+  # Static hosts
+  hosts:
+    gateway-01:
+      ssh_hostname: "192.168.1.1"
+      ssh_user: "admin"
+      tags: ["dmz", "router"]
+
+  # Restrictions Engine (evaluated before get_context)
+  restrictions:
+    allow_tags:
+      wireguard: ["router", "gateway"]
+    black_tags:
+      docker: ["workstation"]
+    black_list:
+      legacy-node: {} # Completely blacklisted from all roles`
+      },
+      {
+        label: "boats/provider.py",
+        lang: "python",
+        code: `from typing import Any
+from chaos.lib.boats.base import Boat
+
+class MyCloudBoat(Boat):
+    """Dynamic boat registered under [project.entry-points.'chaos.boats']"""
+    @property
+    def name(self) -> str:
+        return "my-cloud-boat"
+
+    def check_connection(self) -> bool:
+        return True
+
+    def get_fleet_config(self) -> dict[str, Any]:
+        return {"instances": [{"id": "node-01", "ip": "10.0.1.10"}]}
+
+    def handle_boat_logic(self, fleet_config: dict[str, Any]) -> list[dict[str, Any]]:
+        return [
+            {inst["id"]: {"ssh_hostname": inst["ip"], "ssh_user": "ubuntu"}}
+            for inst in fleet_config.get("instances", [])
+        ]`
+      }
+    ]
+  },
+  {
+    id: "sops-secrets",
+    category: "SOPS and Ephemeral Key Providers",
+    title: "Zero-disk RAM secret workflows and encrypted multi-recipient master keys.",
+    description: "Ch-aOS stores zero plaintext keys on disk. File-level encryption and decryption is handled entirely by CNCF's SOPS. Secret Providers fetch the master decryption key exclusively into volatile in-memory RAM disks (/dev/shm) during execution, wiping it immediately upon completion.",
+    link: `${base}/commands/secrets/`,
+    linkText: "Secrets & Providers Documentation",
+    tabs: [
+      {
+        label: "~/.config/chaos/config.yml & CLI",
+        lang: "yaml",
+        code: `# ~/.config/chaos/config.yml
+secret_providers:
+  default: bw.age
+
+  # Providers storing master SOPS Age/PGP encryption keys
+  bw:
+    age_id: "7f4c0a91-4d3b-4819-91a0-128a5df90123"
+    gpg_id: "3a1b4e7f-9a8d-4c6b-8e0d-5c2a1b4e7f9a"
+
+  op:
+    age_url: "op://dev-vault/master-key/notesPlain"
+
+# 1. Execution: Age key retrieved in RAM (/dev/shm), SOPS decrypts file in-memory
+# $ chaos apply users --secrets -p bw.age
+
+# 2. Inspect a specific secret key via dot-notation
+# $ chaos secrets cat user_secrets.db_password -v`
+      }
+    ]
+  },
+  {
+    id: "styx-registry",
+    category: "Styx Soul Registry",
+    title: "Decentralized Git-backed plugin registry with SHA256 verification.",
+    description: "Styx is the official community Soul registry for Ch-aOS. Discover available Souls (chaos styx list), install verified packages (chaos styx invoke <soul>), and remove plugins (chaos styx destroy <soul>). Manifests are declared in a public Git repository (registry.yaml) with cryptographic commit signing and strict SHA256 checksum enforcement.",
+    link: `${base}/commands/styx/`,
+    linkText: "Styx Command Documentation",
+    tabs: [
+      {
+        label: "registry.yaml & CLI Commands",
+        lang: "yaml",
+        code: `# Styx Soul Registry Schema (registry.yaml)
+styx:
+  chaos-dots:
+    name: "chaos_dots"
+    repo: "https://github.com/Ch-aOS-Ch/chaos-dots"
+    about: "Declarative dotfile and workstation management Soul."
+    version: "v0.1.1"
+    hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+# Official Styx CLI commands:
+# 1. List all available Souls in registry
+# $ chaos styx list
+
+# 2. Install a Soul into ~/.local/share/chaos/souls/
+# $ chaos styx invoke chaos-dots
+
+# 3. Remove an installed Soul
+# $ chaos styx destroy chaos-dots`
+      }
+    ]
+  },
+  {
+    id: "python-sdk",
+    category: "Python SDK & Payloads",
+    title: "Programmatic automation and decoupling via typed Payloads.",
+    description: "Ch-aOS was engineered from the ground up as a Python SDK. The chaos.lib package cleanly separates interactive data gathering (gather_*) from business execution (handle_*). All handle_* functions are 100% headless by design, allowing automation scripts and CI/CD pipelines to instantiate typed Payloads and execute orchestration directly.",
+    link: `${base}/advanced/sdk/overview/`,
+    linkText: "Python SDK Documentation",
+    tabs: [
+      {
+        label: "automation_pipeline.py",
+        lang: "python",
+        code: `from chaos.lib.args.dataclasses import ApplyPayload
+from chaos.lib.apply import handleApply
+
+# Direct instantiation of typed execution payload
+payload = ApplyPayload(
+    target="fleet.production",
+    roles=["system_packages", "docker"],
+    dry_run=False,
+    parallelism=8
+)
+
+# Direct headless execution of the Ch-aOS engine via Python SDK
+result = handleApply(payload)
+
+if result.success:
+    print(f"Execution succeeded: {result.message}")
+else:
+    print(f"Execution failed: {result.error}")`
+      }
+    ]
+  }
+];
+---
+
+<section id="features" class="py-16 sm:py-24 relative scroll-mt-6 sm:scroll-mt-8">
+  <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 space-y-20 sm:space-y-28">
+
+    <div class="text-center max-w-3xl mx-auto flex flex-col items-center">
+      <h2 class="features-header-title text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#E8F0EC] mb-4">
+        Made to tame the chaos of modern infrastructure.
+      </h2>
+      <p class="features-header-subtitle text-sm sm:text-base text-[#C1C9D6] leading-relaxed max-w-2xl">
+        From declarative and local system management to multi-cloud provisioning, SOPS RAM-disk secrets, and agentless fleet configuration.
+      </p>
+    </div>
+
+    {features.map((feat, idx) => {
+      const isEven = idx % 2 === 0;
+      return (
+        <div class="feature-item-row grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+
+          <!-- Text Column -->
+          <div class={`lg:col-span-5 flex flex-col justify-center ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
+            <h3 class="feature-title text-xl sm:text-3xl font-bold tracking-tight text-[#E8F0EC] mb-3 sm:mb-4 leading-snug">
+              {feat.title}
+            </h3>
+
+            <p class="feature-desc text-sm sm:text-base text-[#C1C9D6] leading-relaxed mb-5 sm:mb-6">
+              {feat.id === 'chobolos-roles' && (
+                <span>
+                  <GlossaryTerm termKey="ch-aos" display="Ch-aOS" /> decouples system state declarations from execution logic. The <GlossaryTerm termKey="ch-obolo" /> declares the desired end state of systems and fleets in clean YAML, while <GlossaryTerm termKey="roles" /> are Python classes that implement the idempotent operations via Pyinfra.
+                </span>
+              )}
+              {feat.id === 'pelago-iac' && (
+                <span>
+                  <GlossaryTerm termKey="pelago" /> (Ch-aOS Archipelago) unifies cloud infrastructure provisioning via Pulumi Automation API and automatic configuration management. It supports 4 declaration methods: Python classes, pure YAML, and inline or external HCL.
+                </span>
+              )}
+              {feat.id === 'fleet-boats' && (
+                <span>
+                  Orchestrate entire <GlossaryTerm termKey="fleet" /> over parallel SSH with fine-grained restrictions (<GlossaryTerm termKey="black_tags" />). For auto-scaling clusters and cloud VMs, implement <GlossaryTerm termKey="boats" /> classes to dynamically query external cloud APIs and merge discovered hosts into the active fleet.
+                </span>
+              )}
+              {feat.id === 'sops-secrets' && (
+                <span>
+                  <GlossaryTerm termKey="ch-aos" display="Ch-aOS" /> stores zero plaintext keys on disk. File-level encryption and decryption is handled entirely by CNCF's SOPS. Secret <GlossaryTerm termKey="secret-providers" display="Providers" /> fetch the master decryption key exclusively into volatile in-memory RAM disks (/dev/shm) during execution, wiping it immediately upon completion.
+                </span>
+              )}
+              {feat.id === 'styx-registry' && (
+                <span>
+                  <GlossaryTerm termKey="styx" /> is the official community <GlossaryTerm termKey="soul" display="Soul registry" /> for Ch-aOS. Discover available Souls (chaos styx list), install verified packages (chaos styx invoke), and remove plugins. Manifests are declared in a public Git repository with strict SHA256 checksum enforcement.
+                </span>
+              )}
+              {feat.id === 'python-sdk' && (
+                <span>
+                  {feat.description}
+                </span>
+              )}
+            </p>
+
+            <a 
+              href={feat.link}
+              class={`feature-link min-h-[44px] inline-flex items-center gap-2 text-sm font-semibold transition-colors group w-fit py-2 ${
+                feat.id === 'sops-secrets'
+                  ? 'text-[#F8A5C2] hover:text-[#E8F0EC] [data-theme=light]:text-[#C92861] [data-theme=light]:hover:text-[#8C143F]'
+                  : 'text-[#38D9A9] hover:text-[#E8F0EC] [data-theme=light]:text-[#0E7A5A] [data-theme=light]:hover:text-[#0A543E]'
+              }`}
+            >
+              <span>{feat.linkText}</span>
+              <span class="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </a>
+          </div>
+
+          <div class={`lg:col-span-7 w-full ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
+            <div class="code-window-card backdrop-blur-md rounded-none shadow-2xl overflow-hidden">
+              <div class="feature-tabs-container" data-tab-group={feat.id}>
+                <div class="code-window-header flex items-center justify-between gap-2 px-2.5 sm:px-5 py-2 sm:py-3 border-b border-[#3D524A]/40">
+                  <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto no-scrollbar py-0.5">
+                    {feat.tabs.length > 1 ? (
+                      <div class="flex items-center gap-1 sm:gap-1.5 bg-[#121916]/60 p-0.5 sm:p-1 rounded-none border border-[#3D524A]/60 text-xs sm:text-[13px] font-mono shrink-0" role="tablist" aria-label={`${feat.category} tabs`}>
+                        {feat.tabs.map((tab, tIdx) => (
+                          <button 
+                            type="button" 
+                            role="tab"
+                            id={`tab-btn-${feat.id}-${tIdx}`}
+                            aria-selected={tIdx === 0 ? "true" : "false"}
+                            aria-controls={`tab-${feat.id}-${tIdx}`}
+                            tabindex={tIdx === 0 ? 0 : -1}
+                            class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap"
+                            data-target={`tab-${feat.id}-${tIdx}`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <span class="single-tab-title text-xs sm:text-sm font-mono font-semibold truncate text-[#F8A5C2] [data-theme=light]:text-[#C92861]">{feat.tabs[0].label}</span>
+                    )}
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0 ml-1.5">
+                    <button 
+                      type="button" 
+                      class="copy-code-btn flex items-center justify-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 min-h-[44px] sm:min-h-0 text-xs font-mono cursor-pointer rounded-none relative z-10"
+                      title="Copy active code"
+                      aria-label="Copy active code"
+                      aria-live="polite"
+                    >
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      <span class="copy-label">Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="tab-panel p-3 sm:p-6 font-mono text-xs sm:text-sm md:text-[15px] leading-relaxed overflow-x-auto overflow-y-auto min-h-[280px] max-h-[420px] sm:h-[420px] overscroll-y-contain text-[#E8F0EC] [data-theme=light]:text-[#14241E]">
+                  {feat.tabs.map((tab, tIdx) => (
+                    <div 
+                      id={`tab-${feat.id}-${tIdx}`} 
+                      role="tabpanel"
+                      aria-labelledby={`tab-btn-${feat.id}-${tIdx}`}
+                      tabindex="0"
+                      class={`tab-content focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded ${tIdx === 0 ? 'block' : 'hidden'}`}
+                    >
+                      <Code code={tab.code} lang={tab.lang as any} themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      );
+    })}
+
+  </div>
+</section>
+
+<style>
+  .code-window-card pre,
+  .code-window-card code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  .tab-btn[aria-selected="true"] {
+    color: #E8F0EC;
+    background-color: #25342E;
+    border: 1px solid rgba(248, 165, 194, 0.6);
+  }
+  .tab-btn[aria-selected="false"] {
+    color: #9CA8B6;
+    border: 1px solid transparent;
+  }
+  .tab-btn[aria-selected="false"]:hover {
+    color: #F8A5C2;
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="true"] {
+    color: #C92861 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #C92861 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(201, 40, 97, 0.12);
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="false"] {
+    color: #486156 !important;
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="false"]:hover {
+    color: #C92861 !important;
+  }
+  :global(html[data-theme="light"]) .features-header-title {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .features-header-subtitle {
+    color: #243830 !important;
+  }
+  :global(html[data-theme="light"]) .feature-title {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .feature-desc {
+    color: #243830 !important;
+  }
+  :global(html[data-theme="light"]) .code-encoding {
+    color: #385549 !important;
+  }
+  :global(html[data-theme="light"]) .copy-code-btn {
+    background-color: rgba(225, 240, 232, 0.95) !important;
+    border-color: #9EC4B5 !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .copy-code-btn:hover {
+    background-color: #D4DFDA !important;
+    border-color: #137A5B !important;
+    color: #137A5B !important;
+  }
+</style>
+
+<script>
+  function setupFeatureTabs() {
+    const tabGroups = document.querySelectorAll('.feature-tabs-container');
+    tabGroups.forEach((group) => {
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.tab-btn');
+      const contents = group.querySelectorAll<HTMLElement>('.tab-content');
+      const tablist = group.querySelector<HTMLElement>('[role="tablist"]');
+
+      function activateFeatureTab(targetBtn: HTMLButtonElement) {
+        const targetId = targetBtn.getAttribute('data-target');
+
+        buttons.forEach((btn) => {
+          const isSelected = btn === targetBtn;
+          btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+          btn.setAttribute('tabindex', isSelected ? '0' : '-1');
+        });
+
+        contents.forEach((c) => {
+          if (c.id === targetId) {
+            c.classList.remove('hidden');
+            c.classList.add('block');
+          } else {
+            c.classList.remove('block');
+            c.classList.add('hidden');
+          }
+        });
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activateFeatureTab(btn);
+        });
+      });
+
+      if (tablist && !tablist.dataset.keyboardBound) {
+        tablist.dataset.keyboardBound = 'true';
+        tablist.addEventListener('keydown', (e: KeyboardEvent) => {
+          const tabs = Array.from(buttons);
+          const currentIndex = tabs.findIndex(tab => tab === document.activeElement);
+          if (currentIndex === -1) return;
+
+          let nextIndex = -1;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            nextIndex = (currentIndex + 1) % tabs.length;
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            nextIndex = 0;
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            nextIndex = tabs.length - 1;
+          }
+
+          if (nextIndex !== -1) {
+            tabs[nextIndex].focus();
+            activateFeatureTab(tabs[nextIndex]);
+          }
+        });
+      }
+
+      const copyBtn = group.querySelector<HTMLButtonElement>('.copy-code-btn');
+      if (copyBtn && !copyBtn.dataset.listenerAttached) {
+        copyBtn.dataset.listenerAttached = 'true';
+        copyBtn.addEventListener('click', () => {
+          const activePane = group.querySelector<HTMLElement>('.tab-content.block') || group.querySelector<HTMLElement>('.tab-content:not(.hidden)');
+          const codeElement = activePane ? activePane.querySelector('code') || activePane : null;
+          if (codeElement) {
+            const text = codeElement.innerText || codeElement.textContent || '';
+            navigator.clipboard.writeText(text.trim());
+            const label = copyBtn.querySelector('.copy-label');
+            if (label) {
+              const originalText = label.textContent;
+              label.textContent = 'Copied!';
+              setTimeout(() => {
+                label.textContent = originalText;
+              }, 1500);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  setupFeatureTabs();
+  document.addEventListener('astro:page-load', setupFeatureTabs);
+</script>

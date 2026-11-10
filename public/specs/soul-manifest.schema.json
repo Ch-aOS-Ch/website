@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaos.dexmachina.com/schemas/soul-manifest.schema.json",
+  "title": "Ch-aOS Soul Manifest Schema",
+  "description": "Specification for Soul plugins and extension entrypoints in Ch-aOS.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "soul_type",
+    "entrypoint"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Soul package name, e.g. 'chaos-dots' or 'ch-aronte'."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic versioning string."
+    },
+    "soul_type": {
+      "type": "string",
+      "enum": [
+        "core",
+        "functionality",
+        "isle",
+        "boat",
+        "secret_provider",
+        "explanation",
+        "key",
+        "alias"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "entrypoint": {
+      "type": "string",
+      "description": "Python entrypoint module and class (e.g., 'chaos_dots.roles:DotfilesRole')."
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

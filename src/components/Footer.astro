@@ -1,0 +1,91 @@
+---
+// Footer.astro
+// Technical footer with documentation links, official Ch-aOS palette and 50% frosted glass backdrop-blur
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="relative z-10 w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 pb-12 sm:pb-16 mt-8">
+  <div class="code-window-card backdrop-blur-md rounded-none shadow-2xl p-5 sm:p-12 overflow-hidden text-xs text-[#C1C9D6] [data-theme=light]:text-[#24362E] w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
+
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2">
+            <span class="footer-brand font-extrabold text-base sm:text-lg text-[var(--chaos-text-primary)] tracking-tight">Ch-aOS</span>
+            <svg class="w-5 h-5 shrink-0" viewBox="0 0 64 64" fill="none">
+              <polygon points="32,10 50,20 32,30 14,20" fill="#38D9A9"/>
+              <path d="M 14 20 L 32 30 L 32 37 L 21 31 L 21 42 L 32 48 L 32 54 L 14 44 Z" fill="#63E6BE"/>
+              <path d="M 32 30 L 38 26.7 L 38 34.5 L 50 28 L 50 44 L 44 47.3 L 44 38 L 38 41.3 L 38 50.7 L 32 54 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="text-[#8E9EA0] [data-theme=light]:text-[#3D524A] text-[11px] leading-relaxed">
+            Declarative Infrastructure as Code and Configuration Management Engine.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="footer-title font-semibold text-[var(--chaos-text-primary)] text-xs uppercase tracking-wider mb-3">Documentation</h3>
+          <ul class="space-y-1">
+            <li><a href={`${base}/getting-started/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Getting Started</a></li>
+            <li><a href={`${base}/core-concepts/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Ch-obolos & Roles</a></li>
+            <li><a href={`${base}/chopping-board/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">The Chopping Board</a></li>
+            <li><a href={`${base}/glossary/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Nautical Glossary</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title font-semibold text-[var(--chaos-text-primary)] text-xs uppercase tracking-wider mb-3">Subsystems & SDK</h3>
+          <ul class="space-y-1">
+            <li><a href={`${base}/advanced/fleet/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Fleet Management</a></li>
+            <li><a href={`${base}/advanced/pelago/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Pelago</a></li>
+            <li><a href={`${base}/souls/styx/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Styx Soul Registry</a></li>
+            <li><a href={`${base}/advanced/sdk/overview/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Python SDK Overview</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-title font-semibold text-[var(--chaos-text-primary)] text-xs uppercase tracking-wider mb-3">Resources</h3>
+          <ul class="space-y-1">
+            <li>
+              <a href="https://github.com/Ch-aOS-Ch/Ch-aOS" target="_blank" rel="noopener noreferrer" class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center gap-1 min-h-[44px] py-2">
+                GitHub Repository
+                <svg class="w-3 h-3 text-[#6E7787] [data-theme=light]:text-[#50685E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/Ch-aOS-Ch/Ch-aOS/issues" target="_blank" rel="noopener noreferrer" class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center gap-1 min-h-[44px] py-2">
+                Issues & Roadmap
+                <svg class="w-3 h-3 text-[#6E7787] [data-theme=light]:text-[#50685E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            </li>
+            <li><a href={`${base}/core-concepts/`} class="hover:text-[#38D9A9] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center min-h-[44px] py-2">Core Concepts</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-6 border-t border-[#3D524A]/25 [data-theme=light]:border-[#A9BCB3]/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#8E9EA0] [data-theme=light]:text-[#3D524A] text-center sm:text-left">
+        <p>© {currentYear} Ch-aOS Project. Under MPL2.0. Forever.</p>
+      </div>
+    </div>
+  </footer>
+
+<style>
+  .footer-title {
+    color: var(--chaos-text-primary, #E8F0EC);
+  }
+
+  .footer-brand {
+    color: var(--chaos-text-primary, #E8F0EC);
+  }
+
+  :global(html[data-theme="light"]) .footer-title,
+  :global([data-theme="light"]) .footer-title {
+    color: #14241E !important;
+  }
+
+  :global(html[data-theme="light"]) .footer-brand,
+  :global([data-theme="light"]) .footer-brand {
+    color: #14241E !important;
+  }
+</style>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Face Superior (Topo do Cubo) -->
+  <polygon points="32,10 50,20 32,30 14,20" fill="#38D9A9"/>
+  
+  <!-- Face Esquerda estilizada em "C" -->
+  <path d="M 14 20 L 32 30 L 32 37 L 21 31 L 21 42 L 32 48 L 32 54 L 14 44 Z" 
+        fill="#63E6BE"/>
+        
+  <!-- Face Direita estilizada em "h" -->
+  <path d="
+    M 32 30 
+    L 38 26.7 
+    L 38 34.5 
+    L 50 28 
+    L 50 44 
+    L 44 47.3 
+    L 44 38 
+    L 38 41.3 
+    L 38 50.7 
+    L 32 54 
+    Z" 
+    fill="#1E2D27" 
+    stroke="#F8A5C2" 
+    stroke-width="1.5" 
+    stroke-linejoin="round"/>
+</svg>

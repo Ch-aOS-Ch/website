@@ -1,0 +1,1498 @@
+---
+import type { SystemArchitecture, ArchView } from '../../data/architecture/types';
+import ArchNodeCard from './ArchNodeCard.astro';
+import ArchDrawer from './ArchDrawer.astro';
+
+interface Props {
+  arch: SystemArchitecture;
+  defaultViewId?: string;
+  oppositeArchUrl: string;
+  oppositeArchLabel: string;
+}
+
+const { arch, defaultViewId = 'overview', oppositeArchUrl, oppositeArchLabel } = Astro.props;
+const currentView: ArchView = arch.views[defaultViewId] || arch.views[arch.overviewViewId];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<div class="arch-explorer relative w-full max-w-[1560px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12" data-arch-id={arch.id} data-current-view={currentView.id}>
+  
+  <!-- Breadcrumbs & Quick Navigation Bar -->
+  <div class="arch-nav-bar flex flex-wrap items-center justify-between gap-4 mb-8 pb-4">
+    <nav class="arch-breadcrumbs flex items-center gap-2 text-xs sm:text-sm font-mono" aria-label="Architecture View Hierarchy">
+      <button 
+        type="button" 
+        class="arch-crumb-btn arch-crumb-root font-bold cursor-pointer transition-colors" 
+        data-target-view="overview"
+      >
+        {arch.systemName}
+      </button>
+      <span class="arch-crumb-sep">/</span>
+      <span id="crumb-current-view" class="arch-crumb-current font-semibold">
+        {currentView.title}
+      </span>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <!-- Return to Overview Button (Shown when in a drilldown) -->
+      <button
+        type="button"
+        id="btn-back-overview"
+        class:list={[
+          "arch-btn-back items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold transition-all cursor-pointer shadow-md",
+          currentView.id === 'overview' ? 'hidden' : 'inline-flex'
+        ]}
+        style={currentView.id === 'overview' ? 'display: none;' : 'display: inline-flex;'}
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Back to Overview</span>
+      </button>
+
+      <!-- Switch to opposite architecture -->
+      <a
+        href={oppositeArchUrl}
+        class="arch-btn-switch inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold transition-all"
+      >
+        <span>{oppositeArchLabel}</span>
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- View Header with Prominent Back Action when inside a subsystem -->
+  <div class="arch-view-header mb-10 text-left">
+    <h1 id="view-title" class="arch-header-title text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3">
+      {currentView.title}
+    </h1>
+
+    <p id="view-lead" class="arch-header-lead text-sm sm:text-base lg:text-lg leading-relaxed max-w-4xl">
+      {currentView.lead}
+    </p>
+  </div>
+
+  <!-- Interactive Architecture Board Canvas -->
+  <div id="arch-canvas-container" class="relative w-full overflow-visible my-6">
+    <!-- Zone Bounding Boxes Layer (z-0: Behind wires and cards) -->
+    <div id="arch-zones-layer" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" aria-hidden="true"></div>
+
+    <!-- SVG Connections Layer with Wires (z-1: Behind cards so lines exit cleanly) -->
+    <svg id="arch-wires" class="wires-canvas absolute inset-0 w-full h-full pointer-events-none z-1 overflow-visible" aria-hidden="true">
+      <defs>
+        <marker id="arrow-exec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
+        </marker>
+        <marker id="arrow-data" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-data" />
+        </marker>
+        <marker id="arrow-secret" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-secret" />
+        </marker>
+        <marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
+        </marker>
+        <marker id="arrow-telemetry" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-telemetry" />
+        </marker>
+      </defs>
+    </svg>
+
+    <!-- HTML Zone Title Pills Layer (z-15: Above wires and cards so arrows never pass over pills) -->
+    <div id="arch-zone-pills" class="absolute inset-0 w-full h-full pointer-events-none z-15 overflow-visible"></div>
+
+    <!-- HTML Edge Pill Labels Layer (z-20: Cleanly offset from wires) -->
+    <div id="arch-wire-labels" class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"></div>
+
+    <!-- HTML Node Grid Container (z-10: Sits above wires with generous spacing) -->
+    <div
+      id="arch-board"
+      class="arch-board relative grid gap-x-12 sm:gap-x-16 gap-y-20 sm:gap-y-28 z-10 pb-16"
+      style={`grid-template-columns: ${currentView.gridCols}; grid-template-areas: ${currentView.gridAreas.map(r => `'${r}'`).join(' ')};`}
+    >
+      {currentView.nodes.map((node) => (
+        <ArchNodeCard node={node} />
+      ))}
+    </div>
+  </div>
+
+  <!-- Bottom Navigation & Wire Legend -->
+  <div class="arch-footer mt-14 pt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+    <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+      <span class="arch-legend-title font-bold uppercase tracking-wider">Connections:</span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="arch-legend-line-exec w-3.5 h-0.5"></span>
+        <span class="arch-legend-text-exec font-semibold">Execution / Operations</span>
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="arch-legend-line-secret w-3.5 h-0.5 border-t-2 border-dashed"></span>
+        <span class="arch-legend-text-secret font-semibold">Ephemeral Secrets in RAM</span>
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="arch-legend-line-data w-3.5 h-0.5 border-t border-dashed"></span>
+        <span class="arch-legend-text-data font-semibold">Specification Data</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Architecture Inspection Slide-Over Drawer -->
+  <ArchDrawer />
+</div>
+
+<!-- Embedded Architecture Model JSON for Client Navigation -->
+<script is:inline id="arch-data-json" type="application/json" set:html={JSON.stringify(arch)} />
+
+<style is:global>
+  /* ========================================================================= */
+  /* Ch-aOS Architecture Explorer - Complete Semantic CSS Theme System        */
+  /* Absolute High-Contrast Tokens: Dark text in light mode, Light in dark     */
+  /* ========================================================================= */
+
+  :root,
+  [data-theme="dark"],
+  html[data-theme="dark"] {
+    --arch-bg: #121916;
+    --arch-canvas-border: rgba(61, 82, 74, 0.45);
+    --arch-title: #E8F0EC;
+    --arch-lead: #C1C9D6;
+    --arch-muted: #8E9EA0;
+    --arch-subtle: #5A7266;
+
+    --arch-accent: #38D9A9;
+    --arch-accent-hover: #7CFAD3;
+    --arch-accent-bg: rgba(56, 217, 169, 0.12);
+    --arch-accent-border: rgba(56, 217, 169, 0.45);
+
+    --arch-pink: #F8A5C2;
+    --arch-pink-bg: rgba(248, 165, 194, 0.12);
+    --arch-pink-border: rgba(248, 165, 194, 0.45);
+
+    --arch-card-bg: #16221D;
+    --arch-card-border: rgba(61, 82, 74, 0.7);
+    --arch-card-border-hover: #38D9A9;
+    --arch-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --arch-card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
+
+    --arch-tag-bg: #1E2D27;
+    --arch-tag-text: #C1C9D6;
+    --arch-tag-border: rgba(61, 82, 74, 0.55);
+
+    --arch-wire-exec: #38D9A9;
+    --arch-wire-secret: #F8A5C2;
+    --arch-wire-data: #A8B6C8;
+    --arch-wire-telemetry: #8FA39A;
+
+    --arch-zone-border: rgba(56, 217, 169, 0.32);
+    --arch-zone-bg: rgba(56, 217, 169, 0.03);
+    --arch-zone-pill-bg: #16221D;
+    --arch-zone-pill-text: #38D9A9;
+    --arch-zone-pill-border: rgba(56, 217, 169, 0.55);
+    --arch-zone-pill-ring: #121916;
+
+    --arch-btn-back-bg: #1E2D27;
+    --arch-btn-back-text: #38D9A9;
+    --arch-btn-back-border: rgba(56, 217, 169, 0.6);
+    --arch-btn-back-hover-bg: #38D9A9;
+    --arch-btn-back-hover-text: #121916;
+
+    --arch-btn-switch-bg: #16221D;
+    --arch-btn-switch-text: #C1C9D6;
+    --arch-btn-switch-border: rgba(61, 82, 74, 0.75);
+    --arch-btn-switch-hover-text: #E8F0EC;
+    --arch-btn-switch-hover-border: #38D9A9;
+
+    --arch-border-subtle: rgba(61, 82, 74, 0.5);
+
+    --arch-drawer-bg: #141F1A;
+    --arch-drawer-header-bg: rgba(18, 25, 22, 0.95);
+    --arch-drawer-code-bg: #0D1311;
+    --arch-drawer-code-text: #E8F0EC;
+    --arch-drawer-code-border: rgba(61, 82, 74, 0.6);
+  }
+
+  [data-theme="light"],
+  html[data-theme="light"] {
+    --arch-bg: #F4F8F6;
+    --arch-canvas-border: rgba(158, 196, 181, 0.65);
+    --arch-title: #14241E;
+    --arch-lead: #243830;
+    --arch-muted: #3D524A;
+    --arch-subtle: #728D80;
+
+    --arch-accent: #0C7554;
+    --arch-accent-hover: #08523A;
+    --arch-accent-bg: rgba(12, 117, 84, 0.12);
+    --arch-accent-border: rgba(12, 117, 84, 0.5);
+
+    --arch-pink: #B8174E;
+    --arch-pink-bg: rgba(184, 23, 78, 0.1);
+    --arch-pink-border: rgba(184, 23, 78, 0.45);
+
+    --arch-card-bg: #FFFFFF;
+    --arch-card-border: rgba(142, 179, 164, 0.75);
+    --arch-card-border-hover: #0C7554;
+    --arch-card-shadow: 0 4px 16px rgba(18, 38, 30, 0.08);
+    --arch-card-shadow-hover: 0 8px 24px rgba(18, 38, 30, 0.15);
+
+    --arch-tag-bg: #EAF2EE;
+    --arch-tag-text: #243830;
+    --arch-tag-border: rgba(142, 179, 164, 0.7);
+
+    --arch-wire-exec: #0C7554;
+    --arch-wire-secret: #B8174E;
+    --arch-wire-data: #4A6572;
+    --arch-wire-telemetry: #456356;
+
+    --arch-zone-border: rgba(12, 117, 84, 0.42);
+    --arch-zone-bg: rgba(12, 117, 84, 0.04);
+    --arch-zone-pill-bg: #FFFFFF;
+    --arch-zone-pill-text: #0C7554;
+    --arch-zone-pill-border: rgba(12, 117, 84, 0.7);
+    --arch-zone-pill-ring: #F4F8F6;
+
+    --arch-btn-back-bg: #E3EFE9;
+    --arch-btn-back-text: #0C7554;
+    --arch-btn-back-border: rgba(12, 117, 84, 0.7);
+    --arch-btn-back-hover-bg: #0C7554;
+    --arch-btn-back-hover-text: #FFFFFF;
+
+    --arch-btn-switch-bg: #FFFFFF;
+    --arch-btn-switch-text: #243830;
+    --arch-btn-switch-border: rgba(142, 179, 164, 0.85);
+    --arch-btn-switch-hover-text: #0C7554;
+    --arch-btn-switch-hover-border: #0C7554;
+
+    --arch-border-subtle: rgba(158, 196, 181, 0.6);
+
+    --arch-drawer-bg: #FFFFFF;
+    --arch-drawer-header-bg: rgba(244, 248, 246, 0.98);
+    --arch-drawer-code-bg: #F4F8F6;
+    --arch-drawer-code-text: #14241E;
+    --arch-drawer-code-border: rgba(158, 196, 181, 0.75);
+  }
+
+  /* Navigation Bar & Breadcrumbs */
+  .arch-nav-bar {
+    border-bottom: 1px solid var(--arch-border-subtle);
+  }
+  .arch-crumb-root {
+    color: var(--arch-title) !important;
+  }
+  .arch-crumb-root:hover {
+    color: var(--arch-accent) !important;
+  }
+  .arch-crumb-sep {
+    color: var(--arch-subtle) !important;
+    font-weight: 700 !important;
+  }
+  .arch-crumb-current {
+    color: var(--arch-accent) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Action Buttons */
+  .arch-btn-back {
+    background: var(--arch-btn-back-bg) !important;
+    color: var(--arch-btn-back-text) !important;
+    border: 1px solid var(--arch-btn-back-border) !important;
+  }
+  .arch-btn-back.hidden,
+  .btn-back-overview-bottom.hidden {
+    display: none !important;
+  }
+  .arch-btn-back:hover {
+    background: var(--arch-btn-back-hover-bg) !important;
+    color: var(--arch-btn-back-hover-text) !important;
+  }
+  .arch-btn-switch {
+    background: var(--arch-btn-switch-bg) !important;
+    color: var(--arch-btn-switch-text) !important;
+    border: 1px solid var(--arch-btn-switch-border) !important;
+  }
+  .arch-btn-switch:hover {
+    color: var(--arch-btn-switch-hover-text) !important;
+    border-color: var(--arch-btn-switch-hover-border) !important;
+  }
+
+  /* View Header */
+  .arch-kicker-badge {
+    background: var(--arch-accent-bg) !important;
+    color: var(--arch-accent) !important;
+    border: 1px solid var(--arch-accent-border) !important;
+  }
+  .arch-kicker-dot {
+    background-color: var(--arch-accent) !important;
+  }
+  .arch-header-back-link {
+    color: var(--arch-accent) !important;
+    font-weight: 600 !important;
+  }
+  .arch-header-back-link:hover {
+    color: var(--arch-accent-hover) !important;
+  }
+  .arch-header-title {
+    color: var(--arch-title) !important;
+    font-weight: 800 !important;
+  }
+  .arch-header-lead {
+    color: var(--arch-lead) !important;
+  }
+
+  /* Card Elements */
+  .arch-node {
+    background: var(--arch-card-bg) !important;
+    border: 1px solid var(--arch-card-border) !important;
+    box-shadow: var(--arch-card-shadow) !important;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.2s ease, 
+                box-shadow 0.2s ease,
+                background-color 0.2s ease !important;
+  }
+  .arch-node:hover {
+    border-color: var(--arch-card-border-hover) !important;
+    box-shadow: var(--arch-card-shadow-hover) !important;
+  }
+  .arch-node:focus-visible {
+    outline: 2px solid var(--arch-accent);
+    outline-offset: 2px;
+  }
+  .arch-node.dim {
+    opacity: 0.45 !important;
+    transform: scale(0.99) !important;
+    pointer-events: auto !important;
+  }
+  .arch-node.focused {
+    border-color: var(--arch-accent) !important;
+    box-shadow: 0 0 28px rgba(56, 217, 169, 0.38) !important;
+    transform: translateY(-2px) !important;
+    z-index: 30 !important;
+  }
+  [data-theme="light"] .arch-node.focused,
+  html[data-theme="light"] .arch-node.focused {
+    box-shadow: 0 0 24px rgba(12, 117, 84, 0.38) !important;
+  }
+
+  .arch-node-title {
+    color: var(--arch-title) !important;
+    transition: color 0.15s ease;
+  }
+  .arch-node:hover .arch-node-title {
+    color: var(--arch-accent) !important;
+  }
+  .arch-node-subtitle {
+    color: var(--arch-lead) !important;
+  }
+
+  /* Node Pills */
+  .arch-node-pill {
+    transition: all 0.15s ease;
+  }
+  .arch-pill-mint {
+    background: var(--arch-accent-bg) !important;
+    color: var(--arch-accent) !important;
+    border: 1px solid var(--arch-accent-border) !important;
+  }
+  .arch-pill-pink {
+    background: var(--arch-pink-bg) !important;
+    color: var(--arch-pink) !important;
+    border: 1px solid var(--arch-pink-border) !important;
+  }
+  .arch-pill-slate {
+    background: var(--arch-tag-bg) !important;
+    color: var(--arch-muted) !important;
+    border: 1px solid var(--arch-tag-border) !important;
+  }
+
+  .arch-tag {
+    background: var(--arch-tag-bg) !important;
+    color: var(--arch-tag-text) !important;
+    border: 1px solid var(--arch-tag-border) !important;
+  }
+
+  .arch-action-cue-go {
+    color: var(--arch-accent) !important;
+    font-weight: 600 !important;
+  }
+  .arch-action-cue-inspect {
+    color: var(--arch-muted) !important;
+  }
+
+  /* Wires & Markers */
+  .arch-wire-path {
+    stroke-width: 1.8px;
+    transition: opacity 0.2s ease, stroke-width 0.2s ease, stroke 0.2s ease !important;
+  }
+  .arch-wire-path.wire-exec {
+    stroke: var(--arch-wire-exec);
+  }
+  .arch-wire-path.wire-secret {
+    stroke: var(--arch-wire-secret);
+  }
+  .arch-wire-path.wire-data {
+    stroke: var(--arch-wire-data);
+  }
+  .arch-wire-path.wire-telemetry {
+    stroke: var(--arch-wire-telemetry);
+  }
+  .marker-exec {
+    fill: var(--arch-wire-exec);
+  }
+  .marker-data {
+    fill: var(--arch-wire-data);
+  }
+  .marker-secret {
+    fill: var(--arch-wire-secret);
+  }
+  .marker-telemetry {
+    fill: var(--arch-wire-telemetry);
+  }
+
+  .arch-wire-path.dim {
+    opacity: 0.08 !important;
+  }
+  .arch-wire-path.on {
+    stroke-width: 3.5px !important;
+    opacity: 1 !important;
+  }
+
+  /* Edge Labels with Dynamic Away-From-Card Gliding Animation */
+  .arch-edge-label {
+    background: var(--arch-card-bg) !important;
+    color: var(--arch-muted) !important;
+    border: 1px solid var(--arch-card-border) !important;
+    box-shadow: var(--arch-card-shadow) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.22s ease,
+                border-color 0.2s ease,
+                color 0.2s ease,
+                box-shadow 0.2s ease !important;
+  }
+  .arch-edge-label.dim {
+    opacity: 0.04 !important;
+    pointer-events: none !important;
+  }
+  .arch-edge-label.on {
+    border-color: var(--arch-accent) !important;
+    color: var(--arch-accent) !important;
+    opacity: 1 !important;
+    z-index: 40 !important;
+    box-shadow: 0 0 16px rgba(56, 217, 169, 0.45) !important;
+  }
+  [data-theme="light"] .arch-edge-label.on,
+  html[data-theme="light"] .arch-edge-label.on {
+    box-shadow: 0 0 16px rgba(12, 117, 84, 0.45) !important;
+  }
+  
+  .arch-zone {
+    position: absolute;
+    z-index: 0;
+    border: 1.5px dashed var(--arch-zone-border);
+    border-radius: 0px;
+    background: var(--arch-zone-bg);
+    pointer-events: none;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .arch-zone-pill {
+    position: absolute;
+    z-index: 15;
+    padding: 2px 10px;
+    font-family: monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--arch-zone-pill-bg) !important;
+    color: var(--arch-zone-pill-text) !important;
+    border: 1px solid var(--arch-zone-pill-border) !important;
+    box-shadow: 0 0 0 3px var(--arch-zone-pill-ring) !important;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* Bottom Legend & Footer */
+  .arch-footer {
+    border-top: 1px solid var(--arch-border-subtle) !important;
+    color: var(--arch-lead) !important;
+  }
+  .arch-legend-title {
+    color: var(--arch-title) !important;
+    font-weight: 700 !important;
+  }
+  .arch-legend-line-exec {
+    background-color: var(--arch-wire-exec) !important;
+  }
+  .arch-legend-text-exec {
+    color: var(--arch-title) !important;
+    font-weight: 600 !important;
+  }
+  .arch-legend-line-secret {
+    border-color: var(--arch-wire-secret) !important;
+  }
+  .arch-legend-text-secret {
+    color: var(--arch-pink) !important;
+    font-weight: 600 !important;
+  }
+  .arch-legend-line-data {
+    border-color: var(--arch-wire-data) !important;
+  }
+  .arch-legend-text-data {
+    color: var(--arch-lead) !important;
+    font-weight: 600 !important;
+  }
+  .arch-legend-back-btn {
+    color: var(--arch-accent) !important;
+    font-weight: 700 !important;
+  }
+  .arch-footer-note {
+    color: var(--arch-lead) !important;
+  }
+
+  /* Slide-over Inspection Drawer */
+  .arch-drawer-panel {
+    z-index: 1000 !important;
+    background: var(--arch-drawer-bg) !important;
+    border-left: 1px solid var(--arch-border-subtle) !important;
+    color: var(--arch-title) !important;
+  }
+  .arch-drawer-header {
+    background: var(--arch-drawer-header-bg) !important;
+    border-bottom: 1px solid var(--arch-border-subtle) !important;
+  }
+  .arch-drawer-pill-dot {
+    background-color: var(--arch-accent) !important;
+  }
+  .arch-drawer-pill-text {
+    color: var(--arch-accent) !important;
+  }
+  .arch-drawer-close-btn {
+    color: var(--arch-muted) !important;
+    border: 1px solid var(--arch-border-subtle) !important;
+    background: var(--arch-tag-bg) !important;
+  }
+  .arch-drawer-close-btn:hover {
+    color: var(--arch-title) !important;
+    border-color: var(--arch-accent) !important;
+  }
+  .arch-drawer-title {
+    color: var(--arch-title) !important;
+  }
+  .arch-drawer-subtitle {
+    color: var(--arch-lead) !important;
+  }
+  .arch-drawer-section-title-mint {
+    color: var(--arch-accent) !important;
+  }
+  .arch-drawer-section-title-pink {
+    color: var(--arch-pink) !important;
+  }
+  .arch-drawer-section-title-text {
+    color: var(--arch-title) !important;
+  }
+  .arch-drawer-text {
+    color: var(--arch-lead) !important;
+  }
+  .arch-drawer-code-title {
+    color: var(--arch-muted) !important;
+  }
+  .arch-drawer-code-box {
+    background: var(--arch-drawer-code-bg) !important;
+    color: var(--arch-drawer-code-text) !important;
+    border: 1px solid var(--arch-drawer-code-border) !important;
+  }
+  .arch-drawer-source-link {
+    color: var(--arch-accent) !important;
+  }
+  .arch-drawer-divider {
+    border-top: 1px solid var(--arch-border-subtle) !important;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const rawData = document.getElementById('arch-data-json')?.textContent;
+    if (!rawData) return;
+
+    const arch = JSON.parse(rawData);
+    const explorer = document.querySelector('.arch-explorer');
+    const board = document.getElementById('arch-board');
+    const svgWires = document.getElementById('arch-wires');
+    const wireLabels = document.getElementById('arch-wire-labels');
+    const zonesLayer = document.getElementById('arch-zones-layer');
+    const zonePillsLayer = document.getElementById('arch-zone-pills');
+    const canvasContainer = document.getElementById('arch-canvas-container');
+    const drawer = document.getElementById('arch-drawer');
+    const drawerBody = document.getElementById('drawer-body');
+    const drawerPill = document.getElementById('drawer-pill');
+    const drawerClose = document.getElementById('arch-drawer-close');
+    const crumbCurrent = document.getElementById('crumb-current-view');
+    const viewKicker = document.getElementById('view-kicker');
+    const viewTitle = document.getElementById('view-title');
+    const viewLead = document.getElementById('view-lead');
+    const viewFooterNote = document.getElementById('arch-view-footer-note');
+    const btnBackOverview = document.getElementById('btn-back-overview');
+    const subsystemBackBadge = document.getElementById('subsystem-back-badge');
+    const btnBackOverviewBottom = document.querySelector('.btn-back-overview-bottom');
+
+    let currentViewId = explorer?.dataset.currentView || 'overview';
+    let focusedNodeId = null;
+
+    /* ---------- Orthogonal Arrow Routing & Card Collision Avoidance ---------- */
+    const NV = { l: [-1, 0], r: [1, 0], t: [0, -1], b: [0, 1] };
+
+    function box(el) {
+      return {
+        id: el.dataset.nodeId,
+        x: el.offsetLeft,
+        y: el.offsetTop,
+        w: el.offsetWidth,
+        h: el.offsetHeight,
+      };
+    }
+
+    const horiz = s => s === 'l' || s === 'r';
+    const along = (r, s, f) => horiz(s) ? r.y + r.h * f : r.x + r.w * f;
+
+    function ends(a, b, sa, sb, e, zonePillBoxes = []) {
+      let ua = null, ub = null;
+      if (horiz(sa) === horiz(sb) && sa !== sb) {
+        const H = horiz(sa);
+        const lo = H ? Math.max(a.y, b.y) : Math.max(a.x, b.x);
+        const hi = H ? Math.min(a.y + a.h, b.y + b.h) : Math.min(a.x + a.w, b.x + b.w);
+        if (hi - lo > 20) ua = ub = (lo + hi) / 2;
+      }
+      if (e?.fa != null) ua = along(a, sa, e.fa);
+      if (e?.fb != null) ub = along(b, sb, e.fb);
+      if (e?.off) {
+        ua = (ua ?? along(a, sa, 0.5)) + e.off;
+        ub = (ub ?? along(b, sb, 0.5)) + e.off;
+      }
+
+      // Avoid zone title pills collision on top edges
+      if (sb === 't' && zonePillBoxes && zonePillBoxes.length > 0) {
+        const currentUb = ub ?? along(b, sb, 0.5);
+        for (const zp of zonePillBoxes) {
+          if (zp.y < b.y && zp.y > b.y - 55) {
+            if (currentUb >= zp.x - 12 && currentUb <= zp.x + zp.w + 14) {
+              const clearX = zp.x + zp.w + 18;
+              if (clearX < b.x + b.w - 16) {
+                ub = clearX;
+                if (horiz(sa) === horiz(sb) && sa !== sb && Math.abs(a.x - b.x) < 25) {
+                  ua = clearX;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const pt = (r, s, u) => horiz(s) 
+        ? [s === 'l' ? r.x : r.x + r.w, u ?? r.y + r.h / 2]
+        : [u ?? r.x + r.w / 2, s === 't' ? r.y : r.y + r.h];
+      return [pt(a, sa, ua), pt(b, sb, ub)];
+    }
+
+    function computeGutters(allBoxList) {
+      const rowMap = new Map();
+      const colMap = new Map();
+
+      allBoxList.forEach(b => {
+        let rKey = null;
+        for (const key of rowMap.keys()) {
+          if (Math.abs(key - b.y) < 35) {
+            rKey = key;
+            break;
+          }
+        }
+        if (rKey === null) {
+          rowMap.set(b.y, { top: b.y, bottom: b.y + b.h });
+        } else {
+          const r = rowMap.get(rKey);
+          r.top = Math.min(r.top, b.y);
+          r.bottom = Math.max(r.bottom, b.y + b.h);
+        }
+
+        let cKey = null;
+        for (const key of colMap.keys()) {
+          if (Math.abs(key - b.x) < 35) {
+            cKey = key;
+            break;
+          }
+        }
+        if (cKey === null) {
+          colMap.set(b.x, { left: b.x, right: b.x + b.w });
+        } else {
+          const c = colMap.get(cKey);
+          c.left = Math.min(c.left, b.x);
+          c.right = Math.max(c.right, b.x + b.w);
+        }
+      });
+
+      const rows = Array.from(rowMap.values()).sort((r1, r2) => r1.top - r2.top);
+      const cols = Array.from(colMap.values()).sort((c1, c2) => c1.left - c2.left);
+
+      const guttersY = [];
+      const minY = rows.length > 0 ? rows[0].top : 0;
+      const maxY = rows.length > 0 ? rows[rows.length - 1].bottom : 0;
+      guttersY.push(minY - 32);
+      for (let i = 0; i < rows.length - 1; i++) {
+        guttersY.push((rows[i].bottom + rows[i + 1].top) / 2);
+      }
+      guttersY.push(maxY + 32);
+
+      const guttersX = [];
+      const minX = cols.length > 0 ? cols[0].left : 0;
+      const maxX = cols.length > 0 ? cols[cols.length - 1].right : 0;
+      guttersX.push(minX - 32);
+      for (let i = 0; i < cols.length - 1; i++) {
+        guttersX.push((cols[i].right + cols[i + 1].left) / 2);
+      }
+      guttersX.push(maxX + 32);
+
+      return { guttersX, guttersY };
+    }
+
+    function segmentIntersectsBox(x1, y1, x2, y2, obs, pad = 8) {
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+
+      const bx1 = obs.x - pad;
+      const bx2 = obs.x + obs.w + pad;
+      const by1 = obs.y - pad;
+      const by2 = obs.y + obs.h + pad;
+
+      if (maxX <= bx1 || minX >= bx2 || maxY <= by1 || minY >= by2) {
+        return false;
+      }
+
+      if (Math.abs(y1 - y2) < 1) {
+        return y1 > by1 && y1 < by2 && maxX > bx1 && minX < bx2;
+      }
+
+      if (Math.abs(x1 - x2) < 1) {
+        return x1 > bx1 && x1 < bx2 && maxY > by1 && minY < by2;
+      }
+
+      return true;
+    }
+
+    function segmentIntersectsAnyBox(x1, y1, x2, y2, obstacles, pad = 8) {
+      for (const obs of obstacles) {
+        if (segmentIntersectsBox(x1, y1, x2, y2, obs, pad)) return true;
+      }
+      return false;
+    }
+
+    function pathIntersects(pts, obstacles, pad = 8) {
+      for (let i = 0; i < pts.length - 1; i++) {
+        const x1 = pts[i][0], y1 = pts[i][1];
+        const x2 = pts[i + 1][0], y2 = pts[i + 1][1];
+        for (const obs of obstacles) {
+          if (segmentIntersectsBox(x1, y1, x2, y2, obs, pad)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function simplify(rawPts) {
+      const out = [];
+      for (const p of rawPts) {
+        const z = out[out.length - 1];
+        if (z && Math.hypot(p[0] - z[0], p[1] - z[1]) < 0.5) continue;
+        if (out.length >= 2) {
+          const y = out[out.length - 2];
+          if ((Math.abs(y[0] - z[0]) < 0.5 && Math.abs(z[0] - p[0]) < 0.5) ||
+              (Math.abs(y[1] - z[1]) < 0.5 && Math.abs(z[1] - p[1]) < 0.5)) {
+            out.pop();
+          }
+        }
+        out.push(p);
+      }
+      return out;
+    }
+
+    function routeWithObstacleAvoidance(a, b, edge, obstacles, guttersX, guttersY, edgeIdx, zonePillBoxes = []) {
+      const cxA = a.x + a.w / 2;
+      const cyA = a.y + a.h / 2;
+      const cxB = b.x + b.w / 2;
+      const cyB = b.y + b.h / 2;
+      const dx = cxB - cxA;
+      const dy = cyB - cyA;
+
+      const gOffset = ((edgeIdx % 5) - 2) * 6;
+
+      const primarySides = [];
+      if (Math.abs(dy) > Math.abs(dx) * 0.8) {
+        if (dy > 0) {
+          primarySides.push(['b', 't'], ['r', 't'], ['l', 't'], ['r', 'l'], ['l', 'r'], ['b', 'r'], ['b', 'l']);
+        } else {
+          primarySides.push(['t', 'b'], ['r', 'b'], ['l', 'b'], ['r', 'l'], ['l', 'r'], ['t', 'r'], ['t', 'l']);
+        }
+      } else {
+        if (dx > 0) {
+          primarySides.push(['r', 'l'], ['b', 'l'], ['t', 'l'], ['r', 't'], ['r', 'b'], ['b', 't']);
+        } else {
+          primarySides.push(['l', 'r'], ['b', 'r'], ['t', 'r'], ['l', 't'], ['l', 'b'], ['b', 't']);
+        }
+      }
+
+      const allSides = ['r', 'b', 'l', 't'];
+      for (const sa of allSides) {
+        for (const sb of allSides) {
+          if (!primarySides.some(pair => pair[0] === sa && pair[1] === sb)) {
+            primarySides.push([sa, sb]);
+          }
+        }
+      }
+
+      let bestPath = null;
+      let minCost = Infinity;
+
+      for (const [sa, sb] of primarySides) {
+        const n0 = NV[sa], n3 = NV[sb];
+        const stubDist = 18;
+        const [p0, p3] = ends(a, b, sa, sb, edge, zonePillBoxes);
+        const p1 = [p0[0] + n0[0] * stubDist, p0[1] + n0[1] * stubDist];
+        const p2 = [p3[0] + n3[0] * stubDist, p3[1] + n3[1] * stubDist];
+        const q3 = [p3[0] + n3[0] * 2, p3[1] + n3[1] * 2];
+
+        if (segmentIntersectsAnyBox(p0[0], p0[1], p1[0], p1[1], obstacles, 6) ||
+            segmentIntersectsAnyBox(p2[0], p2[1], p3[0], p3[1], obstacles, 6)) {
+          continue;
+        }
+
+        const candidateWays = [];
+
+        if (Math.abs(p1[0] - p2[0]) < 1 || Math.abs(p1[1] - p2[1]) < 1) {
+          candidateWays.push([p0, p1, p2, q3]);
+        }
+
+        candidateWays.push([p0, p1, [p2[0], p1[1]], p2, q3]);
+        candidateWays.push([p0, p1, [p1[0], p2[1]], p2, q3]);
+
+        if (n0[0] !== 0 && n3[0] !== 0) {
+          const mx = (p1[0] + p2[0]) / 2;
+          candidateWays.push([p0, p1, [mx, p1[1]], [mx, p2[1]], p2, q3]);
+        } else if (n0[1] !== 0 && n3[1] !== 0) {
+          const my = (p1[1] + p2[1]) / 2;
+          candidateWays.push([p0, p1, [p1[0], my], [p2[0], my], p2, q3]);
+        }
+
+        for (const gy of guttersY) {
+          const adjGy = gy + gOffset;
+          candidateWays.push([p0, p1, [p1[0], adjGy], [p2[0], adjGy], p2, q3]);
+        }
+        for (const gx of guttersX) {
+          const adjGx = gx + gOffset;
+          candidateWays.push([p0, p1, [adjGx, p1[1]], [adjGx, p2[1]], p2, q3]);
+        }
+
+        for (const gx of guttersX) {
+          const adjGx = gx + gOffset;
+          for (const gy of guttersY) {
+            const adjGy = gy + gOffset;
+            candidateWays.push([p0, p1, [p1[0], adjGy], [adjGx, adjGy], [adjGx, p2[1]], p2, q3]);
+            candidateWays.push([p0, p1, [adjGx, p1[1]], [adjGx, adjGy], [p2[0], adjGy], p2, q3]);
+          }
+        }
+
+        for (const rawPath of candidateWays) {
+          const path = simplify(rawPath);
+          if (!pathIntersects(path, obstacles, 8)) {
+            let clipsSelf = false;
+            for (let i = 1; i < path.length - 2; i++) {
+              if (segmentIntersectsBox(path[i][0], path[i][1], path[i + 1][0], path[i + 1][1], a, 6) ||
+                  segmentIntersectsBox(path[i][0], path[i][1], path[i + 1][0], path[i + 1][1], b, 6)) {
+                clipsSelf = true;
+                break;
+              }
+            }
+            if (clipsSelf) continue;
+
+            let len = 0;
+            for (let i = 0; i < path.length - 1; i++) {
+              len += Math.hypot(path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]);
+            }
+            const bends = path.length - 2;
+            const cost = len + bends * 45;
+
+            if (cost < minCost) {
+              minCost = cost;
+              bestPath = path;
+            }
+          }
+        }
+
+        if (bestPath && minCost < 650) {
+          break;
+        }
+      }
+
+      return bestPath || [ [a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y] ];
+    }
+
+    function pathD(pts, r = 12) {
+      let d = `M ${pts[0][0]},${pts[0][1]}`;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const a = pts[i - 1], p = pts[i], b = pts[i + 1];
+        const la = Math.hypot(a[0] - p[0], a[1] - p[1]), lb = Math.hypot(b[0] - p[0], b[1] - p[1]);
+        const rr = Math.min(r, la / 2, lb / 2);
+        const q1 = [p[0] + (a[0] - p[0]) / la * rr, p[1] + (a[1] - p[1]) / la * rr];
+        const q2 = [p[0] + (b[0] - p[0]) / lb * rr, p[1] + (b[1] - p[1]) / lb * rr];
+        d += ` L ${q1[0]},${q1[1]} Q ${p[0]},${p[1]} ${q2[0]},${q2[1]}`;
+      }
+      const z = pts[pts.length - 1];
+      return d + ` L ${z[0]},${z[1]}`;
+    }
+
+    /* ---------- Hover Dimming & Dynamic Label Gliding Effect ---------- */
+    function setFocusNode(id) {
+      focusedNodeId = id;
+      const view = arch.views[currentViewId];
+      if (!view) return;
+
+      const relatedNodes = new Set(id ? [id] : []);
+      if (id && view.edges) {
+        view.edges.forEach(e => {
+          if (e.from === id || e.to === id) {
+            relatedNodes.add(e.from);
+            relatedNodes.add(e.to);
+          }
+        });
+      }
+
+      // Dim non-related cards across all views (overview or subsystem)
+      board.querySelectorAll('[data-node-id]').forEach(card => {
+        const cardId = card.dataset.nodeId;
+        if (id) {
+          const isRelated = relatedNodes.has(cardId);
+          card.classList.toggle('dim', !isRelated);
+          card.classList.toggle('focused', cardId === id);
+        } else {
+          card.classList.remove('dim', 'focused');
+        }
+      });
+
+      // Highlight/dim SVG wires
+      svgWires.querySelectorAll('.arch-wire-path').forEach(path => {
+        const f = path.dataset.from;
+        const t = path.dataset.to;
+        if (id) {
+          const isConnected = (f === id || t === id);
+          path.classList.toggle('on', isConnected);
+          path.classList.toggle('dim', !isConnected);
+          if (isConnected) svgWires.appendChild(path);
+        } else {
+          path.classList.remove('on', 'dim');
+        }
+      });
+
+      // Highlight/dim Edge Labels and smoothly animate connected label away from focused card
+      if (wireLabels) {
+        wireLabels.querySelectorAll('.arch-edge-label').forEach(lbl => {
+          const f = lbl.dataset.from;
+          const t = lbl.dataset.to;
+          const isConnected = (f === id || t === id);
+          const baseTrans = lbl.dataset.baseTransform || 'translate(-50%, -50%)';
+          if (id) {
+            lbl.classList.toggle('on', isConnected);
+            lbl.classList.toggle('dim', !isConnected);
+            if (isConnected) {
+              const card = board.querySelector(`[data-node-id="${id}"]`);
+              if (card) {
+                const cx = card.offsetLeft + card.offsetWidth / 2;
+                const cy = card.offsetTop + card.offsetHeight / 2;
+                const lx = parseFloat(lbl.dataset.baseX);
+                const ly = parseFloat(lbl.dataset.baseY);
+                const dx = lx - cx;
+                const dy = ly - cy;
+                const shiftDist = 42;
+                let shiftX = 0, shiftY = 0;
+                if (lbl.dataset.isHorizontal === '1') {
+                  shiftX = dx >= 0 ? shiftDist : -shiftDist;
+                } else {
+                  shiftY = dy >= 0 ? shiftDist : -shiftDist;
+                }
+                lbl.style.transform = `${baseTrans} translate(${shiftX}px, ${shiftY}px)`;
+              }
+            } else {
+              lbl.style.transform = baseTrans;
+            }
+          } else {
+            lbl.classList.remove('on', 'dim');
+            lbl.style.transform = baseTrans;
+          }
+        });
+      }
+    }
+
+    function bindCardHover(card) {
+      card.addEventListener('pointerenter', () => {
+        const id = card.dataset.nodeId;
+        if (id) setFocusNode(id);
+      });
+      card.addEventListener('pointerleave', (e) => {
+        const nextCard = e.relatedTarget?.closest?.('[data-node-id]');
+        if (!nextCard) {
+          setFocusNode(null);
+        }
+      });
+      card.addEventListener('focus', () => {
+        if (card.matches && card.matches(':focus-visible')) {
+          const id = card.dataset.nodeId;
+          if (id) setFocusNode(id);
+        }
+      });
+      card.addEventListener('blur', () => {
+        setFocusNode(null);
+      });
+    }
+
+    function renderView(viewId) {
+      const view = arch.views[viewId];
+      if (!view) return;
+
+      currentViewId = viewId;
+      focusedNodeId = null;
+      setFocusNode(null);
+      explorer.dataset.currentView = viewId;
+      if (crumbCurrent) crumbCurrent.textContent = view.title;
+      if (viewKicker) viewKicker.textContent = view.kicker;
+      if (viewTitle) viewTitle.textContent = view.title;
+      if (viewLead) viewLead.textContent = view.lead;
+      if (viewFooterNote) viewFooterNote.textContent = view.footerNote || '';
+
+      const isSubsystem = viewId !== 'overview';
+      if (btnBackOverview) {
+        btnBackOverview.style.display = isSubsystem ? 'inline-flex' : 'none';
+        btnBackOverview.classList.toggle('hidden', !isSubsystem);
+      }
+      if (btnBackOverviewBottom) {
+        btnBackOverviewBottom.style.display = isSubsystem ? 'inline-block' : 'none';
+        btnBackOverviewBottom.classList.toggle('hidden', !isSubsystem);
+      }
+
+      // Update grid layout
+      board.style.gridTemplateColumns = view.gridCols;
+      board.style.gridTemplateAreas = view.gridAreas.map(r => `'${r}'`).join(' ');
+
+      // Render cards using semantic CSS classes (no hardcoded inline theme colors)
+      board.innerHTML = '';
+      view.nodes.forEach(node => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'arch-node group relative flex flex-col justify-between text-left p-5 sm:p-6 cursor-pointer w-full h-full min-h-[160px] rounded-none focus-visible:outline-2 focus-visible:outline-offset-2';
+        card.dataset.nodeId = node.id;
+        card.dataset.go = node.go || '';
+        card.style.gridArea = node.gridArea;
+
+        const badgesHtml = (node.badges || []).map(b => `<span class="arch-tag text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-none">${b}</span>`).join('');
+        const tagsHtml = (node.tags || []).map(t => `<span class="arch-tag text-[10px] font-mono px-1.5 py-0.5 rounded-none">${t}</span>`).join('');
+        const cueHtml = node.go 
+          ? `<span class="arch-action-cue-go inline-flex items-center gap-1 text-[11px] shrink-0 group-hover:translate-x-0.5 transition-transform">Explore Subsystem <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`
+          : `<span class="arch-action-cue-inspect inline-flex items-center gap-1 text-[10px] shrink-0">Inspect Details <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <h3 class="arch-node-title text-base sm:text-lg font-bold leading-tight flex-1">
+              ${node.title}
+            </h3>
+            ${badgesHtml ? `<div class="flex items-center gap-1.5 shrink-0 mt-0.5">${badgesHtml}</div>` : ''}
+          </div>
+          <p class="arch-node-subtitle text-xs sm:text-[13px] leading-relaxed mb-4 flex-1">
+            ${node.subtitle}
+          </p>
+          <div class="pt-3 border-t border-[var(--arch-border-subtle)] flex items-center justify-between gap-2 mt-auto">
+            <div class="flex flex-wrap gap-1.5">${tagsHtml}</div>
+            ${cueHtml}
+          </div>
+        `;
+        bindCardHover(card);
+        board.appendChild(card);
+      });
+
+      // Recalculate wires & zones
+      requestAnimationFrame(drawWires);
+      closeDrawer();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function drawWires() {
+      const view = arch.views[currentViewId];
+      if (!view || !svgWires) return;
+
+      const defs = svgWires.querySelector('defs');
+      svgWires.innerHTML = '';
+      if (defs) svgWires.appendChild(defs);
+      if (wireLabels) wireLabels.innerHTML = '';
+      if (zonesLayer) zonesLayer.innerHTML = '';
+      if (zonePillsLayer) zonePillsLayer.innerHTML = '';
+
+      const nodeElements = {};
+      board.querySelectorAll('[data-node-id]').forEach(el => {
+        nodeElements[el.dataset.nodeId] = el;
+      });
+
+      // 1. Draw Zones (Bounding boxes behind cards) & Zone Pills (Layer above wires)
+      const zonePillBoxes = [];
+      if (view.zones && zonesLayer) {
+        view.zones.forEach((z) => {
+          const els = z.nodeIds.map(id => nodeElements[id]).filter(Boolean);
+          if (els.length === 0) return;
+
+          const boxes = els.map(box);
+          const x0 = Math.min(...boxes.map(b => b.x)) - 16;
+          const y0 = Math.min(...boxes.map(b => b.y)) - 28;
+          const x1 = Math.max(...boxes.map(b => b.x + b.w)) + 16;
+          const y1 = Math.max(...boxes.map(b => b.y + b.h)) + 16;
+
+          const zoneEl = document.createElement('div');
+          zoneEl.className = 'arch-zone';
+          zoneEl.style.left = `${x0}px`;
+          zoneEl.style.top = `${y0}px`;
+          zoneEl.style.width = `${x1 - x0}px`;
+          zoneEl.style.height = `${y1 - y0}px`;
+          zonesLayer.appendChild(zoneEl);
+
+          const pill = document.createElement('span');
+          pill.className = 'arch-zone-pill';
+          pill.textContent = z.title;
+          pill.style.left = `${x0 + 18}px`;
+          pill.style.top = `${y0 - 11}px`;
+
+          if (zonePillsLayer) {
+            zonePillsLayer.appendChild(pill);
+          } else {
+            zoneEl.appendChild(pill);
+          }
+
+          const pillW = pill.offsetWidth || (z.title.length * 7.5 + 24);
+          const pillH = pill.offsetHeight || 22;
+          zonePillBoxes.push({
+            id: 'zone-pill-' + z.title,
+            x: x0 + 18,
+            y: y0 - 11,
+            w: pillW,
+            h: pillH,
+          });
+        });
+      }
+
+      // 2. Draw Edges with Card & Zone Pill Obstacle Avoidance & Wire Label Pills
+      const allBoxList = Object.values(nodeElements).map(box);
+      const { guttersX, guttersY } = computeGutters(allBoxList);
+      const obstacleBoxes = [
+        ...allBoxList,
+        ...zonePillBoxes,
+      ];
+
+      view.edges.forEach((edge, edgeIdx) => {
+        const fromEl = nodeElements[edge.from];
+        const toEl = nodeElements[edge.to];
+        if (!fromEl || !toEl) return;
+
+        const a = box(fromEl);
+        const b = box(toEl);
+        const edgeObstacles = obstacleBoxes.filter(o => o.id !== edge.from && o.id !== edge.to);
+
+        const pts = routeWithObstacleAvoidance(a, b, edge, edgeObstacles, guttersX, guttersY, edgeIdx, zonePillBoxes);
+        const d = pathD(pts, 10);
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        let wireTypeClass = 'wire-exec';
+        let marker = 'url(#arrow-exec)';
+        let strokeDash = 'none';
+
+        if (edge.type === 'secret') {
+          wireTypeClass = 'wire-secret';
+          marker = 'url(#arrow-secret)';
+          strokeDash = '5 4';
+        } else if (edge.type === 'data') {
+          wireTypeClass = 'wire-data';
+          marker = 'url(#arrow-data)';
+          strokeDash = '4 3';
+        } else if (edge.type === 'telemetry') {
+          wireTypeClass = 'wire-telemetry';
+          marker = 'url(#arrow-telemetry)';
+        }
+
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-dasharray', strokeDash);
+        path.setAttribute('marker-end', marker);
+        path.dataset.from = edge.from;
+        path.dataset.to = edge.to;
+        path.classList.add('arch-wire-path', wireTypeClass);
+
+        if (edge.bidirectional) {
+          path.setAttribute('marker-start', marker);
+        }
+        svgWires.appendChild(path);
+
+        // Place pill label cleanly along the longest wire segment (in the gutter)
+        if (edge.label && wireLabels && pts.length >= 2) {
+          let longestLen = 0;
+          let bestIdx = 0;
+          for (let i = 0; i < pts.length - 1; i++) {
+            const len = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+            if (len > longestLen) {
+              longestLen = len;
+              bestIdx = i;
+            }
+          }
+          const u = pts[bestIdx], w = pts[bestIdx + 1];
+          const isLastSegment = (bestIdx === pts.length - 2);
+          
+          const tFactor = isLastSegment ? 0.35 : 0.5;
+          const midX = u[0] + (w[0] - u[0]) * tFactor;
+          const midY = u[1] + (w[1] - u[1]) * tFactor;
+
+          const isHorizontal = Math.abs(u[1] - w[1]) < 2;
+          const isVertical = Math.abs(u[0] - w[0]) < 2;
+
+          let posX = midX;
+          let posY = midY;
+          let transformStyle = 'translate(-50%, -50%)';
+
+          if (isHorizontal) {
+            posY = midY - 14;
+            transformStyle = 'translate(-50%, -50%)';
+          } else if (isVertical) {
+            posX = midX + 14;
+            transformStyle = 'translate(0, -50%)';
+          }
+
+          const label = document.createElement('div');
+          label.className = 'arch-edge-label absolute px-2.5 py-0.5 text-[9.5px] sm:text-[10px] font-mono font-semibold whitespace-nowrap z-20 pointer-events-none';
+          label.dataset.from = edge.from;
+          label.dataset.to = edge.to;
+          label.dataset.baseX = String(posX);
+          label.dataset.baseY = String(posY);
+          label.dataset.baseTransform = transformStyle;
+          label.dataset.isHorizontal = isHorizontal ? '1' : '0';
+          label.style.left = `${posX}px`;
+          label.style.top = `${posY}px`;
+          label.style.transform = transformStyle;
+          label.textContent = edge.label;
+          wireLabels.appendChild(label);
+        }
+      });
+    }
+
+    function openNodeDrawer(node) {
+      if (drawerPill) drawerPill.textContent = node.pill || 'Component Specification';
+
+      let detailsHtml = `
+        <div class="space-y-4">
+          <div>
+            <h2 class="arch-drawer-title text-2xl font-extrabold leading-tight mb-2">
+              ${node.title}
+            </h2>
+            <p class="arch-drawer-subtitle text-sm leading-relaxed">
+              ${node.subtitle}
+            </p>
+          </div>
+      `;
+
+      if (node.details?.howItWorks) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <h4 class="arch-drawer-section-title-mint text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              How It Works
+            </h4>
+            <p class="arch-drawer-text text-xs leading-relaxed">
+              ${node.details.howItWorks}
+            </p>
+          </div>
+        `;
+      }
+
+      if (node.details?.whyThisWay && node.details.whyThisWay.length > 0) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <h4 class="arch-drawer-section-title-pink text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              Architectural Rationale
+            </h4>
+            <ul class="space-y-2 text-xs arch-drawer-text">
+              ${node.details.whyThisWay.map(r => `<li class="flex items-start gap-2"><span class="arch-drawer-section-title-mint font-bold">›</span><span>${r}</span></li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (node.details?.technicalFacts && node.details.technicalFacts.length > 0) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <h4 class="arch-drawer-section-title-text text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              Technical Facts & Guarantees
+            </h4>
+            <ul class="space-y-1.5 text-xs arch-drawer-text">
+              ${node.details.technicalFacts.map(f => `<li class="flex items-start gap-2"><span class="arch-drawer-code-title">▪</span><span>${f}</span></li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (node.details?.codeSnippets && node.details.codeSnippets.length > 0) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <h4 class="arch-drawer-section-title-mint text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              Implementation Blueprint
+            </h4>
+            <div class="space-y-3">
+              ${node.details.codeSnippets.map(snip => `
+                <div>
+                  <div class="arch-drawer-code-title text-[10px] font-mono mb-1">${snip.title}</div>
+                  <pre class="arch-drawer-code-box p-3 text-[11px] font-mono overflow-x-auto"><code>${snip.code}</code></pre>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (node.details?.relatedFiles && node.details.relatedFiles.length > 0) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <h4 class="arch-drawer-section-title-text text-xs font-mono font-bold uppercase tracking-wider mb-2">
+              Repository Sources
+            </h4>
+            <div class="space-y-1">
+              ${node.details.relatedFiles.map(f => `
+                <div class="arch-drawer-source-link text-xs font-mono flex items-center gap-1.5">
+                  <svg class="w-3 h-3 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                  </svg>
+                  <span>${f}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (node.go) {
+        detailsHtml += `
+          <div class="pt-4 arch-drawer-divider">
+            <button type="button" class="btn-primary w-full py-2.5 px-4 text-xs font-bold text-center inline-flex items-center justify-center gap-2 cursor-pointer" data-drilldown="${node.go}">
+              <span>Drill Down into Subsystem Architecture</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      detailsHtml += `</div>`;
+      drawerBody.innerHTML = detailsHtml;
+
+      drawer.hidden = false;
+      drawer.classList.remove('translate-x-full');
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      setTimeout(() => {
+        if (drawer.classList.contains('translate-x-full')) {
+          drawer.hidden = true;
+        }
+      }, 300);
+    }
+
+    // Bind Hover on initial SSR cards
+    board.querySelectorAll('[data-node-id]').forEach(bindCardHover);
+
+    // Canvas container hover reset
+    if (canvasContainer) {
+      canvasContainer.addEventListener('mouseleave', () => {
+        setFocusNode(null);
+      });
+    }
+
+    // Click Event Delegation
+    board.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-node-id]');
+      if (!card) return;
+
+      const nodeId = card.dataset.nodeId;
+      const view = arch.views[currentViewId];
+      const node = view?.nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      if (node.go) {
+        renderView(node.go);
+      } else {
+        openNodeDrawer(node);
+      }
+    });
+
+    drawerBody.addEventListener('click', (e) => {
+      const drillBtn = e.target.closest('[data-drilldown]');
+      if (drillBtn) {
+        const targetView = drillBtn.dataset.drilldown;
+        renderView(targetView);
+      }
+    });
+
+    explorer.addEventListener('click', (e) => {
+      const crumbBtn = e.target.closest('.arch-crumb-btn');
+      if (crumbBtn) {
+        renderView(crumbBtn.dataset.targetView || 'overview');
+      }
+    });
+
+    if (btnBackOverview) {
+      btnBackOverview.addEventListener('click', () => renderView('overview'));
+    }
+
+    drawerClose.addEventListener('click', closeDrawer);
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!drawer.hidden && !drawer.classList.contains('translate-x-full')) {
+        if (!drawer.contains(e.target) && !e.target.closest('[data-node-id]')) {
+          closeDrawer();
+        }
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!drawer.hidden && !drawer.classList.contains('translate-x-full')) {
+          closeDrawer();
+        } else if (currentViewId !== 'overview') {
+          renderView('overview');
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      requestAnimationFrame(drawWires);
+    });
+
+    // Theme change listener via MutationObserver
+    const themeObserver = new MutationObserver(() => {
+      requestAnimationFrame(drawWires);
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    window.addEventListener('theme-change', () => {
+      requestAnimationFrame(drawWires);
+    });
+
+    // Initial draw on DOM ready and after fonts load
+    requestAnimationFrame(drawWires);
+    if (document.fonts) {
+      document.fonts.ready.then(() => {
+        requestAnimationFrame(drawWires);
+      });
+    }
+  })();
+</script>

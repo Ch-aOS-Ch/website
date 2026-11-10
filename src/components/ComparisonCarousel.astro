@@ -1,0 +1,1279 @@
+---
+// ComparisonCarousel.astro
+// Architectural and ergonomic comparison carousel with authentic Ch-aOS palette
+import { Code } from 'astro:components';
+import { chaosThemes } from '../themes/index.mjs';
+import GlossaryTerm from './GlossaryTerm.astro';
+
+interface ComparisonItem {
+  id: string;
+  category: string;
+  title: string;
+  badge: string;
+  shortLabel: string;
+  traditional: {
+    tool: string;
+    description: string;
+    filename: string;
+    codeLang: string;
+    code: string;
+  };
+  chaos: {
+    feature: string;
+    description: string;
+    codeFilename?: string;
+    codeLang?: string;
+    code?: string;
+    declFilename: string;
+    declLang: string;
+    declCode: string;
+    hasToggle?: boolean;
+    advantages: string[];
+  };
+  summary: string;
+}
+
+const comparisons: ComparisonItem[] = [
+  {
+    id: "config-management",
+    category: "Configuration Management",
+    title: "Declarative Data vs. Execution Logic",
+    badge: "Ch-obolos & Roles",
+    shortLabel: "Ansible (CM)",
+    traditional: {
+      tool: "Conventional Approach (Ansible / Jinja2 in YAML)",
+      description: "Declarative YAML is ergonomic for basic lists, but as logic expands, expressing nested loops, host filters, and conditional data munging via Jinja2 creates brittle 'YAML programming' that lacks native IDE typing and unit-test isolation.",
+      filename: "playbook.yml",
+      codeLang: "yaml",
+      code: `# playbook.yml (Ansible Playbook with Jinja2 Logic)
+- name: Configure web cluster
+  hosts: all
+  tasks:
+    - name: Conditional package installation
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ target_packages }}"
+      when: >
+        ansible_distribution == 'Ubuntu' and
+        (node_role == 'primary' or
+         inventory_hostname in groups['dmz'])`
+    },
+    chaos: {
+      feature: "Decoupled State & Typed Roles",
+      description: "Pure decoupling: clean YAML declares the desired state data, while typed Python classes implement a 3-stage lifecycle (get_context -> delta -> plan) with full IDE autocompletion, type safety, and native Pytest testability.",
+      codeFilename: "roles/web_server.py",
+      codeLang: "python",
+      code: `# roles/web_server.py (Typed Idempotent Python Role)
+from chaos.lib.roles.role import Role
+from chaos.lib.args.dataclasses import Delta, ResultPayload
+from pyinfra.operations import server
+
+class WebServerRole(Role):
+    """Canonical 3-stage lifecycle: get_context -> delta -> plan"""
+    def get_context(self, state, host, chobolo: dict = {}, secrets: dict = {}):
+        return {
+            "installed": host.get_fact(server.Packages) or {},
+            "distro": host.get_fact(server.Distribution)
+        }
+
+    def delta(self, chobolo: dict, context: dict = {}) -> Delta:
+        target = set(chobolo.get("packages", []))
+        if context.get("distro") != "Ubuntu":
+            return Delta()
+        installed = set(context.get("installed", {}).keys())
+        return Delta(to_add={"packages": list(target - installed)})
+
+    def plan(self, state, host, delta: Delta) -> ResultPayload[None]:
+        if delta.to_add.get("packages"):
+            server.packages(state, packages=delta.to_add["packages"], _sudo=True)
+        return ResultPayload(success=True, message=["Packages ensured"])`,
+      declFilename: "ch-obolos/prod.yml",
+      declLang: "yaml",
+      declCode: `# ch-obolos/prod.yml (Pure Declarative State)
+fleet:
+  hosts:
+    prod-web-01:
+      ssh_hostname: "10.0.1.10"
+      ssh_user: "ubuntu"
+      ssh_key: "~/.ssh/id_ed25519"
+      tags: ["primary"]
+
+restrictions:
+  allow_tags:
+    webserver: ["primary", "dmz"]
+  black_tags:
+    webserver: ["legacy"]
+
+# Declarative system state data
+packages:
+  - "nginx"
+  - "tailscale"
+  - "certbot"`,
+      advantages: [
+        "Pure separation: clean YAML for state, real Python for execution logic",
+        "Full IDE autocompletion, type hinting, and native Python unit testability (Pytest)",
+        "Blazing-fast agentless parallel SSH powered by Pyinfra"
+      ]
+    },
+    summary: "Keep system state declarative in clean YAML while executing idempotent logic in typed, testable Python classes."
+  },
+  {
+    id: "declarative-os",
+    category: "Declarative OS & Workstations",
+    title: "Simple & Familiar Declarative Linux vs. Specialized Functional Systems",
+    badge: "Simplicity & Low Friction",
+    shortLabel: "NixOS (Workstations)",
+    traditional: {
+      tool: "Functional System Management (NixOS)",
+      description: "NixOS offers powerful mathematical reproducibility, generation rollbacks, and atomic builds. However, it requires learning a specialized language and paradigm, uses a non-standard filesystem layout (/nix/store), and carries a noticeable learning curve before you can get productive.",
+      filename: "configuration.nix",
+      codeLang: "nix",
+      code: `# configuration.nix (NixOS Functional Paradigm)
+{ config, pkgs, ... }:
+
+{
+  # Requires learning Nix syntax and idioms:
+  networking.hostName = "dionysus";
+  services.openssh.enable = true;
+
+  # Unique packaging model and non-standard filesystem layout:
+  environment.systemPackages = with pkgs; [
+    neovim
+    tailscale
+    docker
+  ];
+
+  # Extremely powerful atomic builds and generation rollbacks,
+  # but requires adapting your workflow to a new operating paradigm.
+}`
+    },
+    chaos: {
+      feature: "Simple Declarative Management on Familiar Distros",
+      description: "Ch-aOS keeps things simple and immediately familiar: manage standard distributions (Arch, Debian, Fedora) using clean YAML for desired state and standard Python for execution. It's much easier to get started with and fits directly into standard Linux workflows, without needing to adopt a completely new operating paradigm.",
+      codeFilename: "roles/workstation.py",
+      codeLang: "python",
+      code: `# roles/workstation.py (Standard Python on Standard Linux)
+from chaos.lib.roles.role import Role
+from chaos.lib.args.dataclasses import Delta, ResultPayload
+from pyinfra.operations import server, systemd
+
+class WorkstationRole(Role):
+    """Familiar Python execution on standard Linux distributions"""
+    def plan(self, state, host, delta: Delta) -> ResultPayload:
+        # Runs on standard Linux distros using native package managers & systemd
+        systemd.service(state, service="docker", running=True, enabled=True)
+        return ResultPayload(success=True, message=["System configured"])`,
+      declFilename: "ch-obolo.yml",
+      declLang: "yaml",
+      declCode: `# ch-obolo.yml (Simple Declarative State)
+hostname: dionysus
+bootloader: grub
+
+# Declarative packages on familiar distributions (Arch, Debian, etc.)
+system_packages:
+  - "neovim"
+  - "tailscale"
+  - "docker"
+
+services:
+  - name: "docker.service"
+    on_boot: true
+
+dotfiles:
+  - url: "https://github.com/user/dotfiles.git"
+    links:
+      - { from: .config, to: . }`,
+      advantages: [
+        "Gentle learning curve: straightforward YAML declarations and standard Python logic",
+        "Runs directly on your favorite distribution (Arch, Debian, Fedora) with standard FHS and packages",
+        "Balanced approach: declarative system configuration that's easy to adopt, without changing your entire OS paradigm"
+      ]
+    },
+    summary: "Get the productivity of declarative system configuration on standard Linux distributions with a gentle learning curve and familiar tools."
+  },
+  {
+    id: "iac-unification",
+    category: "Infrastructure Provisioning",
+    title: "Unified Provisioning & Fleet Hand-off",
+    badge: "Unified IaC",
+    shortLabel: "Terraform (IaC)",
+    traditional: {
+      tool: "Multi-Tool Pipeline (Terraform + Bash + Ansible)",
+      description: "While multi-stage pipelines suit separate infrastructure teams, orchestrating full-stack deployments or ephemeral environments requires gluing Terraform and Ansible with bash scripts, dynamic inventory plugins, and custom loops awaiting host readiness.",
+      filename: "deploy.sh",
+      codeLang: "bash",
+      code: `# deploy.sh (Dual-tool pipeline orchestration)
+# 1. Provision cloud resources with Terraform
+terraform -chdir=infra/ apply -auto-approve
+
+# 2. Hand off to Ansible via Terraform dynamic inventory plugin
+# Requires managing 2 separate CLIs, dual credentials, and waiting for host readiness
+ansible-playbook \\
+  -i infra/inventory_terraform.yml \\
+  playbooks/site.yml`
+    },
+    chaos: {
+      feature: "Unified IaC & CM (Pelago)",
+      description: "Declare cloud resources and system roles in the same Ch-obolo. Pelago provisions cloud instances (via Pulumi, Terraform modules, or Isles) and registers exported hosts directly into the fleet in memory, configuring them immediately.",
+      codeFilename: "roles/web_server.py",
+      codeLang: "python",
+      code: `# roles/web_server.py (Applied immediately after Pelago up)
+class WebServerRole(Role):
+    def plan(self, state, host, delta: Delta) -> ResultPayload:
+        # Executes directly on host exported by Pelago
+        server.packages(state, packages=["nginx", "tailscale"])
+        return ResultPayload(success=True)`,
+      declFilename: "ch-obolo.yml",
+      declLang: "yaml",
+      declCode: `# ch-obolo.yml (Unified IaC + Configuration in 1 file)
+pelago:
+  - name: "web-server"
+    isle: "aws-ec2"
+    config:
+      instance_type: "t3.medium"
+    exports:
+      hosts:
+        web-server:
+          ssh_hostname: "\${web-server.publicIp}"
+          ssh_user: "ubuntu"
+          roles: ["aws-provided", "web_server"]
+
+fleet:
+  restrictions:
+    allow_tags:
+      webserver: ["aws-provided", "web_server"]
+    black_tags:
+      webserver: ["legacy"]
+
+# Automatically configured right after cloud provision:
+system_packages:
+  - "nginx"
+  - "tailscale"`,
+      advantages: [
+        "Single continuous workflow: provisions cloud resources and applies roles immediately",
+        "Direct in-memory export into the active fleet without intermediary files or parsing",
+        "Supports 4 declaration models: Isles, native Pulumi, Terraform modules, and inline HCL"
+      ]
+    },
+    summary: "Eliminate multi-tool glue scripts and dynamic inventory parsing. Provision cloud infrastructure and apply configuration roles in a unified, deterministic workflow."
+  },
+  {
+    id: "secret-management",
+    category: "Secrets & Key Security",
+    title: "Ephemeral Decryption Keys vs. The 'Secret Zero' Dilemma",
+    badge: "RAM-Only Ephemeral Providers",
+    shortLabel: "Secret Management",
+    traditional: {
+      tool: "Conventional Workflow (Disk Files, Env Vars & KMS Tokens)",
+      description: "Whether using local keys or cloud KMS / Vault, authentication tokens (AWS_SESSION_TOKEN, ~/.aws/credentials, ~/.vault-token) must still reside somewhere. They end up either in environment variables (inherited by child processes and exposed in /proc/$PID/environ) or saved in plaintext token caches on disk.",
+      filename: "deploy.sh",
+      codeLang: "bash",
+      code: `# The 'Secret Zero' trap: where does the KMS authentication token live?
+# 1. Exposed in environment variables (/proc/$PID/environ, CI logs, subprocess forks):
+export AWS_SESSION_TOKEN="AQoDYXdzEJ..."
+export VAULT_TOKEN="s.123456789abcdef..."
+export SOPS_AGE_KEY="AGE-SECRET-KEY-1..."
+
+# 2. Or written as persistent plaintext caches on developer/runner filesystems:
+# ~/.aws/sso/cache/*.json, ~/.vault-token, or ~/.vault_pass.txt
+ansible-playbook -i hosts site.yml --vault-password-file ~/.vault_pass.txt`
+    },
+    chaos: {
+      feature: "Ephemeral RAM Providers (/dev/shm)",
+      description: "Ch-aOS breaks the Secret Zero chain: master keys are fetched on demand from your existing vault via secure IPC / OS keychain directly into volatile RAM (/dev/shm) via pass_fds (0600). Keys never touch persistent storage or shell environments, and are wiped instantly upon command completion.",
+      codeFilename: "apply-command.sh",
+      codeLang: "bash",
+      code: `# Ephemeral in-memory key retrieval with instant wipe
+$ chaos apply system --secrets -p bw.age
+
+# 1. Master Age key pulled on-the-fly via secure IPC from Bitwarden/1Password
+# 2. Mounted strictly in volatile RAM (/dev/shm) via pass_fds (mode 0600)
+# 3. Never exported as environment variable; never touches persistent disk
+# 4. SOPS decrypts payload in-memory
+# 5. Immediate wipe of /dev/shm and eviction upon command completion`,
+      declFilename: "~/.config/chaos/config.yml",
+      declLang: "yaml",
+      declCode: `# ~/.config/chaos/config.yml (Pluggable Ephemeral Key Providers)
+secret_providers:
+  default: bw.age
+
+  bw: # Bitwarden / rbw
+    age_id: "9d8e7f6a-1234-5678-abcd-ef0123456789"
+
+  dp: # Doppler
+    project_name: "infra-core"
+    config_name: "prd"
+    age_secret_name: "PROD_AGE_KEY"
+
+  op: # 1Password CLI
+    age_url: "op://DevOps/ClusterAgeKey/notesPlain"`,
+      advantages: [
+        "Zero-Disk & Zero-Env: master keys never touch persistent storage or environment variables",
+        "Ephemeral RAM lifecycle: mounted strictly in /dev/shm (Linux) or RAM disk (macOS)",
+        "Instant eviction: keys and file descriptors wiped immediately upon execution finish",
+        "Breaks the Secret Zero chain: leverages secure IPC and session-based vault authentication"
+      ]
+    },
+    summary: "Eliminate the 'Secret Zero' dilemma. No disk artifacts, no plaintext cache files, and no environment variables — decryption keys live strictly in volatile RAM."
+  },
+  {
+    id: "python-sdk",
+    category: "Python SDK & API-First Engine",
+    title: "First-Class Python SDK vs. CLI Subprocess Wrappers",
+    badge: "Native SDK vs. Subprocess Wrappers",
+    shortLabel: "Programmability",
+    traditional: {
+      tool: "Conventional Approach (Subprocess / Shell Out)",
+      description: "Ansible is designed CLI-first without a stable in-process Python API. Integrating into Python services requires shelling out via subprocess or using ansible-runner, which isolates execution by spawning external processes and reading/writing artifact trees on disk.",
+      filename: "deploy_pipeline.py",
+      codeLang: "python",
+      code: `# deploy_pipeline.py (Brittle CLI Subprocess Wrapping)
+import subprocess
+
+# Shelling out to CLI with text/stderr parsing:
+proc = subprocess.run(
+    ["ansible-playbook", "-i", "hosts.ini", "site.yml", "--extra-vars", "env=prod"],
+    capture_output=True, text=True
+)
+
+if proc.returncode != 0:
+    raise RuntimeError(f"Playbook failed: {proc.stderr}")
+
+# Alternatively, ansible-runner requires spawning external processes
+# and writing runtime artifact directories to disk storage.`
+    },
+    chaos: {
+      feature: "Native Python SDK & DTO Contracts",
+      description: "Ch-aOS is built API-first. The CLI is merely a consumer of the SDK. Everything accepts lightweight __slots__ Payload DTOs and returns typed ResultPayload contracts with zero subprocess or disk overhead.",
+      codeFilename: "pipeline.py",
+      codeLang: "python",
+      code: `# pipeline.py (Native Ch-aOS SDK Execution)
+from chaos.lib.apply import setup_pyinfra, execute_plans
+from chaos.lib.args.dataclasses import ApplyPayload, SecretsContext
+
+payload = ApplyPayload(
+    tags=["web_server"],
+    chobolo="ch-obolos/prod.yml",
+    i_know_what_im_doing=True, # Bypasses interactive prompts
+    secrets_context=SecretsContext(team="backend")
+)
+
+# 1. Setup Pyinfra in memory & execute 3-stage plan
+setup_pyinfra(payload)
+result = execute_plans(payload)
+
+# 2. Strict ResultPayload[T] contract: success, message, data, error
+if not result.success:
+    print(f"Orchestration errors: {result.error}")
+else:
+    print(f"Applied successfully: {result.message}")`,
+      declFilename: "ch-obolos/prod.yml",
+      declLang: "yaml",
+      declCode: `# ch-obolos/prod.yml (Consumed directly by the SDK)
+fleet:
+  parallelism: 5
+  hosts:
+    api-01:
+      ssh_hostname: "10.0.1.20"
+      ssh_user: "ubuntu"
+      ssh_key: "~/.ssh/id_ed25519"
+
+# Declarative state data consumed without disk temp files
+web_server:
+  packages: ["fastapi", "uvicorn", "tailscale"]
+  port: 8000`,
+      advantages: [
+        "True API-first engine: direct Python import with zero subprocess overhead or shell parsing",
+        "Strict ResultPayload contract: guaranteed (success, message, data, error) handling",
+        "Lightweight __slots__ DTOs (ApplyPayload, SecretsContext) for instant startup and serialization"
+      ]
+    },
+    summary: "Embed infrastructure orchestration directly into webhooks, custom platforms, and CI/CD pipelines with typed Python contracts instead of disk-heavy process runners."
+  },
+  {
+    id: "supply-chain-security",
+    category: "Soul Registry & Self-Hosting",
+    title: "Zero-Infra Git Self-Hosting vs. Heavy Registry Servers",
+    badge: "Styx Git Registry",
+    shortLabel: "Registry",
+    traditional: {
+      tool: "Conventional Registries (Galaxy / Pulp / Artifactory)",
+      description: "Hosting a private internal registry requires managing complex server stacks (Pulp with PostgreSQL and Redis, or commercial Artifactory). Meanwhile, community collections often lack mandatory SHA-256 integrity verification and human review.",
+      filename: "requirements.yml",
+      codeLang: "yaml",
+      code: `# requirements.yml (Ansible Galaxy / Unpinned Repos)
+# Self-hosting internally requires standing up dedicated Pulp/Galaxy servers
+roles:
+  # Downloaded without mandatory SHA-256 checksum pinning
+  - name: geerlingguy.nginx
+    version: 3.1.1
+
+  # Git tag subject to force-push or upstream tampering
+  - src: https://github.com/community/monitoring-role
+    scm: git
+    version: v1.0.4`
+    },
+    chaos: {
+      feature: "Styx: Zero-Infra Git Self-Hosting & SHA-256",
+      description: "Styx turns any standard Git repository (GitHub, GitLab, or on-prem Gitea) into a full-featured Soul registry with a single registry.yaml. Zero servers, zero databases, and zero ch-obolo needed: invoke and install standalone Souls straight from the CLI with cryptographic SHA-256 verification.",
+      declFilename: "registry.yaml",
+      declLang: "yaml",
+      declCode: `# Styx Decentralized Registry (registry.yaml)
+# Self-host anywhere: private GitHub, GitLab, or on-prem Gitea repo!
+# Zero dedicated servers or databases to maintain.
+styx:
+  internal-auth:
+    name: internal_auth
+    repo: https://gitlab.internal.corp/infra/chaos-auth
+    about: "Enterprise SSO and PAM integration Soul"
+    version: "v1.2.0"
+    # Cryptographic SHA-256 hash verified on every download:
+    hash: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"`,
+      hasToggle: false,
+      advantages: [
+        "Host private registries in any Github or Gitlab repo without managing servers",
+        "Every Soul is hash-verified before local installation, preventing supply chain attacks",
+        "Audit changes via signed Git commits and standard Pull Request reviews"
+      ]
+    },
+    summary: "Self-host an enterprise Soul registry in any Git repository with zero dedicated servers, and install cryptographically verified extensions without needing a ch-obolo."
+  },
+  {
+    id: "execution-observability",
+    category: "Execution Telemetry & Storage",
+    title: "Pluggable Telemetry Sink vs. Unstructured Terminal Output",
+    badge: "Logbook & Limani Souls",
+    shortLabel: "Observability",
+    traditional: {
+      tool: "Terminal Logs & Ad-Hoc Callback Plugins",
+      description: "Conventional tools dump execution progress as console stdout. Persisting structured execution history into internal databases, data warehouses, or observability platforms requires writing custom regex scrapers or complex, unstandardized callback plugins.",
+      filename: "ansible.log",
+      codeLang: "text",
+      code: `# ansible.log (Raw terminal text output)
+TASK [nginx : Install web server] **************************************
+changed: [web-01] => {"changed": true, "msg": "All packages installed"}
+<10.0.1.10> ESTABLISH SSH CONNECTION FOR USER: ubuntu
+<10.0.1.10> SSH: EXEC ssh -o ControlMaster=auto -o ...
+
+# Saving this into PostgreSQL, ClickHouse, or a data lake
+# requires writing fragile regex scrapers or managing
+# custom, heavy Python callback plugins.`
+    },
+    chaos: {
+      feature: "Logbook + Limani Souls (Pluggable Data Sink)",
+      description: "The Logbook is an endpoint-agnostic execution sink. It captures exact commands, pre/post health checks, timings, and fact diffs with zero compromises, allowing you to route and store structured telemetry into any database or format via Limani Souls.",
+      codeFilename: "custom_limani.py",
+      codeLang: "python",
+      code: `# Pluggable data destination via the Limani Soul interface
+from chaos.souls.limani import Limani
+
+class EnterpriseDataLakeLimani(Limani):
+    """Store execution data in whatever format or database you want"""
+    def end_run_update(self, run_id: str, end_time: float, status: str, summary: dict):
+        # Ship structured run data to PostgreSQL, ClickHouse, or S3
+        self.warehouse.save_run(run_id=run_id, status=status, summary=summary)
+
+    def insert_fact_log(self, run_id: str, timestamp: float, log_level: str, context: str, command: str):
+        # Store exact commands, fact transitions, and execution order
+        self.warehouse.save_command(run_id=run_id, cmd=command, ctx=context)`,
+      declFilename: "chaos apply --logbook",
+      declLang: "bash",
+      declCode: `# Stream structured execution data to any database via Limani:
+$ chaos apply web_server --fleet --logbook --limani chaos-limani-postgresql
+
+# Or persist locally via SQLite (default Limani):
+$ chaos apply --fleet --logbook --limani chrima
+
+# Captured with zero punches pulled:
+# - Exact commands executed with order and timings
+# - Fact changes & diffs before and after operations
+# - Pre- and post-operation host health checks`,
+      advantages: [
+        "Endpoint-agnostic execution sink: save and stream orchestration data into PostgreSQL, SQLite, or any database",
+        "Zero-compromise telemetry: captures exact commands, fact transitions, and health checks even when no ops run",
+        "Pluggable Limani interface: write simple Souls to dock execution records into your own internal data warehouse"
+      ]
+    },
+    summary: "Route high-resolution execution data, fact diffs, and exact commands directly into whatever database or backend you want via pluggable Limani Souls."
+  }
+];
+
+const totalCount = comparisons.length;
+---
+
+<section id="comparison" class="py-12 sm:py-20 relative">
+  <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 w-full">
+
+    <!-- Section Header -->
+    <div class="flex flex-col items-start text-left mb-8 sm:mb-10">
+      <h2 class="comparison-title text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-[#E8F0EC] leading-[1.15] mb-4">
+        Advantages of <span class="gradient-brand-text font-bold">Ch-aOS</span>.
+      </h2>
+
+      <p class="comparison-subtitle text-sm sm:text-base lg:text-lg text-[#C1C9D6] leading-relaxed max-w-3xl">
+        Ch-aOS was born as a personal tool, so it had DX front and center from day one. A handful of clever architectural decisions made it possible to evolve beyond local environments, proving its edge against traditional models. Take a look:
+      </p>
+    </div>
+
+    <!-- Direct Comparison Navigation Tabs (Logbook & Tool Selectors) -->
+    <div class="comp-tool-tabs-container mb-4 overflow-x-auto scrollbar-none" role="tablist" aria-label="Direct tool comparison selector">
+      <div class="flex items-center gap-1.5 sm:gap-2 min-w-max pb-1">
+        {comparisons.map((item, idx) => (
+          <button
+            type="button"
+            role="tab"
+            id={`comp-quick-tab-${idx}`}
+            aria-selected={idx === 0 ? "true" : "false"}
+            aria-controls={`comp-slide-${idx}`}
+            tabindex={idx === 0 ? 0 : -1}
+            data-target-index={idx}
+            class={`comp-quick-tab inline-flex items-center gap-2 px-3 py-2 text-xs font-mono border transition-all cursor-pointer rounded-none ${idx === 0 ? 'comp-quick-tab-active' : ''}`}
+          >
+            <span class="font-medium">{item.shortLabel}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Clean Panel Container with Small Code Header -->
+    <div class="code-window-card backdrop-blur-md rounded-none shadow-2xl relative overflow-hidden" role="region" aria-roledescription="carousel" aria-label="Comparison Carousel">
+
+      <!-- Small Code Header Bar with indicator + Prev/Next -->
+      <div class="code-window-header flex items-center justify-between gap-2 px-3 sm:px-6 py-2 sm:py-3 border-b">
+        <!-- Left: Dynamic Category/Badge -->
+        <div class="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
+          <span class="comp-category-indicator text-[11px] sm:text-xs font-mono uppercase tracking-wider font-bold truncate max-w-[125px] xs:max-w-[180px] sm:max-w-none" id="comp-category-indicator">
+            {comparisons[0].category}
+          </span>
+          <span class="comp-separator text-[#3D524A] hidden md:inline">•</span>
+          <span class="comp-badge-indicator text-xs font-mono hidden md:inline" id="comp-badge-indicator">
+            {comparisons[0].badge}
+          </span>
+        </div>
+
+        <!-- Right: Prev / Next Controls with dynamic counter -->
+        <div class="flex items-center gap-1.5 sm:gap-2.5 font-mono text-xs shrink-0" role="toolbar" aria-label="Carousel navigation">
+          <button
+            type="button"
+            id="comp-prev-btn"
+            class="comp-nav-btn inline-flex items-center justify-center gap-1 px-2.5 sm:px-2.5 py-2 sm:py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 transition-all cursor-pointer rounded-none text-xs"
+            aria-label="Previous comparison"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Prev</span>
+          </button>
+
+          <span id="comp-counter" class="comp-counter font-bold px-1 sm:px-1.5 text-xs select-none" aria-live="polite">
+            01 / {totalCount.toString().padStart(2, '0')}
+          </span>
+
+          <button
+            type="button"
+            id="comp-next-btn"
+            class="comp-nav-btn inline-flex items-center justify-center gap-1 px-2.5 sm:px-2.5 py-2 sm:py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 transition-all cursor-pointer rounded-none text-xs"
+            aria-label="Next comparison"
+          >
+            <span>Next</span>
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Visual Progress Indicator Bar -->
+      <div class="comp-progress-track w-full h-[2px] bg-[#3D524A]/25 relative overflow-hidden" aria-hidden="true">
+        <div id="comp-progress-bar" class="h-full bg-[var(--chaos-accent-mint)] transition-all duration-300 ease-out" style={`width: ${(1 / totalCount * 100).toFixed(2)}%;`}></div>
+      </div>
+
+      <!-- Card Body with slides (No scroll - Architectural Value always visible) -->
+      <div class="p-3.5 sm:p-8 lg:p-10">
+        <div id="comparison-slides" class="relative" style="touch-action: pan-y;">
+          {comparisons.map((item, idx) => (
+            <div
+              id={`comp-slide-${idx}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`Slide ${idx + 1} of ${totalCount}: ${item.title}`}
+              class={`comp-slide ${idx === 0 ? 'block' : 'hidden'}`}
+              data-index={idx}
+              data-category={item.category}
+              data-badge={item.badge}
+              data-code-filename={item.chaos.codeFilename || ''}
+              data-decl-filename={item.chaos.declFilename}
+            >
+              <!-- Slide Title Header (No dividing line underneath) -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-5 sm:mb-8">
+                <div>
+                  <h3 class="comp-slide-title text-lg sm:text-2xl font-bold">
+                    {item.title}
+                  </h3>
+                </div>
+                <div class="comp-slide-badge self-start sm:self-center px-2.5 py-1 text-xs font-mono">
+                  {item.badge}
+                </div>
+              </div>
+
+              <!-- Two Columns Comparison -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+
+                <!-- Column Left: Conventional Pattern -->
+                <div class="comp-card-traditional flex flex-col p-3.5 sm:p-6 rounded-none">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="comp-trad-title font-mono text-xs font-semibold uppercase tracking-wide">
+                      {item.traditional.tool}
+                    </span>
+                    <span class="comp-trad-tag text-[11px] font-mono uppercase">Conventional</span>
+                  </div>
+
+                  <p class="comp-trad-desc text-xs sm:text-sm mb-4 leading-relaxed">
+                    {item.traditional.description}
+                  </p>
+
+                  <!-- Snippet with filename header for perfect vertical symmetry -->
+                  <div class="flex-1 flex flex-col">
+                    <div class="comp-trad-snippet-header flex items-center justify-between px-3 sm:px-3.5 py-1.5 border-t border-x text-xs font-mono">
+                      <span class="text-[11px] truncate">
+                        {item.traditional.filename}
+                      </span>
+                    </div>
+                    <div class="comp-code-box comp-code-box-trad p-2.5 sm:p-3.5 border text-xs font-mono overflow-auto h-[210px] sm:h-[260px] max-h-[260px]">
+                      <Code
+                        code={item.traditional.code}
+                        lang={item.traditional.codeLang as any}
+                        themes={chaosThemes}
+                        class="bg-transparent! m-0! p-0!"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Column Right: The Ch-aOS Paradigm with Code / Declaration Toggle -->
+                <div class="comp-card-chaos flex flex-col p-3.5 sm:p-6 rounded-none relative">
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                      <span class="comp-chaos-title font-mono text-xs font-semibold uppercase tracking-wide">
+                        {item.chaos.feature}
+                      </span>
+                    </div>
+                    <span class="comp-chaos-tag text-[11px] font-mono uppercase font-semibold">Ch-aOS</span>
+                  </div>
+
+                  <p class="comp-chaos-desc text-xs sm:text-sm mb-4 leading-relaxed">
+                    {item.id === 'config-management' && (
+                      <span>
+                        Pure decoupling: clean YAML declares the desired state data in the <GlossaryTerm termKey="ch-obolo" />, while typed Python classes implement a 3-stage lifecycle (get_context -&gt; delta -&gt; plan) with full IDE autocompletion, type safety, and native Pytest testability.
+                      </span>
+                    )}
+                    {item.id === 'declarative-os' && (
+                      <span>
+                        <GlossaryTerm termKey="ch-aos" display="Ch-aOS" /> keeps things simple and immediately familiar: manage standard distributions (Arch, Debian, Fedora) using clean YAML for desired state and standard Python for execution. It's much easier to get started with and fits directly into standard Linux workflows, without needing to adopt a completely new operating paradigm.
+                      </span>
+                    )}
+                    {item.id === 'iac-unification' && (
+                      <span>
+                        Declare cloud resources and system roles in the same <GlossaryTerm termKey="ch-obolo" />. <GlossaryTerm termKey="pelago" /> provisions cloud instances (via Pulumi, Terraform modules, or <GlossaryTerm termKey="isle" display="Isles" />) and registers exported hosts directly into the <GlossaryTerm termKey="fleet" /> in memory, configuring them immediately.
+                      </span>
+                    )}
+                    {item.id === 'secret-management' && (
+                      <span>
+                        <GlossaryTerm termKey="ch-aos" display="Ch-aOS" /> breaks the Secret Zero chain: master keys are fetched on demand from your existing vault via secure IPC / OS keychain directly into volatile RAM (/dev/shm) via pass_fds (0600). Keys never touch persistent storage or shell environments, and are wiped instantly upon command completion.
+                      </span>
+                    )}
+                    {item.id === 'python-sdk' && (
+                      <span>
+                        <GlossaryTerm termKey="ch-aos" display="Ch-aOS" /> is built API-first. The CLI is merely a consumer of the SDK. Everything accepts lightweight __slots__ Payload DTOs and returns typed ResultPayload contracts with zero subprocess or disk overhead.
+                      </span>
+                    )}
+                    {item.id === 'supply-chain-security' && (
+                      <span>
+                        <GlossaryTerm termKey="styx" /> turns any standard Git repository (GitHub, GitLab, or on-prem Gitea) into a full-featured <GlossaryTerm termKey="soul" display="Soul registry" /> with a single registry.yaml. Zero servers, zero databases, and zero ch-obolo needed: invoke and install standalone Souls straight from the CLI with cryptographic SHA-256 verification.
+                      </span>
+                    )}
+                    {item.id === 'execution-observability' && (
+                      <span>
+                        The <GlossaryTerm termKey="logbook" /> is an endpoint-agnostic execution sink. It captures exact commands, pre/post health checks, timings, and fact diffs with zero compromises, allowing you to route and store structured telemetry into any database or format via <GlossaryTerm termKey="limani" /> Souls.
+                      </span>
+                    )}
+                  </p>
+
+                  <!-- Ch-aOS Code vs Declaration Snippet Container -->
+                  <div class="chaos-snippet-wrapper flex-1 flex flex-col">
+                    <!-- Snippet Header with Filename & Segmented View Toggle -->
+                    <div class="comp-chaos-snippet-header flex items-center justify-between gap-2 px-3 sm:px-3.5 py-1.5 border-t border-x text-xs font-mono">
+                      <span class="chaos-active-filename chaos-view-filename text-[11px] font-semibold truncate max-w-[130px] sm:max-w-none">
+                        {item.chaos.declFilename}
+                      </span>
+
+                      <!-- 2-Option Segmented View Toggle (Only if slide has toggle and code) -->
+                      {item.chaos.hasToggle !== false && item.chaos.code && (
+                        <div
+                          class="chaos-view-toggle-group inline-flex items-center p-0.5 border shrink-0"
+                          role="group"
+                          aria-label="Switch between state declaration and execution code"
+                        >
+                          <button
+                            type="button"
+                            data-view-mode="decl"
+                            aria-pressed="true"
+                            class="chaos-toggle-pill chaos-toggle-pill-active px-2 py-1 sm:py-0.5 text-[11px] font-semibold border cursor-pointer transition-all bg-[#38D9A9]/20 text-[#38D9A9] border-[#38D9A9]/50"
+                          >
+                            {item.id === 'execution-observability' ? 'CLI & Output' : 'YAML State'}
+                          </button>
+                          <button
+                            type="button"
+                            data-view-mode="code"
+                            aria-pressed="false"
+                            class="chaos-toggle-pill px-2 py-1 sm:py-0.5 text-[11px] font-semibold border border-transparent cursor-pointer transition-all text-[#8FA39A] hover:text-[#E8F0EC]"
+                          >
+                            {item.id === 'execution-observability' ? 'Python Soul' : 'Python Role'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <!-- 1. Declaration View (Visible by default) -->
+                    <div class="chaos-decl-view chaos-view-decl comp-code-box comp-code-box-chaos p-2.5 sm:p-3.5 border text-xs font-mono overflow-auto h-[210px] sm:h-[260px] max-h-[260px]">
+                      <Code
+                        code={item.chaos.declCode}
+                        lang={item.chaos.declLang as any}
+                        themes={chaosThemes}
+                        class="bg-transparent! m-0! p-0!"
+                      />
+                    </div>
+
+                    <!-- 2. Code View (Hidden initially, shown on toggle if code exists) -->
+                    {item.chaos.code && (
+                      <div class="chaos-code-view chaos-view-code hidden comp-code-box comp-code-box-chaos p-2.5 sm:p-3.5 border text-xs font-mono overflow-auto h-[210px] sm:h-[260px] max-h-[260px]">
+                        <Code
+                          code={item.chaos.code}
+                          lang={item.chaos.codeLang as any}
+                          themes={chaosThemes}
+                          class="bg-transparent! m-0! p-0!"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <!-- Advantages list -->
+                  <div class="comp-adv-container space-y-2 pt-3 mt-4 border-t">
+                    <span class="comp-adv-title text-[11px] font-mono uppercase font-semibold block">
+                      Ch-aOS Advantages:
+                    </span>
+                    <ul class="space-y-1.5 text-xs">
+                      {item.chaos.advantages.map(adv => (
+                        <li class="comp-adv-item flex items-start gap-2">
+                          <span class="comp-adv-check font-bold">✓</span>
+                          <span>{adv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Slide Bottom Summary Callout -->
+              <div class="comp-summary-callout mt-5 sm:mt-8 p-3 sm:p-4 text-xs sm:text-sm font-sans flex items-center gap-2.5 sm:gap-3">
+                <span class="comp-summary-icon font-mono font-bold text-base shrink-0">✦</span>
+                <span><strong class="font-mono">Architectural Value:</strong> {item.summary}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<style is:global>
+  /* ========================================================= */
+  /* COMPARISON CAROUSEL - SEMANTIC TOKEN STYLING             */
+  /* ========================================================= */
+  #comparison .comp-tool-tabs-container {
+    mask-image: linear-gradient(to right, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 95%, transparent 100%);
+  }
+  #comparison .comp-quick-tab {
+    background-color: var(--chaos-surface-card);
+    border-color: var(--chaos-border-card);
+    color: var(--chaos-text-secondary);
+  }
+  #comparison .comp-quick-tab:hover {
+    border-color: var(--chaos-border-accent);
+    color: var(--chaos-text-primary);
+  }
+  #comparison .comp-quick-tab-active {
+    background-color: var(--chaos-surface-card-alt);
+    border-color: var(--chaos-accent-mint) !important;
+    color: var(--chaos-accent-mint) !important;
+  }
+  #comparison .comp-quick-dot {
+    background-color: var(--chaos-border-medium);
+  }
+  #comparison .comp-quick-tab-active .comp-quick-dot {
+    background-color: var(--chaos-accent-mint);
+    box-shadow: 0 0 6px var(--chaos-accent-mint);
+  }
+  [data-theme="light"] #comparison .comp-quick-tab {
+    background-color: #F1FAF5;
+    border-color: rgba(19, 122, 91, 0.2);
+    color: #4A6356;
+  }
+  [data-theme="light"] #comparison .comp-quick-tab:hover {
+    border-color: rgba(19, 122, 91, 0.5);
+    color: #0E6E4F;
+  }
+  [data-theme="light"] #comparison .comp-quick-tab-active {
+    background-color: #E2F2E9;
+    border-color: #0E7A5A !important;
+    color: #0E7A5A !important;
+  }
+  [data-theme="light"] #comparison .comp-quick-tab-active .comp-quick-dot {
+    background-color: #0E7A5A;
+    box-shadow: 0 0 6px rgba(14, 122, 90, 0.4);
+  }
+  #comparison .comparison-title {
+    color: var(--chaos-text-primary);
+  }
+  #comparison .comparison-subtitle {
+    color: var(--chaos-text-secondary);
+  }
+  #comparison .comp-category-indicator {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-badge-indicator {
+    color: var(--chaos-text-muted);
+  }
+  #comparison .comp-separator {
+    color: var(--chaos-border-card);
+  }
+  #comparison .comp-counter {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-slide-title {
+    color: var(--chaos-text-primary);
+  }
+  #comparison .comp-slide-badge {
+    background-color: var(--chaos-surface-card-alt);
+    border: 1px solid var(--chaos-border-medium);
+    color: var(--chaos-text-secondary);
+  }
+  [data-theme="light"] #comparison .comp-slide-badge {
+    color: var(--chaos-text-primary);
+  }
+  #comparison .comp-nav-btn {
+    background-color: var(--chaos-surface-card-alt);
+    border: 1px solid var(--chaos-border-medium);
+    color: var(--chaos-text-secondary);
+  }
+  #comparison .comp-nav-btn:hover {
+    background-color: #25342E;
+    color: var(--chaos-accent-mint);
+  }
+  [data-theme="light"] #comparison .comp-nav-btn {
+    background-color: #E1F0E8;
+    color: var(--chaos-text-primary);
+  }
+  [data-theme="light"] #comparison .comp-nav-btn:hover {
+    background-color: #D2E7DC;
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .code-window-card {
+    background: var(--chaos-surface-card);
+    border: 1px solid var(--chaos-border-card);
+  }
+  #comparison .code-window-header {
+    background: var(--chaos-surface-card-header);
+    border-bottom: 1px solid var(--chaos-border-subtle);
+  }
+  #comparison .comp-card-traditional {
+    background-color: var(--chaos-surface-card-alt);
+    border: 1px solid var(--chaos-border-card);
+  }
+  [data-theme="light"] #comparison .comp-card-traditional {
+    background-color: #F9FCFA;
+  }
+  #comparison .comp-trad-title {
+    color: var(--chaos-text-secondary);
+  }
+  #comparison .comp-trad-tag {
+    color: var(--chaos-text-muted);
+  }
+  #comparison .comp-trad-desc {
+    color: var(--chaos-text-muted);
+  }
+  #comparison .comp-trad-snippet-header {
+    background-color: rgba(18, 25, 22, 0.85);
+    border-color: var(--chaos-border-subtle);
+    color: var(--chaos-text-muted);
+  }
+  [data-theme="light"] #comparison .comp-trad-snippet-header {
+    background-color: #EAF3EE;
+    color: #5A7266;
+  }
+  #comparison .comp-card-chaos {
+    background-color: rgba(22, 34, 29, 0.7);
+    border: 1px solid var(--chaos-border-accent);
+    box-shadow: 0 0 20px rgba(56, 217, 169, 0.06);
+  }
+  [data-theme="light"] #comparison .comp-card-chaos {
+    background-color: #F1FAF5;
+    border-color: rgba(19, 122, 91, 0.45);
+    box-shadow: 0 8px 24px rgba(19, 122, 91, 0.08);
+  }
+  #comparison .comp-chaos-dot {
+    background-color: var(--chaos-accent-mint);
+    box-shadow: 0 0 8px var(--chaos-border-accent);
+  }
+  #comparison .comp-chaos-title,
+  #comparison .comp-chaos-tag {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-chaos-desc {
+    color: var(--chaos-text-secondary);
+  }
+  #comparison .comp-chaos-snippet-header {
+    background-color: rgba(18, 25, 22, 0.85);
+    border-color: var(--chaos-border-accent);
+    color: var(--chaos-accent-mint);
+  }
+  [data-theme="light"] #comparison .comp-chaos-snippet-header {
+    background-color: #EAF3EE;
+    color: #0E6E4F;
+  }
+  #comparison .chaos-view-toggle-group {
+    background-color: rgba(12, 18, 16, 0.75);
+    border-color: var(--chaos-border-subtle);
+  }
+  [data-theme="light"] #comparison .chaos-view-toggle-group {
+    background-color: #DCECE4;
+    border-color: rgba(14, 122, 90, 0.25);
+  }
+  #comparison .chaos-toggle-pill {
+    color: #8FA39A;
+    border-color: transparent;
+    background-color: transparent;
+  }
+  #comparison .chaos-toggle-pill:hover {
+    color: #E8F0EC;
+  }
+  #comparison .chaos-toggle-pill[aria-pressed="true"],
+  #comparison .chaos-toggle-pill.chaos-toggle-pill-active {
+    background-color: rgba(56, 217, 169, 0.2);
+    color: #38D9A9;
+    border-color: rgba(56, 217, 169, 0.5);
+  }
+  [data-theme="light"] #comparison .chaos-toggle-pill {
+    color: #4A6356;
+  }
+  [data-theme="light"] #comparison .chaos-toggle-pill:hover {
+    color: #0E7A5A;
+  }
+  [data-theme="light"] #comparison .chaos-toggle-pill[aria-pressed="true"],
+  [data-theme="light"] #comparison .chaos-toggle-pill.chaos-toggle-pill-active {
+    background-color: rgba(14, 122, 90, 0.16);
+    color: #0E7A5A;
+    border-color: rgba(14, 122, 90, 0.45);
+  }
+  #comparison .comp-code-box {
+    background-color: rgba(15, 22, 19, 0.70);
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  [data-theme="light"] #comparison .comp-code-box {
+    background-color: #F6FAF8;
+  }
+  #comparison .comp-code-box-trad {
+    border-color: var(--chaos-border-subtle);
+  }
+  #comparison .comp-code-box-chaos {
+    border-color: var(--chaos-border-accent);
+  }
+  #comparison .comp-code-box pre,
+  #comparison .comp-code-box code,
+  #comparison .comp-code-box span {
+    font-family: 'Maple Mono NF', 'Maple Mono', 'DejaVu Sans Mono', monospace !important;
+    font-feature-settings: var(--maple-mono-features) !important;
+    font-variant-ligatures: contextual common-ligatures !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  #comparison .comp-code-box span[style*="6A737D" i],
+  #comparison .comp-code-box span[style*="6a737d" i],
+  #comparison .comp-code-box span[style*="8B949E" i],
+  #comparison .comp-code-box span[style*="8b949e" i],
+  #comparison .comp-code-box span[style*="--shiki-dark:#6A737D" i],
+  #comparison .comp-code-box span[style*="--shiki-dark:#6a737d" i],
+  #comparison .comp-code-box span[style*="--shiki-light:#6A737D" i],
+  #comparison .comp-code-box span[style*="--shiki-light:#6a737d" i] {
+    font-style: italic !important;
+  }
+  #comparison .comp-adv-container {
+    border-top-color: var(--chaos-border-subtle);
+  }
+  #comparison .comp-adv-title {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-adv-item {
+    color: var(--chaos-text-primary);
+  }
+  #comparison .comp-adv-check {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-summary-callout {
+    background-color: var(--chaos-surface-card);
+    border-left: 2px solid var(--chaos-accent-mint);
+    color: var(--chaos-text-secondary);
+    font-family: var(--font-sans);
+  }
+  [data-theme="light"] #comparison .comp-summary-callout {
+    background-color: #E8F4EE;
+    color: #1A3328;
+  }
+  #comparison .comp-summary-icon {
+    color: var(--chaos-accent-mint);
+  }
+  #comparison .comp-code-box::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  #comparison .comp-code-box::-webkit-scrollbar-track {
+    background: rgba(12, 18, 16, 0.8);
+  }
+  [data-theme="light"] #comparison .comp-code-box::-webkit-scrollbar-track {
+    background: #F1FAF5;
+  }
+  #comparison .comp-code-box::-webkit-scrollbar-thumb {
+    background: var(--chaos-border-card);
+  }
+  #comparison .comp-code-box::-webkit-scrollbar-thumb:hover {
+    background: var(--chaos-accent-mint);
+  }
+</style>
+
+<script>
+  function setupComparisonCarousel() {
+    const slides = document.querySelectorAll<HTMLElement>('.comp-slide');
+    const prevBtn = document.getElementById('comp-prev-btn');
+    const nextBtn = document.getElementById('comp-next-btn');
+    const counter = document.getElementById('comp-counter');
+    const categoryIndicator = document.getElementById('comp-category-indicator');
+    const badgeIndicator = document.getElementById('comp-badge-indicator');
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    const total = slides.length;
+
+    function goToSlide(targetIndex: number) {
+      if (targetIndex < 0) targetIndex = total - 1;
+      if (targetIndex >= total) targetIndex = 0;
+      currentIndex = targetIndex;
+
+      slides.forEach((slide, idx) => {
+        if (idx === currentIndex) {
+          slide.classList.remove('hidden');
+          slide.classList.add('block');
+
+          // Update header indicators dynamically from data attributes
+          const cat = slide.getAttribute('data-category');
+          const badge = slide.getAttribute('data-badge');
+          if (categoryIndicator && cat) categoryIndicator.textContent = cat;
+          if (badgeIndicator && badge) badgeIndicator.textContent = badge;
+        } else {
+          slide.classList.remove('block');
+          slide.classList.add('hidden');
+        }
+      });
+
+      if (counter) {
+        const curStr = (currentIndex + 1).toString().padStart(2, '0');
+        const totalStr = total.toString().padStart(2, '0');
+        counter.textContent = `${curStr} / ${totalStr}`;
+      }
+
+      // Update quick navigation tabs
+      const quickTabs = document.querySelectorAll<HTMLButtonElement>('.comp-quick-tab');
+      quickTabs.forEach((tab, idx) => {
+        const isActive = idx === currentIndex;
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        tab.tabIndex = isActive ? 0 : -1;
+        if (isActive) {
+          tab.classList.add('comp-quick-tab-active');
+          tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        } else {
+          tab.classList.remove('comp-quick-tab-active');
+        }
+      });
+
+      // Update progress bar
+      const progressBar = document.getElementById('comp-progress-bar');
+      if (progressBar) {
+        const percentage = ((currentIndex + 1) / total) * 100;
+        progressBar.style.width = `${percentage}%`;
+      }
+    }
+
+    // Bind Quick Navigation Tabs
+    const quickTabs = document.querySelectorAll<HTMLButtonElement>('.comp-quick-tab');
+    quickTabs.forEach((tab) => {
+      if (!tab.dataset.bound) {
+        tab.dataset.bound = 'true';
+        tab.addEventListener('click', () => {
+          const target = Number(tab.getAttribute('data-target-index'));
+          if (!isNaN(target)) {
+            goToSlide(target);
+          }
+        });
+        tab.addEventListener('keydown', (e: KeyboardEvent) => {
+          let newTarget = -1;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            newTarget = (currentIndex + 1) % total;
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            newTarget = (currentIndex - 1 + total) % total;
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            newTarget = 0;
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            newTarget = total - 1;
+          }
+          if (newTarget !== -1) {
+            goToSlide(newTarget);
+            quickTabs[newTarget]?.focus();
+          }
+        });
+      }
+    });
+
+    if (prevBtn && !prevBtn.dataset.bound) {
+      prevBtn.dataset.bound = 'true';
+      prevBtn.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+      });
+    }
+
+    if (nextBtn && !nextBtn.dataset.bound) {
+      nextBtn.dataset.bound = 'true';
+      nextBtn.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+      });
+    }
+
+    // Touch Swipe Navigation for mobile devices
+    const slidesContainer = document.getElementById('comparison-slides');
+    if (slidesContainer && !slidesContainer.dataset.touchBound) {
+      slidesContainer.dataset.touchBound = 'true';
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let ignoreSwipe = false;
+
+      slidesContainer.addEventListener('touchstart', (e: TouchEvent) => {
+        const target = e.target as Element | null;
+        if (target && target.closest('.comp-code-box, .comp-tool-tabs-container, pre, code')) {
+          ignoreSwipe = true;
+          return;
+        }
+        ignoreSwipe = false;
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      slidesContainer.addEventListener('touchend', (e: TouchEvent) => {
+        if (ignoreSwipe) return;
+        const target = e.target as Element | null;
+        if (target && target.closest('.comp-code-box, .comp-tool-tabs-container, pre, code')) return;
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        // Verify gesture has clear horizontal intent and exceeds 50px threshold
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 50) {
+            goToSlide(currentIndex - 1);
+          } else if (deltaX < -50) {
+            goToSlide(currentIndex + 1);
+          }
+        }
+      }, { passive: true });
+
+      slidesContainer.addEventListener('touchcancel', () => {
+        ignoreSwipe = false;
+        touchStartX = 0;
+        touchStartY = 0;
+      }, { passive: true });
+    }
+
+    // Keyboard Arrow Navigation when interacting with carousel
+    const carouselRegion = document.querySelector<HTMLElement>('[role="region"][aria-label="Comparison Carousel"]');
+    if (carouselRegion && !carouselRegion.dataset.keyboardBound) {
+      carouselRegion.dataset.keyboardBound = 'true';
+      carouselRegion.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          goToSlide(currentIndex - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          goToSlide(currentIndex + 1);
+        }
+      });
+    }
+
+    // Setup Segmented Declaration <-> Code Toggle Pills
+    slides.forEach(slide => {
+      const toggleGroup = slide.querySelector<HTMLElement>('.chaos-view-toggle-group');
+      const pills = slide.querySelectorAll<HTMLButtonElement>('.chaos-toggle-pill');
+      const codeView = slide.querySelector<HTMLElement>('.chaos-code-view, .chaos-view-code');
+      const declView = slide.querySelector<HTMLElement>('.chaos-decl-view, .chaos-view-decl');
+      const filename = slide.querySelector<HTMLElement>('.chaos-active-filename, .chaos-view-filename');
+
+      const codeFile = slide.getAttribute('data-code-filename') || '';
+      const declFile = slide.getAttribute('data-decl-filename') || '';
+
+      if (toggleGroup && pills.length && codeView && declView && !toggleGroup.dataset.bound) {
+        toggleGroup.dataset.bound = 'true';
+
+        const setViewMode = (mode: 'decl' | 'code') => {
+          const showDecl = mode === 'decl';
+          declView.classList.toggle('hidden', !showDecl);
+          codeView.classList.toggle('hidden', showDecl);
+          if (filename) {
+            filename.textContent = showDecl ? declFile : codeFile;
+          }
+          pills.forEach(pill => {
+            const isActive = pill.getAttribute('data-view-mode') === mode;
+            pill.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            pill.classList.toggle('chaos-toggle-pill-active', isActive);
+            pill.classList.toggle('bg-[#38D9A9]/20', isActive);
+            pill.classList.toggle('text-[#38D9A9]', isActive);
+            pill.classList.toggle('border-[#38D9A9]/50', isActive);
+            pill.classList.toggle('border-transparent', !isActive);
+            pill.classList.toggle('text-[#8FA39A]', !isActive);
+            pill.classList.toggle('hover:text-[#E8F0EC]', !isActive);
+          });
+        };
+
+        pills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            const targetMode = pill.getAttribute('data-view-mode') === 'code' ? 'code' : 'decl';
+            setViewMode(targetMode);
+          });
+        });
+      }
+    });
+  }
+
+  setupComparisonCarousel();
+  document.addEventListener('astro:page-load', setupComparisonCarousel);
+</script>

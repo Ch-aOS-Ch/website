@@ -1,0 +1,46 @@
+# Ch-aOS Design Tokens — YAML Specification
+version: "1.0.0"
+name: "Ch-aOS Design System"
+description: "Official design tokens, theme color palette, surface hierarchy, typography and visual specifications."
+
+theme:
+  dark:
+    canvas:
+      base: "#121916"
+      deep: "#0C1210"
+    surface:
+      base: "#18241F"
+      panel: "#1E2D27"
+      elevated: "#25342E"
+      hover: "#2E413A"
+    accent:
+      primary: "#38D9A9"
+      cyan: "#63E6BE"
+      pink: "#F8A5C2"
+      warning: "#FFE066"
+      error: "#FFA8A8"
+      orange: "#FFB885"
+    text:
+      light: "#E8F0EC"
+      dim: "#C1C9D6"
+      muted: "#8E9EA0"
+  light:
+    canvas:
+      base: "#F4F8F6"
+      deep: "#E9F0EC"
+    surface:
+      base: "#DDF2E8"
+      panel: "#E1F0E8"
+      elevated: "#E8F0EC"
+      hover: "#D4DFDA"
+    accent:
+      primary: "#137A5B"
+      cyan: "#0B7568"
+      pink: "#C92861"
+      warning: "#A25904"
+      error: "#D22020"
+      orange: "#C0400D"
+    text:
+      light: "#14241E"
+      dim: "#243830"
+      muted: "#486156"

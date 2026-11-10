@@ -1,0 +1,299 @@
+---
+// Navbar.astro
+// Minimalist header with Ch-aOS official palette (#121916, #38D9A9, #3D524A, #C1C9D6, #E8F0EC)
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<header class="relative z-20 w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-6">
+  <div class="navbar-surface backdrop-blur-md rounded-none px-3.5 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3 w-full">
+    
+    <!-- Left: Brand + Section Jump Links + Docs CTA -->
+    <div class="flex items-center gap-3 sm:gap-5 lg:gap-7 min-w-0">
+      <a href={`${base}/`} class="flex items-center gap-2 group shrink-0 min-h-[44px]">
+        <span class="nav-brand-text font-extrabold text-xl sm:text-[26px] tracking-tight transition-colors">
+          Ch-aOS
+        </span>
+        <svg class="w-6 h-6 sm:w-8 sm:h-8 shrink-0 transition-transform duration-200 group-hover:scale-105" viewBox="0 0 64 64" fill="none">
+          <polygon points="32,10 50,20 32,30 14,20" fill="#38D9A9"/>
+          <path d="M 14 20 L 32 30 L 32 37 L 21 31 L 21 42 L 32 48 L 32 54 L 14 44 Z" fill="#63E6BE"/>
+          <path d="M 32 30 L 38 26.7 L 38 34.5 L 50 28 L 50 44 L 44 47.3 L 44 38 L 38 41.3 L 38 50.7 L 32 54 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <nav aria-label="Primary navigation" class="flex items-center gap-1 sm:gap-2">
+        <a 
+          href={`${base}/getting-started/`} 
+          class="nav-link text-xs sm:text-sm font-semibold transition-colors min-h-[44px] inline-flex items-center px-2.5 sm:px-3 rounded-none whitespace-nowrap"
+        >
+          Documentation
+        </a>
+        <!-- Architecture Dropdown Menu -->
+        <div class="relative group/arch">
+          <button
+            type="button"
+            class="nav-link text-xs sm:text-sm font-semibold transition-colors min-h-[44px] inline-flex items-center gap-1 px-2.5 sm:px-3 rounded-none whitespace-nowrap cursor-pointer"
+            aria-expanded="false"
+            aria-haspopup="true"
+            id="arch-dropdown-btn"
+          >
+            <span>Architecture</span>
+            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/arch:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu Box (Opaque, high-contrast & clean items) -->
+          <div
+            id="arch-dropdown-menu"
+            class="arch-nav-dropdown-menu absolute top-full left-0 mt-1 w-44 shadow-2xl p-1.5 hidden group-hover/arch:block hover:block z-50 rounded-none text-left"
+            role="menu"
+            aria-labelledby="arch-dropdown-btn"
+          >
+            <a
+              href={`${base}/architecture/apply/`}
+              class="arch-nav-dropdown-item arch-nav-dropdown-item-apply block px-3 py-2 text-xs font-semibold transition-colors"
+              role="menuitem"
+            >
+              apply
+            </a>
+
+            <a
+              href={`${base}/architecture/secrets/`}
+              class="arch-nav-dropdown-item arch-nav-dropdown-item-secrets block px-3 py-2 text-xs font-semibold transition-colors"
+              role="menuitem"
+            >
+              secrets
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Right: GitHub Link + Theme Toggle Button -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <!-- GitHub Link -->
+      <a 
+        href="https://github.com/Ch-aOS-Ch/Ch-aOS" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label="Ch-aOS GitHub Repository"
+        class="nav-action-btn inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm"
+      >
+        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </a>
+
+      <!-- Theme Toggle Button -->
+      <button 
+        type="button" 
+        id="theme-toggle-btn"
+        aria-label="Toggle light/dark theme"
+        class="nav-action-btn inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm cursor-pointer"
+      >
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="theme-sun-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="theme-moon-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<style>
+  /* Header Container */
+  header {
+    background: transparent !important;
+  }
+
+  /* Clean Navbar Surface (distinct from .code-window-card) */
+  .navbar-surface {
+    background-color: rgba(18, 25, 22, 0.78);
+    border: 1px solid rgba(61, 82, 74, 0.45);
+    box-shadow: 0 4px 20px -2px rgba(6, 10, 8, 0.45);
+  }
+
+  /* Dark Mode Defaults */
+  .nav-brand-text {
+    color: #E8F0EC;
+  }
+  .group:hover .nav-brand-text {
+    color: #38D9A9;
+  }
+  .nav-link {
+    color: #C1C9D6;
+    border-radius: 0px !important;
+  }
+  .nav-link:hover {
+    color: #38D9A9;
+    background-color: rgba(24, 36, 31, 0.65);
+  }
+  .nav-link-cta {
+    color: #38D9A9;
+  }
+  .nav-link-cta:hover {
+    color: #7CFAD3;
+  }
+  .nav-divider {
+    background-color: rgba(61, 82, 74, 0.55);
+  }
+  .nav-action-btn {
+    background-color: rgba(24, 36, 31, 0.85);
+    border: 1px solid rgba(61, 82, 74, 0.7);
+    color: #C1C9D6;
+    border-radius: 0px !important;
+  }
+  .nav-action-btn:hover {
+    border-color: rgba(56, 217, 169, 0.8);
+    color: #E8F0EC;
+    background-color: rgba(30, 45, 39, 0.95);
+  }
+
+  /* Architecture Dropdown */
+  .arch-nav-dropdown-menu {
+    background-color: #141E1A;
+    border: 1px solid rgba(61, 82, 74, 0.7);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  }
+  .arch-nav-dropdown-item {
+    color: #E8F0EC;
+  }
+  .arch-nav-dropdown-item:hover {
+    background-color: #1E2D27;
+  }
+  .arch-nav-dropdown-item-apply:hover {
+    color: #38D9A9;
+  }
+  .arch-nav-dropdown-item-secrets:hover {
+    color: #F8A5C2;
+  }
+
+  /* Light Mode Explicit Styles */
+  :global(html[data-theme="light"]) .navbar-surface {
+    background-color: rgba(244, 248, 246, 0.85) !important;
+    border-color: rgba(158, 196, 181, 0.65) !important;
+    box-shadow: 0 4px 20px -2px rgba(18, 38, 30, 0.06) !important;
+  }
+  :global(html[data-theme="light"]) .nav-brand-text {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .group:hover .nav-brand-text {
+    color: #137A5B !important;
+  }
+  :global(html[data-theme="light"]) .nav-link {
+    color: #243830 !important;
+  }
+  :global(html[data-theme="light"]) .nav-link:hover {
+    color: #137A5B !important;
+    background-color: rgba(162, 220, 183, 0.35) !important;
+  }
+  :global(html[data-theme="light"]) .nav-link-cta {
+    color: #0E6E4F !important;
+  }
+  :global(html[data-theme="light"]) .nav-link-cta:hover {
+    color: #09523D !important;
+  }
+  :global(html[data-theme="light"]) .nav-divider {
+    background-color: rgba(158, 196, 181, 0.7) !important;
+  }
+  :global(html[data-theme="light"]) .nav-action-btn {
+    background-color: rgba(162, 220, 183, 0.45) !important;
+    border-color: #728D80 !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .nav-action-btn:hover {
+    background-color: rgba(162, 220, 183, 0.75) !important;
+    border-color: #137A5B !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .arch-nav-dropdown-menu {
+    background-color: #FFFFFF !important;
+    border-color: rgba(158, 196, 181, 0.85) !important;
+    box-shadow: 0 12px 32px rgba(18, 38, 30, 0.12) !important;
+  }
+  :global(html[data-theme="light"]) .arch-nav-dropdown-item {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .arch-nav-dropdown-item:hover {
+    background-color: #EAF2EE !important;
+  }
+  :global(html[data-theme="light"]) .arch-nav-dropdown-item-apply:hover {
+    color: #0C7554 !important;
+  }
+  :global(html[data-theme="light"]) .arch-nav-dropdown-item-secrets:hover {
+    color: #BD1C54 !important;
+  }
+</style>
+
+<script>
+  function setupThemeToggle() {
+    const btn = document.getElementById('theme-toggle-btn');
+    const sunIcon = document.getElementById('theme-sun-icon');
+    const moonIcon = document.getElementById('theme-moon-icon');
+
+    function updateIcons(currentTheme: string) {
+      if (currentTheme === 'light') {
+        sunIcon?.classList.add('hidden');
+        moonIcon?.classList.remove('hidden');
+      } else {
+        sunIcon?.classList.remove('hidden');
+        moonIcon?.classList.add('hidden');
+      }
+    }
+
+    function getResolvedTheme() {
+      const stored = typeof localStorage !== 'undefined'
+        ? (localStorage.getItem('chaos-theme') || localStorage.getItem('starlight-theme') || localStorage.getItem('theme'))
+        : null;
+      if (stored === 'light' || stored === 'dark') {
+        return stored;
+      }
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light';
+      }
+      return 'dark';
+    }
+
+    const current = getResolvedTheme();
+    document.documentElement.setAttribute('data-theme', current);
+    document.documentElement.dataset.theme = current;
+    document.body?.setAttribute('data-theme', current);
+    updateIcons(current);
+
+    window.addEventListener('theme-change', (e: any) => {
+      if (e.detail?.theme) {
+        updateIcons(e.detail.theme);
+      }
+    });
+
+    btn?.addEventListener('click', () => {
+      const active = (document.documentElement.getAttribute('data-theme') || document.documentElement.dataset.theme) === 'light' ? 'light' : 'dark';
+      const nextTheme = active === 'light' ? 'dark' : 'light';
+      
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      document.documentElement.dataset.theme = nextTheme;
+      document.body?.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('chaos-theme', nextTheme);
+      localStorage.setItem('starlight-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      updateIcons(nextTheme);
+    });
+  }
+
+  setupThemeToggle();
+  document.addEventListener('astro:page-load', setupThemeToggle);
+</script>

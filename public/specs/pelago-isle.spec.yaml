@@ -1,0 +1,25 @@
+# =============================================================================
+# Ch-aOS — Pelago Isle Infrastructure Blueprint Specification
+# =============================================================================
+# Used with 'chaos provision' to create cloud and virtualized infrastructure.
+
+apiVersion: "pelago.chaos/v1"
+kind: "Isle"
+metadata:
+  name: "staging-cluster-node"
+  provider: "proxmox"
+  region: "dc-brazil-south"
+
+spec:
+  resources:
+    - name: "k3s-master-01"
+      type: "compute.vm"
+      properties:
+        cores: 4
+        memory_mb: 8192
+        disk_gb: 50
+        template: "archlinux-cloudinit-v2"
+        network:
+          bridge: "vmbr0"
+          ip_cidr: "192.168.1.150/24"
+          gateway: "192.168.1.1"

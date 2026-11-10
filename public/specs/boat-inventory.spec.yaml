@@ -1,0 +1,31 @@
+# =============================================================================
+# Ch-aOS — Boat Fleet Inventory Specification
+# =============================================================================
+# Dynamic or static multi-host fleet inventory for agentless orchestration.
+
+boats:
+  - name: "boat-styx-edge-01"
+    host: "10.0.10.21"
+    port: 22
+    user: "dex"
+    tags:
+      - edge
+      - gateway
+      - archlinux
+
+  - name: "boat-styx-edge-02"
+    host: "10.0.10.22"
+    port: 22
+    user: "dex"
+    tags:
+      - edge
+      - gateway
+      - archlinux
+
+  - name: "boat-db-primary"
+    host: "10.0.20.15"
+    port: 22
+    user: "postgres"
+    tags:
+      - database
+      - production

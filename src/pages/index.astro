@@ -1,0 +1,123 @@
+---
+// index.astro
+// Ch-aOS Landing Page with authentic Forest Green palette and English copy
+import BackgroundGrid from '../components/BackgroundGrid.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import BathymetricDivider from '../components/BathymetricDivider.astro';
+import AlternatingFeatures from '../components/AlternatingFeatures.astro';
+import ComparisonCarousel from '../components/ComparisonCarousel.astro';
+import Showcase from '../components/Showcase.astro';
+import Quickstart from '../components/Quickstart.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+const title = "Ch-aOS";
+const description = "Ch-aOS is an open-source Python SDK and CLI suite that unifies IaC, agentless CM, and Secret Management into a single programmable workflow. The same declarative spec that configures your own machine, manages entire fleets, and provisions clusters on-prem or in the cloud.";
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = Astro.site ? new URL(base ? `${base}/` : '/', Astro.site).href : 'https://Ch-aOS-Ch.github.io/Ch-aOS/';
+// Imagem de compartilhamento social (quando criar o card, basta salvar em public/og-card.png)
+const ogImageUrl = Astro.site ? new URL(`${base}/og-card.png`, Astro.site).href : 'https://Ch-aOS-Ch.github.io/Ch-aOS/og-card.png';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={siteUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={siteUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="shortcut icon" href={`${base}/favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${base}/favicon.svg`} />
+    <script is:inline>
+      (function() {
+        function getResolvedTheme() {
+          const stored = typeof localStorage !== 'undefined'
+            ? (localStorage.getItem('chaos-theme') || localStorage.getItem('starlight-theme') || localStorage.getItem('theme'))
+            : null;
+          if (stored === 'light' || stored === 'dark') {
+            return stored;
+          }
+          if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            return 'light';
+          }
+          return 'dark';
+        }
+
+        const theme = getResolvedTheme();
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+
+        if (typeof window !== 'undefined' && window.matchMedia) {
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const stored = typeof localStorage !== 'undefined'
+              ? (localStorage.getItem('chaos-theme') || localStorage.getItem('starlight-theme') || localStorage.getItem('theme'))
+              : null;
+            if (stored !== 'light' && stored !== 'dark') {
+              const newTheme = getResolvedTheme();
+              document.documentElement.dataset.theme = newTheme;
+              document.documentElement.setAttribute('data-theme', newTheme);
+              if (document.body) {
+                document.body.setAttribute('data-theme', newTheme);
+              }
+              window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: newTheme } }));
+            }
+          });
+        }
+      })();
+    </script>
+    <script is:inline src={`${base}/code-shader.js?v=2.5`} defer></script>
+  </head>
+  <body class="relative min-h-screen flex flex-col bg-[var(--page-bg)] text-[var(--page-text)] antialiased selection:bg-[#38D9A9] selection:text-[#121916] w-full max-w-full overflow-x-hidden">
+    <BackgroundGrid />
+    <Navbar />
+    <main class="flex-1">
+      <Hero />
+      <BathymetricDivider 
+        variant="shelf" 
+        label="ENTERING THE SOUND" 
+        depth="-180m" 
+        coordinates="38°42'N 09°11'W" 
+      />
+      <Showcase />
+      <BathymetricDivider 
+        variant="trench" 
+        label="PELAGO ARCHIPELAGO" 
+        depth="-90m" 
+        coordinates="38°55'N 09°24'W" 
+      />
+      <AlternatingFeatures />
+      <BathymetricDivider 
+        variant="shallows" 
+        label="CHARTED SHALLOWS" 
+        depth="-30m" 
+        coordinates="39°05'N 09°38'W" 
+      />
+      <ComparisonCarousel />
+      <BathymetricDivider 
+        variant="harbor" 
+        label="LIMANI HARBOR // SAFE DOCK" 
+        depth="-5m" 
+        coordinates="39°12'N 09°45'W" 
+      />
+      <Quickstart />
+    </main>
+    <Footer />
+  </body>
+</html>

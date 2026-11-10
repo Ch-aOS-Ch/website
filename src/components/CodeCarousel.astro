@@ -1,0 +1,348 @@
+---
+// CodeCarousel.astro
+// Code showcase with official Ch-aOS palette (#121916, #38D9A9, #3D524A, #C1C9D6, #E8F0EC)
+import { Code } from 'astro:components';
+import { chaosThemes } from '../themes/index.mjs';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const choboloCode = `# ch-obolo.yml
+
+# IaC
+pelago:
+  - name: "prod-vpc"
+    type: "aws:ec2:Vpc"
+    properties:
+      cidrBlock: "10.0.0.0/16"
+      enableDnsHostnames: true
+
+  - name: "web-server"
+    isle: "aws-ec2"
+    depends_on: ["prod-vpc"]
+    config:
+      instance_type: "t3.medium"
+      ami: "ami-0c55b159cbfafe1f0"
+      key_name: "deployer-key"
+    exports:
+      hosts:
+        web-server:
+          ssh_hostname: "\${web-server.publicIp}"
+          ssh_user: "ubuntu"
+
+# Multi-fleet system
+fleet:
+  parallelism: 5
+  hosts:
+    web-01:
+      ssh_hostname: "192.168.1.50"
+      ssh_user: "deployer"
+      ssh_port: 22
+      ssh_key: "~/.ssh/id_ed25519"
+      tags: ["web", "prod"]
+
+# Declarative system configuration
+system_packages:
+  - "neovim"
+  - "ripgrep"
+  - "tailscale"
+  - "docker.io"
+
+users:
+  - name: "deployer"
+    shell: "/bin/bash"
+    sudo: true
+    groups: ["wheel", "docker"]`;
+
+const roleCode = ` # Logic in Python
+from chaos.lib.roles.role import Role
+from chaos.lib.args.dataclasses import Delta, ResultPayload
+from pyinfra.operations import server
+
+class SystemPackagesRole(Role):
+    """Canonical 3-stage SDK lifecycle: get_context -> delta -> plan"""
+    def __init__(self):
+        super().__init__(
+            name="system_packages",
+            necessary_chobolo_keys=["system_packages"]
+        )
+
+    def get_context(self, state, host, chobolo: dict = {}, secrets: dict = {}):
+        return {"installed_packages": host.get_fact(server.Packages)}
+
+    def delta(self, context: dict = {}) -> Delta:
+        target = set(self.chobolo.get("system_packages", []))
+        installed = set(context.get("installed_packages", {}).keys())
+        return Delta(to_add={"packages": list(target - installed)})
+
+    def plan(self, state, host, delta: Delta) -> ResultPayload:
+        pkgs = delta.to_add.get("packages", [])
+        server.packages(
+            name=f"Install declared packages",
+            packages=pkgs,
+            present=True,
+            _sudo=True
+        )
+        return ResultPayload(success=True, message=["Packages planned successfully"])`;
+
+const cliCode = `# 1. preview your IaC plan
+$ chaos provision preview prod aws-stack --secrets --provider bw.age --diff
+# $ chaos provision preview prod aws-stack -sDp bw.age
+
+INFO: Pelago program created successfully.
+INFO: Stack dev created or selected successfully.
+INFO: Running Pulumi preview for stack 'prod'...
+     Type                       Name               Plan       Info
+     pulumi:pulumi:Stack        aws-stack-prod                
+ +-  aws:ec2:SecurityGroup      web-sg             replace    [diff: ~ingress]
+ ~   aws:ec2:Instance           web-server         update     [diff: ~instanceType]
+ +   aws:s3:Bucket              chaos-assets-prod  create     
+
+Resources:
+    + 1 to create
+    ~ 1 to update
+    +-1 to replace
+    3 changes. 2 unchanged
+
+INFO: Pulumi preview for stack 'prod' completed successfully.
+Pulumi Preview Change
+       Summary
+┏━━━━━━━━━━━┳━━━━━━━┓
+┃ Operation ┃ Count ┃
+┡━━━━━━━━━━━╇━━━━━━━┩
+│ Same      │   2   │
+├───────────┼───────┤
+│ Update    │   3   │
+└───────────┴───────┘
+INFO: Secrets removed from stack prod.
+
+# 2. Pipe RAM secrets directly to Pelago, provision cluster and apply RKE2 role
+$ chaos secrets cat sudo_pass -vp rbw.age | chaos provision up dev k8s-test-hw -sDp rbw.age -A rke2 # use -d for dry-run preview
+
+INFO: Pelago program created successfully.
+INFO: Stack dev created or selected successfully.
+INFO: Provisioning infrastructure for stack 'dev'...
+Refreshing (dev):
+
+     Type                       Name               Status     Info
+     pulumi:pulumi:Stack        aws-stack-dev      updated    
+ +-  aws:ec2:SecurityGroup      web-sg             replaced   
+ ~   aws:ec2:Instance           web-server         updated    
+ +   aws:s3:Bucket              chaos-assets-dev   created    
+
+Resources:
+    3 updated. 2 unchanged
+
+Please, enter your sudo password:: # can be passed via stdin or file
+INFO: Collecting host contexts...
+...
+
+`;
+---
+
+<div class="code-window-card backdrop-blur-md rounded-none shadow-2xl overflow-hidden">
+  <div class="code-window-header flex items-center justify-between gap-2 px-2.5 sm:px-5 py-2 sm:py-3 border-b border-[#3D524A]/40">
+    <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto no-scrollbar py-0.5">
+      <div class="flex items-center gap-1 sm:gap-1.5 bg-[#121916]/60 p-0.5 sm:p-1 rounded-none border border-[#3D524A]/60 text-xs sm:text-[13px] font-mono shrink-0" id="code-tabs" role="tablist" aria-label="Code examples">
+        <button 
+          type="button" 
+          role="tab"
+          id="tab-btn-chobolo"
+          aria-selected="true"
+          aria-controls="tab-chobolo"
+          tabindex="0"
+          data-target="tab-chobolo" 
+          class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap"
+        >
+          ch-obolo.yml
+        </button>
+        <button
+          type="button" 
+          role="tab"
+          id="tab-btn-role"
+          aria-selected="false"
+          aria-controls="tab-role"
+          tabindex="-1"
+          data-target="tab-role" 
+          class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap"
+        >
+          role.py
+        </button>
+        <button 
+          type="button" 
+          role="tab"
+          id="tab-btn-cli"
+          aria-selected="false"
+          aria-controls="tab-cli"
+          tabindex="-1"
+          data-target="tab-cli" 
+          class="tab-btn px-2.5 sm:px-3 py-1.5 min-h-[44px] sm:min-h-0 flex items-center justify-center rounded-none font-medium transition-colors cursor-pointer text-[11px] sm:text-[13px] shrink-0 whitespace-nowrap"
+        >
+          run command
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+      <button
+        type="button"
+        class="copy-code-btn flex items-center justify-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 min-h-[44px] sm:min-h-0 text-xs font-mono cursor-pointer rounded-none relative z-10"
+        title="Copy active code"
+        aria-label="Copy active code"
+        aria-live="polite"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span class="copy-label">Copy</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="p-3 sm:p-6 font-mono text-xs sm:text-sm md:text-base leading-relaxed overflow-x-auto overflow-y-auto h-[340px] sm:h-[490px] text-[#E8F0EC] [data-theme=light]:text-[#14241E]">
+    <div id="tab-chobolo" role="tabpanel" aria-labelledby="tab-btn-chobolo" tabindex="0" class="tab-pane block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+      <Code code={choboloCode} lang="yaml" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+    </div>
+
+    <div id="tab-role" role="tabpanel" aria-labelledby="tab-btn-role" tabindex="0" class="tab-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+      <Code code={roleCode} lang="python" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+    </div>
+
+    <div id="tab-cli" role="tabpanel" aria-labelledby="tab-btn-cli" tabindex="0" class="tab-pane hidden focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#38D9A9] rounded">
+      <Code code={cliCode} lang="bash" themes={chaosThemes} class="bg-transparent! m-0! p-0!" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .code-window-card pre,
+  .code-window-card code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+  .tab-btn[aria-selected="true"] {
+    color: #E8F0EC;
+    background-color: #25342E;
+    border: 1px solid rgba(248, 165, 194, 0.6);
+  }
+  .tab-btn[aria-selected="false"] {
+    color: #9CA8B6;
+    border: 1px solid transparent;
+  }
+  .tab-btn[aria-selected="false"]:hover {
+    color: #F8A5C2;
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="true"] {
+    color: #C92861 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #C92861 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(201, 40, 97, 0.12);
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="false"] {
+    color: #486156 !important;
+  }
+  :global(html[data-theme="light"]) .tab-btn[aria-selected="false"]:hover {
+    color: #C92861 !important;
+  }
+  :global(html[data-theme="light"]) .code-encoding {
+    color: #385549 !important;
+  }
+  :global(html[data-theme="light"]) .copy-code-btn {
+    background-color: rgba(225, 240, 232, 0.95) !important;
+    border-color: #9EC4B5 !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .copy-code-btn:hover {
+    background-color: #D4DFDA !important;
+    border-color: #137A5B !important;
+    color: #137A5B !important;
+  }
+</style>
+
+<script>
+  function setupHeroTabs() {
+    const tabButtons = document.querySelectorAll<HTMLButtonElement>('#code-tabs .tab-btn');
+    const tabPanes = document.querySelectorAll<HTMLElement>('.tab-pane');
+    const tabsContainer = document.getElementById('code-tabs');
+
+    function activateTab(targetBtn: HTMLButtonElement) {
+      const targetId = targetBtn.getAttribute('data-target');
+
+      tabButtons.forEach(btn => {
+        const isSelected = btn === targetBtn;
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        btn.setAttribute('tabindex', isSelected ? '0' : '-1');
+      });
+
+      tabPanes.forEach(pane => {
+        if (pane.id === targetId) {
+          pane.classList.remove('hidden');
+          pane.classList.add('block');
+        } else {
+          pane.classList.remove('block');
+          pane.classList.add('hidden');
+        }
+      });
+    }
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activateTab(button);
+      });
+    });
+
+    if (tabsContainer && !tabsContainer.dataset.keyboardBound) {
+      tabsContainer.dataset.keyboardBound = 'true';
+      tabsContainer.addEventListener('keydown', (e: KeyboardEvent) => {
+        const tabs = Array.from(tabButtons);
+        const currentIndex = tabs.findIndex(tab => tab === document.activeElement);
+        if (currentIndex === -1) return;
+
+        let nextIndex = -1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nextIndex = (currentIndex + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          nextIndex = 0;
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          nextIndex = tabs.length - 1;
+        }
+
+        if (nextIndex !== -1) {
+          tabs[nextIndex].focus();
+          activateTab(tabs[nextIndex]);
+        }
+      });
+    }
+
+    const copyBtn = document.querySelector<HTMLButtonElement>('.code-window-card .copy-code-btn');
+    if (copyBtn && !copyBtn.dataset.listenerAttached) {
+      copyBtn.dataset.listenerAttached = 'true';
+      copyBtn.addEventListener('click', () => {
+        const activePane = document.querySelector('.code-window-card .tab-pane.block');
+        const codeElement = activePane ? activePane.querySelector('code') || activePane : null;
+        if (codeElement) {
+          const text = codeElement.innerText || codeElement.textContent || '';
+          navigator.clipboard.writeText(text.trim());
+          const label = copyBtn.querySelector('.copy-label');
+          if (label) {
+            const originalText = label.textContent;
+            label.textContent = 'Copied!';
+            setTimeout(() => {
+              label.textContent = originalText;
+            }, 1500);
+          }
+        }
+      });
+    }
+  }
+
+  setupHeroTabs();
+  document.addEventListener('astro:page-load', setupHeroTabs);
+</script>

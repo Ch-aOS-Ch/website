@@ -1,0 +1,232 @@
+---
+// Quickstart.astro
+// Technical quickstart with real commands and official Ch-aOS palette (#121916, #38D9A9, #3D524A, #C1C9D6, #E8F0EC)
+import GlossaryTerm from './GlossaryTerm.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<section id="quickstart" class="py-12 sm:py-20 scroll-mt-24 relative">
+  <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+
+    <div class="quickstart-section-surface backdrop-blur-md rounded-none p-4 sm:p-12 overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        
+        <!-- Left: Installation Information -->
+        <div class="lg:col-span-6 text-left">
+          
+          <h2 class="quickstart-title text-2xl sm:text-3xl font-bold mb-4">
+            Get Started in Under 2 Minutes
+          </h2>
+          
+          <p class="quickstart-desc text-xs sm:text-sm leading-relaxed mb-6">
+            Install the <span class="quickstart-accent font-mono font-semibold">chaos</span> binary, install the chaos-dots <GlossaryTerm termKey="soul" display="Soul" /> via <GlossaryTerm termKey="styx" display="Styx" />, and simulate your desired dotfile symlinks before touching disk.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a 
+              href={`${base}/getting-started/`}
+              class="btn-primary text-xs sm:text-sm inline-flex items-center justify-center py-2.5 px-5"
+            >
+              Full Installation Guide
+              <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+
+            <a
+              href={`${base}/core-concepts/`}
+              class="btn-secondary text-xs sm:text-sm inline-flex items-center justify-center py-2.5 px-5"
+            >
+              Core Concepts
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Terminal Commands Box -->
+        <div class="lg:col-span-6 w-full font-mono text-xs">
+          <div class="glass-panel-inner p-3.5 sm:p-6 space-y-3 sm:space-y-4">
+            
+            <div>
+              <div class="step-title text-[13px] sm:text-sm mb-1.5 font-sans font-semibold flex items-center justify-between">
+                <span>Install CLI</span>
+                <a 
+                  href="https://github.com/Ch-aOS-Ch/Ch-aOS/blob/main/install.sh" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="text-[11px] font-mono text-[#8E9EA0] hover:text-[#38D9A9] [data-theme=light]:text-[#3D524A] [data-theme=light]:hover:text-[#137A5B] transition-colors inline-flex items-center gap-1"
+                >
+                  <span>inspect install.sh</span>
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+              </div>
+              <div class="quickstart-code-box relative overflow-hidden flex items-center justify-between gap-2 p-2.5 sm:p-3.5 rounded-none bg-[#121916]/55 backdrop-blur-sm border border-[#3D524A]/50 group hover:border-[#38D9A9]/60 transition-colors shadow-sm">
+                <code id="install-cmd-code" class="quickstart-code text-[#E8F0EC] text-xs sm:text-sm md:text-[14px] min-w-0 flex-1 whitespace-nowrap overflow-x-auto select-all font-mono no-scrollbar">curl -LsSf https://raw.githubusercontent.com/Ch-aOS-Ch/Ch-aOS/main/install.sh | sudo bash</code>
+                <button 
+                  type="button"
+                  id="install-copy-btn"
+                  class="copy-quickstart text-xs sm:text-sm text-[#8E9EA0] hover:text-[#7CFAD3] transition-colors shrink-0 px-2.5 py-2 sm:p-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 inline-flex items-center justify-center cursor-pointer font-sans rounded-none font-semibold relative z-10"
+                  data-cmd="curl -LsSf https://raw.githubusercontent.com/Ch-aOS-Ch/Ch-aOS/main/install.sh | sudo bash"
+                  title="Copy command"
+                  aria-label="Copy command to clipboard"
+                  aria-live="polite"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="step-title text-[13px] sm:text-sm mb-1.5 font-sans font-semibold">
+                Invoke dotfiles Soul from Styx
+              </div>
+              <div class="quickstart-code-box relative overflow-hidden flex items-center justify-between gap-2 p-2.5 sm:p-3.5 rounded-none bg-[#121916]/55 backdrop-blur-sm border border-[#3D524A]/50 group hover:border-[#38D9A9]/60 transition-colors shadow-sm">
+                <code class="quickstart-code text-[#E8F0EC] text-xs sm:text-sm md:text-[14px] min-w-0 flex-1 whitespace-nowrap overflow-x-auto select-all font-mono no-scrollbar">chaos styx invoke chaos-dots</code>
+                <button 
+                  type="button"
+                  class="copy-quickstart text-xs sm:text-sm text-[#8E9EA0] hover:text-[#7CFAD3] transition-colors shrink-0 px-2.5 py-2 sm:p-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 inline-flex items-center justify-center cursor-pointer font-sans rounded-none font-semibold relative z-10"
+                  data-cmd="chaos styx invoke chaos-dots"
+                  title="Copy command"
+                  aria-label="Copy command to clipboard"
+                  aria-live="polite"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="step-title text-[13px] sm:text-sm mb-1.5 font-sans font-semibold">
+                Generate your first Ch-obolo (editable template)
+              </div>
+              <div class="quickstart-code-box relative overflow-hidden flex items-center justify-between gap-2 p-2.5 sm:p-3.5 rounded-none bg-[#121916]/55 backdrop-blur-sm border border-[#3D524A]/50 group hover:border-[#38D9A9]/60 transition-colors shadow-sm">
+                <code class="quickstart-code text-[#E8F0EC] text-xs sm:text-sm md:text-[14px] min-w-0 flex-1 whitespace-nowrap overflow-x-auto select-all font-mono no-scrollbar">chaos init chobolo dotfiles --template --human > first-chobolo.yaml</code>
+                <button 
+                  type="button"
+                  class="copy-quickstart text-xs sm:text-sm text-[#8E9EA0] hover:text-[#7CFAD3] transition-colors shrink-0 px-2.5 py-2 sm:p-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 inline-flex items-center justify-center cursor-pointer font-sans rounded-none font-semibold relative z-10"
+                  data-cmd="chaos init chobolo dotfiles --template --human > first-chobolo.yaml"
+                  title="Copy command"
+                  aria-label="Copy command to clipboard"
+                  aria-live="polite"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="step-title text-[13px] sm:text-sm mb-1.5 font-sans font-semibold">
+                Preview all changes to be made without applying them
+              </div>
+              <div class="quickstart-code-box relative overflow-hidden flex items-center justify-between gap-2 p-2.5 sm:p-3.5 rounded-none bg-[#121916]/55 backdrop-blur-sm border border-[#3D524A]/50 group hover:border-[#38D9A9]/60 transition-colors shadow-sm">
+                <code class="quickstart-code text-[#E8F0EC] text-xs sm:text-sm md:text-[14px] min-w-0 flex-1 whitespace-nowrap overflow-x-auto select-all font-mono no-scrollbar">chaos apply dotfiles --dry -c first-chobolo.yaml</code>
+                <button 
+                  type="button"
+                  class="copy-quickstart text-xs sm:text-sm text-[#8E9EA0] hover:text-[#7CFAD3] transition-colors shrink-0 px-2.5 py-2 sm:p-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 inline-flex items-center justify-center cursor-pointer font-sans rounded-none font-semibold relative z-10"
+                  data-cmd="chaos apply dotfiles --dry -c first-chobolo.yaml"
+                  title="Copy command"
+                  aria-label="Copy command to clipboard"
+                  aria-live="polite"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .quickstart-section-surface {
+    background-color: rgba(18, 25, 22, 0.45);
+    border: 1px solid rgba(61, 82, 74, 0.4);
+  }
+  :global(html[data-theme="light"]) .quickstart-section-surface {
+    background-color: rgba(244, 248, 246, 0.65) !important;
+    border-color: rgba(158, 196, 181, 0.55) !important;
+  }
+
+  .quickstart-alt-note {
+    color: #8E9EA0;
+  }
+  :global(html[data-theme="light"]) .quickstart-alt-note {
+    color: #3D524A !important;
+  }
+
+  .quickstart-alt-code {
+    color: #C1C9D6;
+  }
+  :global(html[data-theme="light"]) .quickstart-alt-code {
+    color: #14241E !important;
+  }
+
+  .quickstart-title {
+    color: #E8F0EC;
+  }
+  :global(html[data-theme="light"]) .quickstart-title {
+    color: #14241E !important;
+  }
+
+  .quickstart-desc {
+    color: #C1C9D6;
+  }
+  :global(html[data-theme="light"]) .quickstart-desc {
+    color: #243830 !important;
+  }
+
+  .quickstart-accent {
+    color: #38D9A9;
+    transition: color 150ms ease;
+  }
+  :global(html[data-theme="light"]) .quickstart-accent {
+    color: #137A5B !important;
+  }
+
+  .step-title {
+    color: #C1C9D6;
+  }
+  :global(html[data-theme="light"]) .step-title {
+    color: #14241E !important;
+    font-weight: 700 !important;
+  }
+  :global(html[data-theme="light"]) .quickstart-code {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .copy-quickstart {
+    color: #486156 !important;
+  }
+  :global(html[data-theme="light"]) .copy-quickstart:hover {
+    color: #09523D !important;
+  }
+</style>
+
+<script>
+  function setupQuickstart() {
+    // Copy buttons
+    const copyBtns = document.querySelectorAll('.copy-quickstart');
+    copyBtns.forEach(btn => {
+      if ((btn as HTMLElement).dataset.bound) return;
+      (btn as HTMLElement).dataset.bound = 'true';
+      btn.addEventListener('click', () => {
+        const cmd = btn.getAttribute('data-cmd');
+        if (cmd) {
+          navigator.clipboard.writeText(cmd);
+          const original = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 1500);
+        }
+      });
+    });
+  }
+
+  setupQuickstart();
+  document.addEventListener('astro:page-load', setupQuickstart);
+</script>

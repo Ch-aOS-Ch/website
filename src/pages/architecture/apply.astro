@@ -1,0 +1,61 @@
+---
+// apply.astro
+// Interactive architecture explorer for chaos apply
+import BackgroundGrid from '../../components/BackgroundGrid.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import ArchExplorer from '../../components/architecture/ArchExplorer.astro';
+import { applyArchitecture } from '../../data/architecture/apply';
+import '../../styles/global.css';
+
+const title = "Ch-aOS Architecture · chaos apply";
+const description = "Interactive system architecture explorer for chaos apply: declarative roles, 3-stage get_context -> delta -> plan lifecycle, Pyinfra execution engine, and fleet telemetry.";
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = Astro.site ? new URL(`${base}/architecture/apply/`, Astro.site).href : 'https://Ch-aOS-Ch.github.io/Ch-aOS/architecture/apply/';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={siteUrl} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <script is:inline>
+      (function() {
+        function getResolvedTheme() {
+          const stored = typeof localStorage !== 'undefined'
+            ? (localStorage.getItem('chaos-theme') || localStorage.getItem('starlight-theme') || localStorage.getItem('theme'))
+            : null;
+          if (stored === 'light' || stored === 'dark') return stored;
+          if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+          return 'dark';
+        }
+        const theme = getResolvedTheme();
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        if (document.body) {
+          document.body.dataset.theme = theme;
+          document.body.setAttribute('data-theme', theme);
+        }
+      })();
+    </script>
+    <script is:inline src={`${base}/code-shader.js?v=2.5`} defer></script>
+  </head>
+  <body class="relative min-h-screen flex flex-col bg-[var(--page-bg)] text-[var(--page-text)] antialiased selection:bg-[#38D9A9] selection:text-[#121916] w-full max-w-full overflow-x-hidden" style="background-color: var(--page-bg); color: var(--page-text);">
+    <BackgroundGrid />
+    <Navbar />
+    
+    <main class="flex-1 w-full">
+      <ArchExplorer
+        arch={applyArchitecture}
+        oppositeArchUrl={`${base}/architecture/secrets/`}
+        oppositeArchLabel="chaos secrets Architecture"
+      />
+    </main>
+
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chaos.dexmachina.com/schemas/boat-inventory.schema.json",
+  "title": "Ch-aOS Boat Fleet Inventory Schema",
+  "description": "Specification for Boat multi-host fleet inventories in Ch-aOS.",
+  "type": "object",
+  "required": [
+    "boats"
+  ],
+  "properties": {
+    "boats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "host"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Logical boat identifier."
+          },
+          "host": {
+            "type": "string",
+            "description": "IP or FQDN."
+          },
+          "port": {
+            "type": "integer",
+            "default": 22
+          },
+          "user": {
+            "type": "string",
+            "default": "root"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fleet grouping tags (e.g. web, database, production)."
+          },
+          "chobolo_override": {
+            "type": "string",
+            "description": "Path to specific Ch-obolo configuration for this boat."
+          }
+        }
+      }
+    }
+  }
+}

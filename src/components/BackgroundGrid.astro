@@ -1,0 +1,134 @@
+---
+// BackgroundGrid.astro
+// Ch-aOS Official Background - 60% Horizon Reach with Calibrated Vortex Center Offset
+// Dark Mode: Maelstrom 3D Voxel Vortex | Light Mode: Storm Surge 3D Voxel Waves
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<div id="chaos-bg-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+
+  <!-- ========================================================================= -->
+  <!-- STRICT HORIZONTAL BOTTOM LIGHT BAR (Clean Pure Green Floor Spotlight)      -->
+  <!-- ========================================================================= -->
+  
+  <!-- Barra de Luz Ascendente Dark Mode (Decaimento contínuo e cristalino) -->
+  <div 
+    class="dark-spotlight absolute bottom-0 inset-x-0 h-[240px] bg-gradient-to-t from-[#18362B]/80 from-0% via-[#18362B]/20 via-50% to-transparent z-10"
+  ></div>
+
+  <!-- Brilho Difuso na Base Dark Mode (Núcleo verde menta suave no piso) -->
+  <div 
+    class="dark-spotlight absolute -bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[1720px] h-[200px] bg-[radial-gradient(ellipse_at_bottom,rgba(56,217,169,0.28)_0%,rgba(56,217,169,0.18)_20%,rgba(18,68,54,0.25)_45%,rgba(18,68,54,0.08)_65%,transparent_80%)] blur-[20px] z-10"
+  ></div>
+
+  <!-- Barra de Luz Ascendente Light Mode (Decaimento contínuo) -->
+  <div 
+    class="light-spotlight absolute bottom-0 inset-x-0 h-[240px] bg-gradient-to-t from-[#A2DCB7]/75 from-0% via-[#A2DCB7]/20 via-50% to-transparent z-10"
+  ></div>
+
+  <!-- Brilho Difuso na Base Light Mode -->
+  <div 
+    class="light-spotlight absolute -bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[1720px] h-[200px] bg-[radial-gradient(ellipse_at_bottom,rgba(19,122,91,0.25)_0%,rgba(19,122,91,0.18)_20%,rgba(162,220,183,0.25)_45%,rgba(162,220,183,0.08)_65%,transparent_80%)] blur-[20px] z-10"
+  ></div>
+
+
+
+  <!-- ========================================================================= -->
+  <!-- 3D ISOMETRIC VOXEL WATER CANVAS (Calibrated Vortex Downward Offset)        -->
+  <!-- ========================================================================= -->
+
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="wave-canvas-wrapper absolute inset-0 [mask-image:linear-gradient(to_top,black_0%,rgba(0,0,0,0.95)_25%,rgba(0,0,0,0.55)_45%,rgba(0,0,0,0.15)_55%,transparent_60%)]">
+      <img 
+        src={`${base}/backgrounds/voxel-water-maelstrom-dark.webp`} 
+        alt="" 
+        class="dark-wave w-full h-full object-cover opacity-85 translate-y-28 sm:translate-y-36 md:translate-y-40 scale-[1.08]" 
+        loading="eager"
+        decoding="async"
+      />
+      <!-- Light Mode: Storm Surge Voxel Wave com offset ajustado -->
+      <img 
+        src={`${base}/backgrounds/voxel-water-storm-light.webp`} 
+        alt="" 
+        class="light-wave w-full h-full object-cover opacity-85 translate-y-28 sm:translate-y-36 md:translate-y-40 scale-[1.08]" 
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <!-- Escurecimento do topo 40% da tela para contraste e leitura perfeita -->
+    <div class="bg-top-darkening absolute inset-0"></div>
+  </div>
+
+</div>
+
+<style>
+  /* Hardware Accelerated Layer Isolation for Background */
+  #chaos-bg-container {
+    contain: strict;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  .wave-canvas-wrapper {
+    contain: paint;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  .dark-spotlight,
+  .light-spotlight {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  /* Base Dark Mode Configuration */
+  .dark-wave {
+    display: block !important;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+  .light-wave {
+    display: none !important;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  .bg-top-darkening {
+    background: linear-gradient(to bottom, #121916 35%, rgba(18, 25, 22, 0.75) 55%, transparent 100%);
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  /* Light Spotlight & Dark Spotlight Defaults */
+  :global(html:not([data-theme="light"])) .light-spotlight,
+  :global(html[data-theme="dark"]) .light-spotlight {
+    display: none !important;
+  }
+
+  :global(html:not([data-theme="light"])) .dark-spotlight,
+  :global(html[data-theme="dark"]) .dark-spotlight {
+    display: block !important;
+  }
+
+  /* Light Mode Overrides */
+  :global(html[data-theme="light"]) .dark-spotlight {
+    display: none !important;
+  }
+
+  :global(html[data-theme="light"]) .light-spotlight {
+    display: block !important;
+  }
+
+  :global(html[data-theme="light"]) .dark-wave {
+    display: none !important;
+  }
+
+  :global(html[data-theme="light"]) .light-wave {
+    display: block !important;
+  }
+
+  :global(html[data-theme="light"]) .bg-top-darkening {
+    background: linear-gradient(to bottom, #F4F8F6 35%, rgba(244, 248, 246, 0.75) 55%, transparent 100%) !important;
+  }
+</style>

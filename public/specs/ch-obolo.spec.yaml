@@ -1,0 +1,50 @@
+# =============================================================================
+# Ch-aOS — Ch-obolo Format Specification & Example
+# =============================================================================
+# A "Ch-obolo" is the single source of truth containing declarative state data.
+# Interpreted via OmegaConf and consumed by modular Roles during 'chaos apply'.
+
+hostname: "ch-workstation-01"
+timezone: "America/Sao_Paulo"
+locale: "en_US.UTF-8"
+
+# Declarative System Users
+users:
+  - name: "dex"
+    shell: "/bin/zsh"
+    sudo: true
+    groups:
+      - wheel
+      - docker
+      - video
+    ssh_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... dex@chaos"
+
+# System Package Enforcements
+packages:
+  - git
+  - neovim
+  - tmux
+  - zsh
+  - curl
+  - ripgrep
+  - fzf
+
+# Core Specific Extensions (e.g., Arch Linux AUR via Ch-aronte)
+aurPkgs:
+  - visual-studio-code-bin
+  - google-chrome
+
+# Services State
+services:
+  - name: "docker.service"
+    enabled: true
+    running: true
+  - name: "sshd.service"
+    enabled: true
+    running: true
+
+# Modular Soul Data Extensions
+dotfiles:
+  repo: "https://github.com/dexmachina/dotfiles.git"
+  target_dir: "~/.dotfiles"

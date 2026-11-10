@@ -1,0 +1,164 @@
+---
+// BathymetricDivider.astro
+// Nautical bathymetric contour divider representing the seafloor depths of the Ch-aOS archipelago
+interface Props {
+  depth?: string;
+  label?: string;
+  coordinates?: string;
+  variant?: 'shelf' | 'trench' | 'shallows' | 'harbor';
+  class?: string;
+}
+
+const {
+  depth = "-120m",
+  label = "PELAGO SOUNDINGS",
+  coordinates = "38°42'N 09°11'W",
+  variant = 'shelf',
+  class: className = ""
+} = Astro.props;
+---
+
+<div class={`bathymetric-divider-wrapper relative w-full overflow-hidden my-6 sm:my-10 select-none pointer-events-none ${className}`}>
+  <!-- SVG Bathymetric Contours -->
+  <div class="w-full flex items-center justify-center relative">
+    <svg 
+      class="bathymetric-svg w-full h-8 sm:h-12" 
+      viewBox="0 0 1440 48" 
+      fill="none" 
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <!-- 1. Linha Sólida 1 (Cheia de curvas ondulando cruzando o centro y=24) -->
+      <path 
+        class="contour-line contour-solid" 
+        d={variant === 'shelf'
+          ? "M 0 24 C 40 14, 80 14, 120 24 C 160 34, 200 34, 240 24 C 280 12, 320 12, 360 24 C 400 36, 440 36, 480 24 C 520 15, 560 15, 600 24 C 640 33, 680 33, 720 24 C 760 13, 800 13, 840 24 C 880 35, 920 35, 960 24 C 1000 15, 1040 15, 1080 24 C 1120 33, 1160 33, 1200 24 C 1240 12, 1280 12, 1320 24 C 1360 36, 1400 36, 1440 24"
+          : variant === 'trench'
+          ? "M 0 24 C 40 10, 80 10, 120 24 C 160 38, 200 38, 240 24 C 280 8, 320 8, 360 24 C 400 40, 440 40, 480 24 C 520 11, 560 11, 600 24 C 640 37, 680 37, 720 24 C 760 9, 800 9, 840 24 C 880 39, 920 39, 960 24 C 1000 11, 1040 11, 1080 24 C 1120 37, 1160 37, 1200 24 C 1240 8, 1280 8, 1320 24 C 1360 40, 1400 40, 1440 24"
+          : variant === 'shallows'
+          ? "M 0 24 C 30 16, 60 16, 90 24 C 120 32, 150 32, 180 24 C 210 15, 240 15, 270 24 C 300 33, 330 33, 360 24 C 390 17, 420 17, 450 24 C 480 31, 510 31, 540 24 C 570 16, 600 16, 630 24 C 660 32, 690 32, 720 24 C 750 15, 780 15, 810 24 C 840 33, 870 33, 900 24 C 930 17, 960 17, 990 24 C 1020 31, 1050 31, 1080 24 C 1110 16, 1140 16, 1170 24 C 1200 32, 1230 32, 1260 24 C 1290 15, 1320 15, 1350 24 C 1380 33, 1410 33, 1440 24"
+          : "M 0 24 C 45 15, 90 15, 135 24 C 180 33, 225 33, 270 24 C 315 14, 360 14, 405 24 C 450 34, 495 34, 540 24 C 580 16, 620 16, 660 24 C 700 32, 740 32, 780 24 C 825 14, 870 14, 915 24 C 960 34, 1005 34, 1050 24 C 1095 15, 1140 15, 1185 24 C 1230 33, 1275 33, 1320 24 C 1365 14, 1400 14, 1440 24"
+        }
+      />
+
+      <!-- 2. Linha Sólida 2 (Cheia de curvas em contrafase, cruzando a primeira no centro) -->
+      <path 
+        class="contour-line contour-solid-alt" 
+        d={variant === 'shelf'
+          ? "M 0 24 C 40 34, 80 34, 120 24 C 160 14, 200 14, 240 24 C 280 36, 320 36, 360 24 C 400 12, 440 12, 480 24 C 520 33, 560 33, 600 24 C 640 15, 680 15, 720 24 C 760 35, 800 35, 840 24 C 880 13, 920 13, 960 24 C 1000 33, 1040 33, 1080 24 C 1120 15, 1160 15, 1200 24 C 1240 36, 1280 36, 1320 24 C 1360 12, 1400 12, 1440 24"
+          : variant === 'trench'
+          ? "M 0 24 C 40 38, 80 38, 120 24 C 160 10, 200 10, 240 24 C 280 40, 320 40, 360 24 C 400 8, 440 8, 480 24 C 520 37, 560 37, 600 24 C 640 11, 680 11, 720 24 C 760 39, 800 39, 840 24 C 880 9, 920 9, 960 24 C 1000 37, 1040 37, 1080 24 C 1120 11, 1160 11, 1200 24 C 1240 40, 1280 40, 1320 24 C 1360 8, 1400 8, 1440 24"
+          : variant === 'shallows'
+          ? "M 0 24 C 30 32, 60 32, 90 24 C 120 16, 150 16, 180 24 C 210 33, 240 33, 270 24 C 300 15, 330 15, 360 24 C 390 31, 420 31, 450 24 C 480 17, 510 17, 540 24 C 570 32, 600 32, 630 24 C 660 16, 690 16, 720 24 C 750 33, 780 33, 810 24 C 840 15, 870 15, 900 24 C 930 31, 960 31, 990 24 C 1020 17, 1050 17, 1080 24 C 1110 32, 1140 32, 1170 24 C 1200 16, 1230 16, 1260 24 C 1290 33, 1320 33, 1350 24 C 1380 15, 1410 15, 1440 24"
+          : "M 0 24 C 45 33, 90 33, 135 24 C 180 15, 225 15, 270 24 C 315 34, 360 34, 405 24 C 450 14, 495 14, 540 24 C 580 32, 620 32, 660 24 C 700 16, 740 16, 780 24 C 825 34, 870 34, 915 24 C 960 14, 1005 14, 1050 24 C 1095 33, 1140 33, 1185 24 C 1230 15, 1275 15, 1320 24 C 1365 34, 1400 34, 1440 24"
+        }
+      />
+
+      <!-- 3. Linha Pontilhada Central (POR CIMA no eixo Z, 100% RETA no centro y=24) -->
+      <path 
+        class="contour-line contour-center-accent" 
+        d="M 0 24 L 1440 24" 
+      />
+    </svg>
+
+    <!-- Center Nautical Sounding Badge / Coordinate Chip -->
+    <div class="absolute inset-x-0 flex items-center justify-center">
+      <div class="bathymetric-badge px-3.5 py-1 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase flex items-center gap-2 backdrop-blur-md shadow-lg">
+        <span class="bathymetric-pin font-bold">⌖</span>
+        <span class="bathymetric-label font-semibold">{label}</span>
+        <span class="bathymetric-sep">|</span>
+        <span class="bathymetric-depth font-bold">{depth}</span>
+        <span class="hidden md:inline bathymetric-sep">|</span>
+        <span class="hidden md:inline bathymetric-coords text-[9px] opacity-75 font-mono">{coordinates}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  /* ========================================================= */
+  /* BATHYMETRIC DIVIDER - DARK THEME DEFAULT                  */
+  /* ========================================================= */
+  .bathymetric-svg {
+    filter: drop-shadow(0 0 8px rgba(56, 217, 169, 0.12));
+  }
+  .bathymetric-svg .contour-solid {
+    stroke: rgba(61, 82, 74, 0.65);
+    stroke-width: 1.1px;
+  }
+  .bathymetric-svg .contour-solid-alt {
+    stroke: rgba(61, 82, 74, 0.45);
+    stroke-width: 1.1px;
+  }
+  /* Linha pontilhada no eixo Z superior com destaque mint */
+  .bathymetric-svg .contour-center-accent {
+    stroke: #38D9A9;
+    stroke-width: 1.5px;
+    stroke-dasharray: 5 6;
+    animation: pulse-contour 6s ease-in-out infinite alternate;
+  }
+  .bathymetric-badge {
+    background-color: rgba(18, 25, 22, 0.90);
+    border: 1px solid rgba(61, 82, 74, 0.7);
+    color: #C1C9D6;
+  }
+  .bathymetric-pin,
+  .bathymetric-depth {
+    color: #38D9A9;
+  }
+  .bathymetric-sep {
+    color: #3D524A;
+  }
+
+  /* ========================================================= */
+  /* BATHYMETRIC DIVIDER - LIGHT THEME PARITY                  */
+  /* ========================================================= */
+  [data-theme="light"] .bathymetric-svg,
+  html[data-theme="light"] .bathymetric-svg {
+    filter: drop-shadow(0 0 6px rgba(14, 122, 90, 0.08));
+  }
+  [data-theme="light"] .bathymetric-svg .contour-solid,
+  html[data-theme="light"] .bathymetric-svg .contour-solid {
+    stroke: rgba(168, 196, 185, 0.8) !important;
+    stroke-width: 1.1px;
+  }
+  [data-theme="light"] .bathymetric-svg .contour-solid-alt,
+  html[data-theme="light"] .bathymetric-svg .contour-solid-alt {
+    stroke: rgba(19, 122, 91, 0.5) !important;
+    stroke-width: 1.1px;
+  }
+  [data-theme="light"] .bathymetric-svg .contour-center-accent,
+  html[data-theme="light"] .bathymetric-svg .contour-center-accent {
+    stroke: #0E7A5A !important;
+    stroke-width: 1.5px;
+    stroke-dasharray: 5 6;
+    animation: pulse-contour 6s ease-in-out infinite alternate;
+  }
+  [data-theme="light"] .bathymetric-badge,
+  html[data-theme="light"] .bathymetric-badge {
+    background-color: rgba(244, 248, 246, 0.95) !important;
+    border: 1px solid rgba(19, 122, 91, 0.45) !important;
+    color: #14241E !important;
+    box-shadow: 0 4px 14px rgba(19, 122, 91, 0.12) !important;
+  }
+  [data-theme="light"] .bathymetric-pin,
+  [data-theme="light"] .bathymetric-depth,
+  html[data-theme="light"] .bathymetric-pin,
+  html[data-theme="light"] .bathymetric-depth {
+    color: #0E7A5A !important;
+  }
+  [data-theme="light"] .bathymetric-sep,
+  html[data-theme="light"] .bathymetric-sep {
+    color: rgba(19, 122, 91, 0.45) !important;
+  }
+  [data-theme="light"] .bathymetric-coords,
+  html[data-theme="light"] .bathymetric-coords {
+    color: #4A6356 !important;
+  }
+
+  @keyframes pulse-contour {
+    0% { stroke-opacity: 0.55; }
+    100% { stroke-opacity: 0.95; }
+  }
+</style>

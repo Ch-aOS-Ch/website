@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Production build output
+dist/
+
+# Astro cache and generated types
+.astro/
+astro.log
+
+# Environment variables
+.env
+.env.production
+.env.local
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local cache
+.impeccable/
