@@ -66,7 +66,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <!-- Interactive Architecture Board Canvas Viewport Wrapper -->
   <div class="arch-viewport-wrapper relative w-full">
     <!-- Scrollable Architecture Viewport -->
-    <div id="arch-viewport" class="arch-viewport w-full overflow-x-auto overflow-y-visible pb-6 touch-pan-x overscroll-x-contain">
+    <div id="arch-viewport" class="arch-viewport w-full overflow-x-auto overflow-y-visible pb-6 overscroll-x-contain">
       <div id="arch-canvas-container" class="relative w-full overflow-visible my-4" style={`min-width: ${currentView.gridCols.includes('repeat(4') ? '1280px' : (currentView.gridCols.includes('repeat(3') ? '1060px' : (currentView.gridCols.includes('repeat(2') ? '720px' : '880px'))};`}>
         <!-- Zone Bounding Boxes Layer (z-0: Behind wires and cards) -->
         <div id="arch-zones-layer" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" aria-hidden="true"></div>
@@ -368,6 +368,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
                 border-color 0.2s ease, 
                 box-shadow 0.2s ease,
                 background-color 0.2s ease !important;
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
   }
   .arch-node:hover {
     border-color: var(--arch-card-border-hover) !important;
@@ -652,6 +654,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--arch-accent) var(--arch-card-bg);
+    touch-action: pan-x pan-y;
+  }
+  #arch-canvas-container {
+    touch-action: pan-x pan-y;
   }
   .arch-viewport::-webkit-scrollbar {
     height: 6px;
@@ -1103,6 +1109,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     }
 
     function bindCardHover(card) {
+      if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(hover: hover)').matches) {
+        return;
+      }
       card.addEventListener('pointerenter', () => {
         const id = card.dataset.nodeId;
         if (id) setFocusNode(id);
@@ -1506,8 +1515,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       });
     }
 
-    // Click Event Delegation
+    // Click Event Delegation with touch-scroll detection
+    let touchMoved = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    board.addEventListener('touchstart', (e: TouchEvent) => {
+      touchMoved = false;
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    board.addEventListener('touchmove', (e: TouchEvent) => {
+      if (e.touches && e.touches[0]) {
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dx > 8 || dy > 8) {
+          touchMoved = true;
+        }
+      }
+    }, { passive: true });
+
     board.addEventListener('click', (e) => {
+      if (touchMoved) {
+        touchMoved = false;
+        return;
+      }
       const card = e.target.closest('[data-node-id]');
       if (!card) return;
 
