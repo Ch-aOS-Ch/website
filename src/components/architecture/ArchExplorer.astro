@@ -15,11 +15,11 @@ const currentView: ArchView = arch.views[defaultViewId] || arch.views[arch.overv
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<div class="arch-explorer relative w-full max-w-[1560px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12" data-arch-id={arch.id} data-current-view={currentView.id}>
+<div class="arch-explorer relative w-full max-w-[1560px] mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-12" data-arch-id={arch.id} data-current-view={currentView.id}>
   
   <!-- Breadcrumbs & Quick Navigation Bar -->
-  <div class="arch-nav-bar flex flex-wrap items-center justify-between gap-4 mb-8 pb-4">
-    <nav class="arch-breadcrumbs flex items-center gap-2 text-xs sm:text-sm font-mono" aria-label="Architecture View Hierarchy">
+  <div class="arch-nav-bar flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8 pb-4">
+    <nav class="arch-breadcrumbs flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-mono min-w-0" aria-label="Architecture View Hierarchy">
       <button 
         type="button" 
         class="arch-crumb-btn arch-crumb-root font-bold cursor-pointer transition-colors" 
@@ -28,88 +28,107 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         {arch.systemName}
       </button>
       <span class="arch-crumb-sep">/</span>
-      <span id="crumb-current-view" class="arch-crumb-current font-semibold">
+      <span id="crumb-current-view" class="arch-crumb-current font-semibold truncate max-w-[200px] sm:max-w-none">
         {currentView.title}
       </span>
     </nav>
 
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       <!-- Return to Overview Button (Shown when in a drilldown) -->
       <button
         type="button"
         id="btn-back-overview"
         class:list={[
-          "arch-btn-back items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold transition-all cursor-pointer shadow-md",
+          "arch-btn-back items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold transition-all cursor-pointer shadow-md min-h-[36px]",
           currentView.id === 'overview' ? 'hidden' : 'inline-flex'
         ]}
         style={currentView.id === 'overview' ? 'display: none;' : 'display: inline-flex;'}
       >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
         <span>Back to Overview</span>
       </button>
+
+      <!-- Switch to Opposite Architecture (Apply <-> Secrets) -->
+      {oppositeArchUrl && (
+        <a
+          href={oppositeArchUrl}
+          class="arch-btn-switch inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold transition-all shadow-sm min-h-[36px]"
+        >
+          <span>{oppositeArchLabel || 'Switch Architecture'}</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      )}
     </div>
   </div>
 
   <!-- View Header with Prominent Back Action when inside a subsystem -->
-  <div class="arch-view-header mb-10 text-left">
-    <h1 id="view-title" class="arch-header-title text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3">
+  <div class="arch-view-header mb-6 sm:mb-10 text-left">
+    <h1 id="view-title" class="arch-header-title text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 break-words">
       {currentView.title}
     </h1>
 
-    <p id="view-lead" class="arch-header-lead text-sm sm:text-base lg:text-lg leading-relaxed max-w-4xl">
+    <p id="view-lead" class="arch-header-lead text-xs sm:text-base lg:text-lg leading-relaxed max-w-4xl">
       {currentView.lead}
     </p>
   </div>
 
-  <!-- Interactive Architecture Board Canvas -->
-  <div id="arch-canvas-container" class="relative w-full overflow-visible my-6">
-    <!-- Zone Bounding Boxes Layer (z-0: Behind wires and cards) -->
-    <div id="arch-zones-layer" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" aria-hidden="true"></div>
+  <!-- Interactive Architecture Board Canvas Viewport Wrapper -->
+  <div class="arch-viewport-wrapper relative w-full">
+    <!-- Scrollable Architecture Viewport -->
+    <div id="arch-viewport" class="arch-viewport w-full overflow-x-auto overflow-y-visible pb-6 touch-pan-x overscroll-x-contain">
+      <div id="arch-canvas-container" class="relative w-full overflow-visible my-4">
+        <!-- Zone Bounding Boxes Layer (z-0: Behind wires and cards) -->
+        <div id="arch-zones-layer" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" aria-hidden="true"></div>
 
-    <!-- SVG Connections Layer with Wires (z-1: Behind cards so lines exit cleanly) -->
-    <svg id="arch-wires" class="wires-canvas absolute inset-0 w-full h-full pointer-events-none z-1 overflow-visible" aria-hidden="true">
-      <defs>
-        <marker id="arrow-exec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
-        </marker>
-        <marker id="arrow-data" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-data" />
-        </marker>
-        <marker id="arrow-secret" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-secret" />
-        </marker>
-        <marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
-        </marker>
-        <marker id="arrow-telemetry" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-telemetry" />
-        </marker>
-      </defs>
-    </svg>
+        <!-- SVG Connections Layer with Wires (z-1: Behind cards so lines exit cleanly) -->
+        <svg id="arch-wires" class="wires-canvas absolute inset-0 w-full h-full pointer-events-none z-1 overflow-visible" aria-hidden="true">
+          <defs>
+            <marker id="arrow-exec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
+            </marker>
+            <marker id="arrow-data" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-data" />
+            </marker>
+            <marker id="arrow-secret" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-secret" />
+            </marker>
+            <marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-exec" />
+            </marker>
+            <marker id="arrow-telemetry" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" class="marker-telemetry" />
+            </marker>
+          </defs>
+        </svg>
 
-    <!-- HTML Zone Title Pills Layer (z-15: Above wires and cards so arrows never pass over pills) -->
-    <div id="arch-zone-pills" class="absolute inset-0 w-full h-full pointer-events-none z-15 overflow-visible"></div>
+        <!-- HTML Zone Title Pills Layer (z-15: Above wires and cards so arrows never pass over pills) -->
+        <div id="arch-zone-pills" class="absolute inset-0 w-full h-full pointer-events-none z-15 overflow-visible"></div>
 
-    <!-- HTML Edge Pill Labels Layer (z-20: Cleanly offset from wires) -->
-    <div id="arch-wire-labels" class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"></div>
+        <!-- HTML Edge Pill Labels Layer (z-20: Cleanly offset from wires) -->
+        <div id="arch-wire-labels" class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"></div>
 
-    <!-- HTML Node Grid Container (z-10: Sits above wires with generous spacing) -->
-    <div
-      id="arch-board"
-      class="arch-board relative grid gap-x-12 sm:gap-x-16 gap-y-20 sm:gap-y-28 z-10 pb-16"
-      style={`grid-template-columns: ${currentView.gridCols}; grid-template-areas: ${currentView.gridAreas.map(r => `'${r}'`).join(' ')};`}
-    >
-      {currentView.nodes.map((node) => (
-        <ArchNodeCard node={node} />
-      ))}
+        <!-- HTML Node Grid Container (z-10: Sits above wires with generous spacing) -->
+        <div
+          id="arch-board"
+          class="arch-board relative grid gap-x-12 sm:gap-x-16 gap-y-20 sm:gap-y-28 z-10 pb-16"
+          style={`grid-template-columns: ${currentView.gridCols}; grid-template-areas: ${currentView.gridAreas.map(r => `'${r}'`).join(' ')};`}
+        >
+          {currentView.nodes.map((node) => (
+            <ArchNodeCard node={node} />
+          ))}
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Bottom Navigation & Wire Legend -->
-  <div class="arch-footer mt-14 pt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-    <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+  <div class="arch-footer mt-10 sm:mt-14 pt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+    <div class="flex flex-wrap items-center gap-3 sm:gap-6">
       <span class="arch-legend-title font-bold uppercase tracking-wider">Connections:</span>
       <span class="inline-flex items-center gap-1.5">
         <span class="arch-legend-line-exec w-3.5 h-0.5"></span>
@@ -124,6 +143,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <span class="arch-legend-text-data font-semibold">Specification Data</span>
       </span>
     </div>
+
+    <!-- Bottom Back to Overview Button -->
+    <button
+      type="button"
+      id="btn-back-overview-bottom"
+      class="btn-back-overview-bottom arch-btn-back items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold transition-all cursor-pointer shadow-md hidden"
+      style="display: none;"
+    >
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>Back to Overview</span>
+    </button>
   </div>
 
   <!-- Architecture Inspection Slide-Over Drawer -->
@@ -606,6 +638,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .arch-drawer-divider {
     border-top: 1px solid var(--arch-border-subtle) !important;
   }
+
+  /* Scrollable Architecture Viewport & Mobile Pan Hint */
+  .arch-viewport {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--arch-accent) var(--arch-card-bg);
+  }
+  .arch-viewport::-webkit-scrollbar {
+    height: 6px;
+  }
+  .arch-viewport::-webkit-scrollbar-track {
+    background: var(--arch-card-bg);
+    border: 1px solid var(--arch-border-subtle);
+  }
+  .arch-viewport::-webkit-scrollbar-thumb {
+    background: var(--arch-accent);
+  }
 </style>
 
 <script is:inline>
@@ -621,7 +670,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const zonesLayer = document.getElementById('arch-zones-layer');
     const zonePillsLayer = document.getElementById('arch-zone-pills');
     const canvasContainer = document.getElementById('arch-canvas-container');
+    const archViewport = document.getElementById('arch-viewport');
     const drawer = document.getElementById('arch-drawer');
+    const drawerBackdrop = document.getElementById('arch-drawer-backdrop');
     const drawerBody = document.getElementById('drawer-body');
     const drawerPill = document.getElementById('drawer-pill');
     const drawerClose = document.getElementById('arch-drawer-close');
@@ -632,10 +683,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const viewFooterNote = document.getElementById('arch-view-footer-note');
     const btnBackOverview = document.getElementById('btn-back-overview');
     const subsystemBackBadge = document.getElementById('subsystem-back-badge');
-    const btnBackOverviewBottom = document.querySelector('.btn-back-overview-bottom');
+    const btnBackOverviewBottom = document.getElementById('btn-back-overview-bottom') || document.querySelector('.btn-back-overview-bottom');
 
     let currentViewId = explorer?.dataset.currentView || 'overview';
     let focusedNodeId = null;
+
+    function updateCanvasMinWidth(view) {
+      if (!canvasContainer || !view) return;
+      if (view.gridCols && view.gridCols.includes('repeat(4')) {
+        canvasContainer.style.minWidth = '1140px';
+      } else if (view.gridCols && view.gridCols.includes('repeat(3')) {
+        canvasContainer.style.minWidth = '960px';
+      } else if (view.gridCols && view.gridCols.includes('repeat(2')) {
+        canvasContainer.style.minWidth = '640px';
+      } else {
+        canvasContainer.style.minWidth = '860px';
+      }
+    }
 
     /* ---------- Orthogonal Arrow Routing & Card Collision Avoidance ---------- */
     const NV = { l: [-1, 0], r: [1, 0], t: [0, -1], b: [0, 1] };
@@ -1076,9 +1140,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         btnBackOverviewBottom.classList.toggle('hidden', !isSubsystem);
       }
 
-      // Update grid layout
+      // Update grid layout & responsive minimum width
       board.style.gridTemplateColumns = view.gridCols;
       board.style.gridTemplateAreas = view.gridAreas.map(r => `'${r}'`).join(' ');
+      updateCanvasMinWidth(view);
+      if (archViewport) archViewport.scrollLeft = 0;
 
       // Render cards using semantic CSS classes (no hardcoded inline theme colors)
       board.innerHTML = '';
@@ -1394,10 +1460,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       drawer.hidden = false;
       drawer.classList.remove('translate-x-full');
+      if (drawerBackdrop) {
+        drawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        drawerBackdrop.classList.add('opacity-100');
+      }
+      document.body.style.overflow = 'hidden';
     }
 
     function closeDrawer() {
       drawer.classList.add('translate-x-full');
+      if (drawerBackdrop) {
+        drawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        drawerBackdrop.classList.remove('opacity-100');
+      }
+      document.body.style.overflow = '';
       setTimeout(() => {
         if (drawer.classList.contains('translate-x-full')) {
           drawer.hidden = true;
@@ -1450,12 +1526,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     if (btnBackOverview) {
       btnBackOverview.addEventListener('click', () => renderView('overview'));
     }
+    if (btnBackOverviewBottom) {
+      btnBackOverviewBottom.addEventListener('click', () => renderView('overview'));
+    }
 
     drawerClose.addEventListener('click', closeDrawer);
+    drawerBackdrop?.addEventListener('click', closeDrawer);
 
     document.addEventListener('pointerdown', (e) => {
       if (!drawer.hidden && !drawer.classList.contains('translate-x-full')) {
-        if (!drawer.contains(e.target) && !e.target.closest('[data-node-id]')) {
+        if (!drawer.contains(e.target) && !e.target.closest('[data-node-id]') && !e.target.closest('#arch-drawer-backdrop')) {
           closeDrawer();
         }
       }
@@ -1484,7 +1564,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       requestAnimationFrame(drawWires);
     });
 
-    // Initial draw on DOM ready and after fonts load
+    // Initial layout setup, min-width & draw on DOM ready and after fonts load
+    updateCanvasMinWidth(arch.views[currentViewId]);
     requestAnimationFrame(drawWires);
     if (document.fonts) {
       document.fonts.ready.then(() => {

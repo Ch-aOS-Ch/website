@@ -3,27 +3,34 @@
 // Slide-over technical inspection sidebar for architecture nodes
 ---
 
+<!-- Drawer Backdrop for Mobile & Tablet -->
+<div
+  id="arch-drawer-backdrop"
+  class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none"
+  aria-hidden="true"
+></div>
+
 <aside
   id="arch-drawer"
-  class="arch-drawer-panel fixed top-0 right-0 bottom-0 z-[1000] w-full sm:w-[480px] lg:w-[540px] shadow-2xl overflow-y-auto overscroll-contain transition-transform duration-300 translate-x-full text-left"
+  class="arch-drawer-panel fixed top-0 right-0 bottom-0 z-[1000] w-full sm:w-[480px] lg:w-[540px] max-w-full shadow-2xl overflow-y-auto overscroll-contain transition-transform duration-300 translate-x-full text-left"
   aria-label="Node Technical Architecture Details"
   hidden
 >
   <!-- Drawer Header -->
-  <div class="arch-drawer-header sticky top-0 z-10 flex items-center justify-between gap-4 px-6 py-4 backdrop-blur-md">
-    <div class="flex items-center gap-2">
-      <span class="arch-drawer-pill-dot w-2 h-2 rounded-full"></span>
-      <span id="drawer-pill" class="arch-drawer-pill-text text-xs font-mono font-bold uppercase tracking-wider">
+  <div class="arch-drawer-header sticky top-0 z-10 flex items-center justify-between gap-4 px-5 sm:px-6 py-4 backdrop-blur-md">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="arch-drawer-pill-dot w-2 h-2 rounded-full shrink-0"></span>
+      <span id="drawer-pill" class="arch-drawer-pill-text text-xs font-mono font-bold uppercase tracking-wider truncate">
         Architecture Inspection
       </span>
     </div>
     <button
       type="button"
       id="arch-drawer-close"
-      class="arch-drawer-close-btn inline-flex items-center justify-center w-8 h-8 rounded-none transition-colors cursor-pointer"
+      class="arch-drawer-close-btn inline-flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px] rounded-none transition-colors cursor-pointer shrink-0"
       aria-label="Close details panel"
     >
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -31,7 +38,7 @@
   </div>
 
   <!-- Drawer Body -->
-  <div id="drawer-body" class="p-6 space-y-6">
+  <div id="drawer-body" class="p-5 sm:p-6 space-y-6">
     <!-- Populated dynamically via JS -->
   </div>
 </aside>

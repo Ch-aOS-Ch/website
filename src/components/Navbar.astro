@@ -4,23 +4,24 @@
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<header class="relative z-20 w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-6">
+<header class="relative z-50 w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-6">
   <div class="navbar-surface backdrop-blur-md rounded-none px-3.5 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3 w-full">
     
-    <!-- Left: Brand + Section Jump Links + Docs CTA -->
+    <!-- Left: Brand + Desktop Navigation -->
     <div class="flex items-center gap-3 sm:gap-5 lg:gap-7 min-w-0">
-      <a href={`${base}/`} class="flex items-center gap-2 group shrink-0 min-h-[44px]">
+      <a href={`${base}/`} class="flex items-center gap-2 group shrink-0 min-h-[44px]" aria-label="Ch-aOS Homepage">
         <span class="nav-brand-text font-extrabold text-xl sm:text-[26px] tracking-tight transition-colors">
           Ch-aOS
         </span>
-        <svg class="w-6 h-6 sm:w-8 sm:h-8 shrink-0 transition-transform duration-200 group-hover:scale-105" viewBox="0 0 64 64" fill="none">
+        <svg class="w-6 h-6 sm:w-8 sm:h-8 shrink-0 transition-transform duration-200 group-hover:scale-105" viewBox="0 0 64 64" fill="none" aria-hidden="true">
           <polygon points="32,10 50,20 32,30 14,20" fill="#38D9A9"/>
           <path d="M 14 20 L 32 30 L 32 37 L 21 31 L 21 42 L 32 48 L 32 54 L 14 44 Z" fill="#63E6BE"/>
           <path d="M 32 30 L 38 26.7 L 38 34.5 L 50 28 L 50 44 L 44 47.3 L 44 38 L 38 41.3 L 38 50.7 L 32 54 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
       </a>
 
-      <nav aria-label="Primary navigation" class="flex items-center gap-1 sm:gap-2">
+      <!-- Desktop Navigation links (hidden on mobile, gathered in sidebar) -->
+      <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-1 sm:gap-2">
         <a 
           href={`${base}/getting-started/`} 
           class="nav-link text-xs sm:text-sm font-semibold transition-colors min-h-[44px] inline-flex items-center px-2.5 sm:px-3 rounded-none whitespace-nowrap"
@@ -37,7 +38,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             id="arch-dropdown-btn"
           >
             <span>Architecture</span>
-            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/arch:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover/arch:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
@@ -69,30 +70,31 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </nav>
     </div>
 
-    <!-- Right: GitHub Link + Theme Toggle Button -->
+    <!-- Right: Desktop Actions (GitHub Link + Theme Toggle) & Mobile Hamburger Button -->
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <!-- GitHub Link -->
+      
+      <!-- Desktop GitHub Link -->
       <a 
         href="https://github.com/Ch-aOS-Ch/Ch-aOS" 
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="Ch-aOS GitHub Repository"
-        class="nav-action-btn inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm"
+        class="nav-action-btn hidden md:inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm"
       >
-        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
         </svg>
       </a>
 
-      <!-- Theme Toggle Button -->
+      <!-- Desktop Theme Toggle Button -->
       <button 
         type="button" 
         id="theme-toggle-btn"
         aria-label="Toggle light/dark theme"
-        class="nav-action-btn inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm cursor-pointer"
+        class="nav-action-btn hidden md:inline-flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-none transition-all shadow-sm cursor-pointer"
       >
         <!-- Sun icon (shown in dark mode) -->
-        <svg id="theme-sun-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="theme-sun-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2"></path>
           <path d="M12 20v2"></path>
@@ -105,14 +107,172 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </svg>
 
         <!-- Moon icon (shown in light mode) -->
-        <svg id="theme-moon-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="theme-moon-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
         </svg>
       </button>
-    </div>
 
+      <!-- Mobile Hamburger Button -->
+      <button
+        type="button"
+        id="mobile-menu-btn"
+        aria-label="Open navigation sidebar"
+        aria-expanded="false"
+        aria-controls="mobile-nav-sidebar"
+        class="nav-action-btn flex md:hidden items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-none transition-all shadow-sm cursor-pointer"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+    </div>
   </div>
 </header>
+
+<!-- Mobile Sidebar Backdrop -->
+<div
+  id="mobile-sidebar-backdrop"
+  class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"
+  aria-hidden="true"
+></div>
+
+<!-- Mobile Navigation Sidebar -->
+<aside
+  id="mobile-nav-sidebar"
+  class="mobile-nav-sidebar fixed top-0 right-0 bottom-0 z-[1000] w-72 sm:w-80 max-w-[85vw] h-full flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-in-out translate-x-full md:hidden text-left overflow-y-auto overscroll-contain"
+  aria-label="Mobile Navigation Sidebar"
+  hidden
+>
+  <!-- Sidebar Header -->
+  <div class="mobile-sidebar-header flex items-center justify-between px-5 py-4 border-b">
+    <div class="flex items-center gap-2">
+      <span class="nav-brand-text font-extrabold text-lg tracking-tight">Ch-aOS</span>
+      <svg class="w-5 h-5 shrink-0" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <polygon points="32,10 50,20 32,30 14,20" fill="#38D9A9"/>
+        <path d="M 14 20 L 32 30 L 32 37 L 21 31 L 21 42 L 32 48 L 32 54 L 14 44 Z" fill="#63E6BE"/>
+        <path d="M 32 30 L 38 26.7 L 38 34.5 L 50 28 L 50 44 L 44 47.3 L 44 38 L 38 41.3 L 38 50.7 L 32 54 Z" fill="#1E2D27" stroke="#F8A5C2" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <button
+      type="button"
+      id="mobile-sidebar-close"
+      class="nav-action-btn inline-flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px] rounded-none transition-colors cursor-pointer"
+      aria-label="Close navigation sidebar"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar Content -->
+  <div class="p-5 flex-1 space-y-6">
+    
+    <!-- Section: Documentation -->
+    <div class="space-y-1">
+      <a 
+        href={`${base}/getting-started/`}
+        class="mobile-nav-link flex items-center justify-between px-3 py-2.5 text-xs font-mono font-bold transition-colors"
+      >
+        <span>Documentation</span>
+        <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Section: Architecture Explorers (Clean without pills) -->
+    <div class="space-y-1 pt-3 border-t mobile-panel-divider">
+      <div class="mobile-section-label text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5">
+        Architecture Explorers
+      </div>
+      <a 
+        href={`${base}/architecture/apply/`}
+        class="mobile-nav-link flex items-center justify-between px-3 py-2.5 text-xs font-mono font-bold transition-colors"
+      >
+        <span class="flex items-center gap-2.5">
+          <span class="w-2 h-2 bg-[#38D9A9] rounded-none shrink-0"></span>
+          <span>chaos apply</span>
+        </span>
+        <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+      <a 
+        href={`${base}/architecture/secrets/`}
+        class="mobile-nav-link flex items-center justify-between px-3 py-2.5 text-xs font-mono font-bold transition-colors"
+      >
+        <span class="flex items-center gap-2.5">
+          <span class="w-2 h-2 bg-[#F8A5C2] rounded-none shrink-0"></span>
+          <span>chaos secrets</span>
+        </span>
+        <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Section: Preferences & Community -->
+    <div class="space-y-2 pt-3 border-t mobile-panel-divider">
+      <!-- Mobile Theme Toggle Button -->
+      <button
+        type="button"
+        id="mobile-theme-toggle-btn"
+        class="mobile-action-card flex items-center justify-between w-full px-3 py-2.5 text-xs font-semibold transition-all cursor-pointer text-left"
+      >
+        <span class="flex items-center gap-2.5">
+          <!-- Sun icon -->
+          <svg id="mobile-sun-icon" class="w-4 h-4 hidden text-[#38D9A9]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <!-- Moon icon -->
+          <svg id="mobile-moon-icon" class="w-4 h-4 hidden text-[#137A5B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span>Toggle Theme</span>
+        </span>
+      </button>
+
+      <!-- Mobile GitHub Link -->
+      <a
+        href="https://github.com/Ch-aOS-Ch/Ch-aOS"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mobile-action-card flex items-center justify-between w-full px-3 py-2.5 text-xs font-semibold transition-all"
+      >
+        <span class="flex items-center gap-2.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub Repository</span>
+        </span>
+        <svg class="w-3.5 h-3.5 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Sidebar Footer Note -->
+  <div class="px-5 py-3.5 border-t mobile-panel-divider text-[10px] font-mono text-[#8E9EA0]">
+    <span>Ch-aOS · MPL-2.0 License</span>
+  </div>
+</aside>
 
 <style>
   /* Header Container */
@@ -120,7 +280,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     background: transparent !important;
   }
 
-  /* Clean Navbar Surface (distinct from .code-window-card) */
+  /* Clean Navbar Surface */
   .navbar-surface {
     background-color: rgba(18, 25, 22, 0.78);
     border: 1px solid rgba(61, 82, 74, 0.45);
@@ -141,15 +301,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .nav-link:hover {
     color: #38D9A9;
     background-color: rgba(24, 36, 31, 0.65);
-  }
-  .nav-link-cta {
-    color: #38D9A9;
-  }
-  .nav-link-cta:hover {
-    color: #7CFAD3;
-  }
-  .nav-divider {
-    background-color: rgba(61, 82, 74, 0.55);
   }
   .nav-action-btn {
     background-color: rgba(24, 36, 31, 0.85);
@@ -182,6 +333,49 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     color: #F8A5C2;
   }
 
+  /* Mobile Navigation Sidebar */
+  .mobile-nav-sidebar {
+    background-color: #121916;
+    border-left: 1px solid rgba(61, 82, 74, 0.7);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.75);
+    border-radius: 0px !important;
+  }
+  .mobile-sidebar-header {
+    background-color: rgba(18, 25, 22, 0.95);
+    border-color: rgba(61, 82, 74, 0.6);
+  }
+  .mobile-section-label {
+    color: #8E9EA0;
+  }
+  .mobile-panel-divider {
+    border-color: rgba(61, 82, 74, 0.55);
+  }
+  .mobile-nav-link {
+    color: #E8F0EC;
+    border-radius: 0px !important;
+  }
+  .mobile-nav-link:hover {
+    color: #38D9A9;
+    background-color: rgba(24, 36, 31, 0.85);
+  }
+  .mobile-action-card {
+    background-color: rgba(24, 36, 31, 0.85);
+    border: 1px solid rgba(61, 82, 74, 0.7);
+    color: #E8F0EC;
+    border-radius: 0px !important;
+  }
+  .mobile-action-card:hover {
+    border-color: rgba(56, 217, 169, 0.8);
+    color: #E8F0EC;
+    background-color: rgba(30, 45, 39, 0.95);
+  }
+  #mobile-theme-indicator {
+    background-color: rgba(24, 36, 31, 0.95);
+    border: 1px solid rgba(61, 82, 74, 0.7);
+    color: #38D9A9;
+    border-radius: 0px !important;
+  }
+
   /* Light Mode Explicit Styles */
   :global(html[data-theme="light"]) .navbar-surface {
     background-color: rgba(244, 248, 246, 0.85) !important;
@@ -200,15 +394,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   :global(html[data-theme="light"]) .nav-link:hover {
     color: #137A5B !important;
     background-color: rgba(162, 220, 183, 0.35) !important;
-  }
-  :global(html[data-theme="light"]) .nav-link-cta {
-    color: #0E6E4F !important;
-  }
-  :global(html[data-theme="light"]) .nav-link-cta:hover {
-    color: #09523D !important;
-  }
-  :global(html[data-theme="light"]) .nav-divider {
-    background-color: rgba(158, 196, 181, 0.7) !important;
   }
   :global(html[data-theme="light"]) .nav-action-btn {
     background-color: rgba(162, 220, 183, 0.45) !important;
@@ -237,21 +422,66 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   :global(html[data-theme="light"]) .arch-nav-dropdown-item-secrets:hover {
     color: #C92861 !important;
   }
+
+  /* Light mode for mobile sidebar */
+  :global(html[data-theme="light"]) .mobile-nav-sidebar {
+    background-color: #F4F8F6 !important;
+    border-color: rgba(158, 196, 181, 0.85) !important;
+    box-shadow: -8px 0 32px rgba(18, 38, 30, 0.15) !important;
+  }
+  :global(html[data-theme="light"]) .mobile-sidebar-header {
+    background-color: rgba(244, 248, 246, 0.98) !important;
+    border-color: rgba(158, 196, 181, 0.7) !important;
+  }
+  :global(html[data-theme="light"]) .mobile-section-label {
+    color: #3D524A !important;
+  }
+  :global(html[data-theme="light"]) .mobile-panel-divider {
+    border-color: rgba(158, 196, 181, 0.6) !important;
+  }
+  :global(html[data-theme="light"]) .mobile-nav-link {
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .mobile-nav-link:hover {
+    color: #137A5B !important;
+    background-color: rgba(162, 220, 183, 0.35) !important;
+  }
+  :global(html[data-theme="light"]) .mobile-action-card {
+    background-color: rgba(162, 220, 183, 0.35) !important;
+    border-color: #728D80 !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) .mobile-action-card:hover {
+    background-color: rgba(162, 220, 183, 0.75) !important;
+    border-color: #137A5B !important;
+    color: #14241E !important;
+  }
+  :global(html[data-theme="light"]) #mobile-theme-indicator {
+    background-color: rgba(162, 220, 183, 0.6) !important;
+    border-color: #137A5B !important;
+    color: #14241E !important;
+  }
 </style>
 
 <script>
-  function setupThemeToggle() {
+  function setupNavbar() {
+    // Theme toggle elements (desktop & mobile)
     const btn = document.getElementById('theme-toggle-btn');
+    const mobileBtn = document.getElementById('mobile-theme-toggle-btn');
     const sunIcon = document.getElementById('theme-sun-icon');
     const moonIcon = document.getElementById('theme-moon-icon');
+    const mobileSunIcon = document.getElementById('mobile-sun-icon');
+    const mobileMoonIcon = document.getElementById('mobile-moon-icon');
+    const mobileThemeIndicator = document.getElementById('mobile-theme-indicator');
 
     function updateIcons(currentTheme: string) {
-      if (currentTheme === 'light') {
-        sunIcon?.classList.add('hidden');
-        moonIcon?.classList.remove('hidden');
-      } else {
-        sunIcon?.classList.remove('hidden');
-        moonIcon?.classList.add('hidden');
+      const isLight = currentTheme === 'light';
+      if (sunIcon) sunIcon.classList.toggle('hidden', isLight);
+      if (moonIcon) moonIcon.classList.toggle('hidden', !isLight);
+      if (mobileSunIcon) mobileSunIcon.classList.toggle('hidden', isLight);
+      if (mobileMoonIcon) mobileMoonIcon.classList.toggle('hidden', !isLight);
+      if (mobileThemeIndicator) {
+        mobileThemeIndicator.textContent = isLight ? 'LIGHT' : 'DARK';
       }
     }
 
@@ -268,6 +498,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       return 'dark';
     }
 
+    function toggleTheme() {
+      const active = (document.documentElement.getAttribute('data-theme') || document.documentElement.dataset.theme) === 'light' ? 'light' : 'dark';
+      const nextTheme = active === 'light' ? 'dark' : 'light';
+      
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      document.documentElement.dataset.theme = nextTheme;
+      document.body?.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('chaos-theme', nextTheme);
+      localStorage.setItem('starlight-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      updateIcons(nextTheme);
+      window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: nextTheme } }));
+    }
+
     const current = getResolvedTheme();
     document.documentElement.setAttribute('data-theme', current);
     document.documentElement.dataset.theme = current;
@@ -280,20 +524,78 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
     });
 
-    btn?.addEventListener('click', () => {
-      const active = (document.documentElement.getAttribute('data-theme') || document.documentElement.dataset.theme) === 'light' ? 'light' : 'dark';
-      const nextTheme = active === 'light' ? 'dark' : 'light';
-      
-      document.documentElement.setAttribute('data-theme', nextTheme);
-      document.documentElement.dataset.theme = nextTheme;
-      document.body?.setAttribute('data-theme', nextTheme);
-      localStorage.setItem('chaos-theme', nextTheme);
-      localStorage.setItem('starlight-theme', nextTheme);
-      localStorage.setItem('theme', nextTheme);
-      updateIcons(nextTheme);
+    btn?.addEventListener('click', toggleTheme);
+    mobileBtn?.addEventListener('click', toggleTheme);
+
+    // Mobile Sidebar Setup
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileSidebar = document.getElementById('mobile-nav-sidebar');
+    const mobileBackdrop = document.getElementById('mobile-sidebar-backdrop');
+    const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+
+    function openSidebar() {
+      if (!mobileSidebar || !mobileBackdrop) return;
+      mobileSidebar.hidden = false;
+      requestAnimationFrame(() => {
+        mobileSidebar.classList.remove('translate-x-full');
+      });
+      mobileBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      mobileBackdrop.classList.add('opacity-100');
+      mobileMenuBtn?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      if (!mobileSidebar || !mobileBackdrop) return;
+      mobileSidebar.classList.add('translate-x-full');
+      mobileBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      mobileBackdrop.classList.remove('opacity-100');
+      mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (mobileSidebar.classList.contains('translate-x-full')) {
+          mobileSidebar.hidden = true;
+        }
+      }, 300);
+    }
+
+    function toggleSidebar() {
+      if (!mobileSidebar) return;
+      const isOpen = !mobileSidebar.classList.contains('translate-x-full') && !mobileSidebar.hidden;
+      if (isOpen) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    }
+
+    mobileMenuBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSidebar();
+    });
+
+    mobileSidebarClose?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeSidebar();
+    });
+
+    mobileBackdrop?.addEventListener('click', closeSidebar);
+
+    // Close on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeSidebar();
+      }
+    });
+
+    // Close when navigating via link inside mobile sidebar
+    mobileSidebar?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeSidebar();
+      });
     });
   }
 
-  setupThemeToggle();
-  document.addEventListener('astro:page-load', setupThemeToggle);
+  setupNavbar();
+  document.addEventListener('astro:page-load', setupNavbar);
 </script>
