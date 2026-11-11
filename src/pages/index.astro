@@ -24,7 +24,9 @@ const ogImageUrl = Astro.site ? new URL(`${base}/og-card.png`, Astro.site).href 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#121916" id="theme-color-meta" />
+    <meta name="color-scheme" content="dark light" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={siteUrl} />
@@ -63,6 +65,8 @@ const ogImageUrl = Astro.site ? new URL(`${base}/og-card.png`, Astro.site).href 
         const theme = getResolvedTheme();
         document.documentElement.dataset.theme = theme;
         document.documentElement.setAttribute('data-theme', theme);
+        const metaTheme = document.getElementById('theme-color-meta');
+        if (metaTheme) metaTheme.setAttribute('content', theme === 'light' ? '#F4F8F6' : '#121916');
 
         if (typeof window !== 'undefined' && window.matchMedia) {
           window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -73,6 +77,7 @@ const ogImageUrl = Astro.site ? new URL(`${base}/og-card.png`, Astro.site).href 
               const newTheme = getResolvedTheme();
               document.documentElement.dataset.theme = newTheme;
               document.documentElement.setAttribute('data-theme', newTheme);
+              if (metaTheme) metaTheme.setAttribute('content', newTheme === 'light' ? '#F4F8F6' : '#121916');
               if (document.body) {
                 document.body.setAttribute('data-theme', newTheme);
               }

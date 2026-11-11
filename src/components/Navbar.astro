@@ -278,6 +278,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   /* Header Container */
   header {
     background: transparent !important;
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   /* Clean Navbar Surface */
@@ -482,6 +485,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       if (mobileMoonIcon) mobileMoonIcon.classList.toggle('hidden', !isLight);
       if (mobileThemeIndicator) {
         mobileThemeIndicator.textContent = isLight ? 'LIGHT' : 'DARK';
+      }
+      let metaTheme = document.getElementById('theme-color-meta') as HTMLMetaElement | null;
+      if (!metaTheme) {
+        metaTheme = document.querySelector('meta[name="theme-color"]');
+      }
+      if (metaTheme) {
+        metaTheme.setAttribute('content', isLight ? '#F4F8F6' : '#121916');
       }
     }
 

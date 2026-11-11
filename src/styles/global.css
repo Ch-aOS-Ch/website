@@ -308,6 +308,16 @@
   --chaos-accent-pink: #C92861;
 }
 
+:root {
+  background-color: #121916;
+  color-scheme: dark light;
+}
+
+[data-theme="light"],
+html[data-theme="light"] {
+  background-color: #F4F8F6;
+}
+
 html {
   background-color: var(--page-bg, #121916);
   color: var(--page-text, #E8F0EC);
@@ -317,6 +327,11 @@ html {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   max-width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -327,6 +342,11 @@ body {
   overflow-x: hidden;
   max-width: 100%;
   width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  margin: 0;
+  padding: 0;
 }
 
 .no-scrollbar::-webkit-scrollbar {

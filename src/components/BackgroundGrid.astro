@@ -65,6 +65,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <style>
   /* Hardware Accelerated Layer Isolation for Background */
   #chaos-bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    width: 100dvw;
+    height: 100vh;
+    height: 100dvh;
+    min-height: -webkit-fill-available;
+    background-color: #121916;
     contain: strict;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
@@ -85,12 +96,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   /* Base Dark Mode Configuration */
   .dark-wave {
     display: block !important;
-    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
   }
   .light-wave {
     display: none !important;
-    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
   }
 
@@ -98,6 +107,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     background: linear-gradient(to bottom, #121916 35%, rgba(18, 25, 22, 0.75) 55%, transparent 100%);
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
+  }
+
+  /* Light Mode Overrides */
+  :global(html[data-theme="light"]) #chaos-bg-container {
+    background-color: #F4F8F6 !important;
   }
 
   /* Light Spotlight & Dark Spotlight Defaults */
