@@ -11,54 +11,55 @@ const hasDrilldown = Boolean(node.go);
 
 <button
   type="button"
-  class="arch-node group relative flex flex-col justify-between text-left p-5 sm:p-6 cursor-pointer w-full h-full min-h-[160px] rounded-none focus-visible:outline-2 focus-visible:outline-[var(--arch-accent)] focus-visible:outline-offset-2"
+  class={`arch-node group relative flex flex-col justify-between text-left p-3.5 sm:p-6 cursor-pointer w-full h-full min-h-[84px] sm:min-h-[160px] rounded-none focus-visible:outline-2 focus-visible:outline-[var(--arch-accent)] focus-visible:outline-offset-2 ${hasDrilldown ? 'is-subsystem' : ''}`}
   data-node-id={node.id}
   data-go={node.go || ""}
   style={`grid-area: ${node.gridArea};`}
-  aria-label={`${node.title}. ${hasDrilldown ? 'Click to check the subsystem architecture' : 'Click to inspect architecture specifications in sidebar'}`}
+  aria-label={`${node.title}. ${hasDrilldown ? 'Subsystem architecture pipeline. Click to explore subsystem' : 'Click to inspect architecture specifications in sidebar'}`}
 >
   <!-- Card Header: Title on Left, Badges/Pills on Right -->
-  <div class="flex items-start justify-between gap-3 mb-2">
-    <h3 class="arch-node-title text-base sm:text-lg font-bold leading-tight flex-1">
+  <div class="flex items-start justify-between gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+    <h3 class="arch-node-title text-sm sm:text-lg font-bold leading-tight flex-1">
       {node.title}
     </h3>
-    {node.badges && node.badges.length > 0 && (
-      <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
-        {node.badges.map((b) => (
-          <span class="arch-tag text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-none">
-            {b}
-          </span>
-        ))}
-      </div>
-    )}
+    
+    <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
+      {node.badges && node.badges.filter(b => b.toLowerCase() !== 'subsystem').map((b) => (
+        <span class="arch-tag hidden sm:inline-block text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-none">
+          {b}
+        </span>
+      ))}
+    </div>
   </div>
 
-  <!-- Subtitle -->
-  <p class="arch-node-subtitle text-xs sm:text-[13px] leading-relaxed mb-4 flex-1">
+  <!-- Subtitle (Hidden on mobile, shown on tablet/desktop) -->
+  <p class="arch-node-subtitle hidden sm:block text-xs sm:text-[13px] leading-relaxed mb-4 flex-1">
     {node.subtitle}
   </p>
 
-  <!-- Bottom: Tags & Action Cue -->
-  <div class="pt-3 border-t border-[var(--arch-border-subtle)] flex items-center justify-between gap-2 mt-auto">
-    <div class="flex flex-wrap gap-1.5">
+  <!-- Bottom: Tags (Always visible) & Clear Action Cue (Visible on both mobile & desktop) -->
+  <div class="pt-2 sm:pt-3 border-t border-[var(--arch-border-subtle)] flex items-center justify-between gap-2 mt-auto">
+    <div class="flex flex-wrap gap-1 sm:gap-1.5">
       {node.tags && node.tags.map((tag) => (
-        <span class="arch-tag text-[10px] font-mono px-1.5 py-0.5 rounded-none">
+        <span class="arch-tag text-[9px] sm:text-[10px] font-mono px-1.5 py-0.5 rounded-none">
           {tag}
         </span>
       ))}
     </div>
 
     {hasDrilldown ? (
-      <span class="arch-action-cue-go inline-flex items-center gap-1 text-[11px] shrink-0 group-hover:translate-x-0.5 transition-transform">
-        Explore Subsystem
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <span class="arch-action-cue-go inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono font-bold shrink-0 text-[var(--arch-accent)] group-hover:translate-x-0.5 transition-transform">
+        <span class="hidden sm:inline">Explore Subsystem</span>
+        <span class="sm:hidden">Subsystem</span>
+        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
       </span>
     ) : (
-      <span class="arch-action-cue-inspect inline-flex items-center gap-1 text-[10px] shrink-0">
-        Inspect Details
-        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <span class="arch-action-cue-inspect inline-flex items-center gap-1 text-[9.5px] sm:text-[10px] font-mono text-[var(--arch-muted)] shrink-0">
+        <span class="hidden sm:inline">Inspect Details</span>
+        <span class="sm:hidden">Inspect</span>
+        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>

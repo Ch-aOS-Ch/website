@@ -135,16 +135,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <!-- Mobile Sidebar Backdrop -->
 <div
   id="mobile-sidebar-backdrop"
-  class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"
+  class="fixed inset-0 z-[999] bg-[#0C1210]/80 transition-opacity duration-250 opacity-0 pointer-events-none md:hidden"
   aria-hidden="true"
 ></div>
 
 <!-- Mobile Navigation Sidebar -->
 <aside
   id="mobile-nav-sidebar"
-  class="mobile-nav-sidebar fixed top-0 right-0 bottom-0 z-[1000] w-72 sm:w-80 max-w-[85vw] h-full flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-in-out translate-x-full md:hidden text-left overflow-y-auto overscroll-contain"
+  class="mobile-nav-sidebar fixed top-0 right-0 bottom-0 z-[1000] w-72 sm:w-80 max-w-[85vw] h-full flex flex-col justify-between shadow-2xl pointer-events-none md:hidden text-left overflow-y-auto overscroll-contain"
   aria-label="Mobile Navigation Sidebar"
-  hidden
+  aria-hidden="true"
 >
   <!-- Sidebar Header -->
   <div class="mobile-sidebar-header flex items-center justify-between px-5 py-4 border-b">
@@ -323,6 +323,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     border: 1px solid rgba(61, 82, 74, 0.7);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
   }
+  .arch-nav-dropdown-menu.open {
+    display: block !important;
+  }
+  #arch-dropdown-btn[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
   .arch-nav-dropdown-item {
     color: #E8F0EC;
   }
@@ -342,6 +348,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     border-left: 1px solid rgba(61, 82, 74, 0.7);
     box-shadow: -8px 0 32px rgba(0, 0, 0, 0.75);
     border-radius: 0px !important;
+    transform: translate3d(100%, 0, 0);
+    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .mobile-nav-sidebar.is-open {
+    transform: translate3d(0, 0, 0) !important;
+    pointer-events: auto !important;
   }
   .mobile-sidebar-header {
     background-color: rgba(18, 25, 22, 0.95);
@@ -537,6 +552,45 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     btn?.addEventListener('click', toggleTheme);
     mobileBtn?.addEventListener('click', toggleTheme);
 
+    // Architecture Dropdown Setup (supports click/tap on landscape mobile & touch screens)
+    const archBtn = document.getElementById('arch-dropdown-btn');
+    const archMenu = document.getElementById('arch-dropdown-menu');
+
+    function toggleArchDropdown(e: Event) {
+      e.stopPropagation();
+      const isOpen = archMenu?.classList.contains('open');
+      if (isOpen) {
+        closeArchDropdown();
+      } else {
+        openArchDropdown();
+      }
+    }
+
+    function openArchDropdown() {
+      archMenu?.classList.add('open');
+      archBtn?.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeArchDropdown() {
+      archMenu?.classList.remove('open');
+      archBtn?.setAttribute('aria-expanded', 'false');
+    }
+
+    archBtn?.addEventListener('click', toggleArchDropdown);
+
+    // Close architecture dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (archMenu?.classList.contains('open') && !archBtn?.contains(e.target as Node) && !archMenu?.contains(e.target as Node)) {
+        closeArchDropdown();
+      }
+    });
+
+    archMenu?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeArchDropdown();
+      });
+    });
+
     // Mobile Sidebar Setup
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileSidebar = document.getElementById('mobile-nav-sidebar');
@@ -545,33 +599,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     function openSidebar() {
       if (!mobileSidebar || !mobileBackdrop) return;
-      mobileSidebar.hidden = false;
-      requestAnimationFrame(() => {
-        mobileSidebar.classList.remove('translate-x-full');
-      });
+      mobileSidebar.classList.add('is-open');
+      mobileSidebar.classList.remove('pointer-events-none');
+      mobileSidebar.setAttribute('aria-hidden', 'false');
       mobileBackdrop.classList.remove('opacity-0', 'pointer-events-none');
-      mobileBackdrop.classList.add('opacity-100');
+      mobileBackdrop.classList.add('opacity-100', 'pointer-events-auto');
       mobileMenuBtn?.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
     }
 
     function closeSidebar() {
       if (!mobileSidebar || !mobileBackdrop) return;
-      mobileSidebar.classList.add('translate-x-full');
+      mobileSidebar.classList.remove('is-open');
+      mobileSidebar.classList.add('pointer-events-none');
+      mobileSidebar.setAttribute('aria-hidden', 'true');
+      mobileBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
       mobileBackdrop.classList.add('opacity-0', 'pointer-events-none');
-      mobileBackdrop.classList.remove('opacity-100');
       mobileMenuBtn?.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      setTimeout(() => {
-        if (mobileSidebar.classList.contains('translate-x-full')) {
-          mobileSidebar.hidden = true;
-        }
-      }, 300);
     }
 
     function toggleSidebar() {
       if (!mobileSidebar) return;
-      const isOpen = !mobileSidebar.classList.contains('translate-x-full') && !mobileSidebar.hidden;
+      const isOpen = mobileSidebar.classList.contains('is-open');
       if (isOpen) {
         closeSidebar();
       } else {
@@ -590,10 +638,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     });
 
     mobileBackdrop?.addEventListener('click', closeSidebar);
+    mobileBackdrop?.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
     // Close on Escape key
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        closeArchDropdown();
         closeSidebar();
       }
     });

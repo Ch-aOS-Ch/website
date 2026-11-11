@@ -6,11 +6,11 @@ import ArchDrawer from './ArchDrawer.astro';
 interface Props {
   arch: SystemArchitecture;
   defaultViewId?: string;
-  oppositeArchUrl: string;
-  oppositeArchLabel: string;
+  oppositeArchUrl?: string;
+  oppositeArchLabel?: string;
 }
 
-const { arch, defaultViewId = 'overview', oppositeArchUrl, oppositeArchLabel } = Astro.props;
+const { arch, defaultViewId = 'overview' } = Astro.props;
 const currentView: ArchView = arch.views[defaultViewId] || arch.views[arch.overviewViewId];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -49,20 +49,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </svg>
         <span>Back to Overview</span>
       </button>
-
-      <!-- Switch to Opposite Architecture (Apply <-> Secrets) -->
-      {oppositeArchUrl && (
-        <a
-          href={oppositeArchUrl}
-          class="arch-btn-switch inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold transition-all shadow-sm min-h-[36px]"
-        >
-          <span>{oppositeArchLabel || 'Switch Architecture'}</span>
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M5 12h14"></path>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-      )}
     </div>
   </div>
 
@@ -81,7 +67,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <div class="arch-viewport-wrapper relative w-full">
     <!-- Scrollable Architecture Viewport -->
     <div id="arch-viewport" class="arch-viewport w-full overflow-x-auto overflow-y-visible pb-6 touch-pan-x overscroll-x-contain">
-      <div id="arch-canvas-container" class="relative w-full overflow-visible my-4">
+      <div id="arch-canvas-container" class="relative w-full overflow-visible my-4" style={`min-width: ${currentView.gridCols.includes('repeat(4') ? '1280px' : (currentView.gridCols.includes('repeat(3') ? '1060px' : (currentView.gridCols.includes('repeat(2') ? '720px' : '880px'))};`}>
         <!-- Zone Bounding Boxes Layer (z-0: Behind wires and cards) -->
         <div id="arch-zones-layer" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" aria-hidden="true"></div>
 
@@ -115,7 +101,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <!-- HTML Node Grid Container (z-10: Sits above wires with generous spacing) -->
         <div
           id="arch-board"
-          class="arch-board relative grid gap-x-12 sm:gap-x-16 gap-y-20 sm:gap-y-28 z-10 pb-16"
+          class="arch-board relative grid gap-x-16 sm:gap-x-20 gap-y-32 sm:gap-y-36 z-10 pb-20"
           style={`grid-template-columns: ${currentView.gridCols}; grid-template-areas: ${currentView.gridAreas.map(r => `'${r}'`).join(' ')};`}
         >
           {currentView.nodes.map((node) => (
@@ -129,7 +115,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <!-- Bottom Navigation & Wire Legend -->
   <div class="arch-footer mt-10 sm:mt-14 pt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
     <div class="flex flex-wrap items-center gap-3 sm:gap-6">
-      <span class="arch-legend-title font-bold uppercase tracking-wider">Connections:</span>
+      <span class="arch-legend-title font-bold uppercase tracking-wider">Nodes & Wires:</span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="font-semibold text-[var(--arch-accent)]">Deep Subsystem Pipeline</span>
+      </span>
       <span class="inline-flex items-center gap-1.5">
         <span class="arch-legend-line-exec w-3.5 h-0.5"></span>
         <span class="arch-legend-text-exec font-semibold">Execution / Operations</span>
@@ -580,12 +569,31 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     color: var(--arch-lead) !important;
   }
 
+  /* Subsystem Card Distinct Indication */
+  .arch-node.is-subsystem {
+    border-left: 3px solid var(--arch-accent) !important;
+  }
+  .arch-subsystem-pill {
+    background: var(--arch-accent-bg) !important;
+    border: 1px solid var(--arch-accent-border) !important;
+    color: var(--arch-accent) !important;
+  }
+
   /* Slide-over Inspection Drawer */
   .arch-drawer-panel {
     z-index: 1000 !important;
     background: var(--arch-drawer-bg) !important;
     border-left: 1px solid var(--arch-border-subtle) !important;
     color: var(--arch-title) !important;
+    transform: translate3d(100%, 0, 0);
+    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .arch-drawer-panel.is-open {
+    transform: translate3d(0, 0, 0) !important;
+    pointer-events: auto !important;
   }
   .arch-drawer-header {
     background: var(--arch-drawer-header-bg) !important;
@@ -691,13 +699,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     function updateCanvasMinWidth(view) {
       if (!canvasContainer || !view) return;
       if (view.gridCols && view.gridCols.includes('repeat(4')) {
-        canvasContainer.style.minWidth = '1140px';
+        canvasContainer.style.minWidth = '1280px';
       } else if (view.gridCols && view.gridCols.includes('repeat(3')) {
-        canvasContainer.style.minWidth = '960px';
+        canvasContainer.style.minWidth = '1060px';
       } else if (view.gridCols && view.gridCols.includes('repeat(2')) {
-        canvasContainer.style.minWidth = '640px';
+        canvasContainer.style.minWidth = '720px';
       } else {
-        canvasContainer.style.minWidth = '860px';
+        canvasContainer.style.minWidth = '880px';
       }
     }
 
@@ -1149,31 +1157,41 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       // Render cards using semantic CSS classes (no hardcoded inline theme colors)
       board.innerHTML = '';
       view.nodes.forEach(node => {
+        const hasDrilldown = Boolean(node.go);
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'arch-node group relative flex flex-col justify-between text-left p-5 sm:p-6 cursor-pointer w-full h-full min-h-[160px] rounded-none focus-visible:outline-2 focus-visible:outline-offset-2';
+        card.className = `arch-node group relative flex flex-col justify-between text-left p-3.5 sm:p-6 cursor-pointer w-full h-full min-h-[84px] sm:min-h-[160px] rounded-none focus-visible:outline-2 focus-visible:outline-[var(--arch-accent)] focus-visible:outline-offset-2 ${hasDrilldown ? 'is-subsystem' : ''}`;
         card.dataset.nodeId = node.id;
         card.dataset.go = node.go || '';
         card.style.gridArea = node.gridArea;
+        card.setAttribute('aria-label', `${node.title}. ${hasDrilldown ? 'Subsystem architecture pipeline. Click to explore subsystem' : 'Click to inspect architecture specifications in sidebar'}`);
 
-        const badgesHtml = (node.badges || []).map(b => `<span class="arch-tag text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-none">${b}</span>`).join('');
-        const tagsHtml = (node.tags || []).map(t => `<span class="arch-tag text-[10px] font-mono px-1.5 py-0.5 rounded-none">${t}</span>`).join('');
-        const cueHtml = node.go 
-          ? `<span class="arch-action-cue-go inline-flex items-center gap-1 text-[11px] shrink-0 group-hover:translate-x-0.5 transition-transform">Explore Subsystem <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`
-          : `<span class="arch-action-cue-inspect inline-flex items-center gap-1 text-[10px] shrink-0">Inspect Details <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>`;
+        const badgesHtml = (node.badges || [])
+          .filter(b => b.toLowerCase() !== 'subsystem')
+          .map(b => `<span class="arch-tag hidden sm:inline-block text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-none">${b}</span>`)
+          .join('');
+
+        const tagsHtml = (node.tags || []).map(t => `<span class="arch-tag text-[9px] sm:text-[10px] font-mono px-1.5 py-0.5 rounded-none">${t}</span>`).join('');
+        
+        const cueHtml = hasDrilldown 
+          ? `<span class="arch-action-cue-go inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono font-bold shrink-0 text-[var(--arch-accent)] group-hover:translate-x-0.5 transition-transform"><span class="hidden sm:inline">Explore Subsystem</span><span class="sm:hidden">Subsystem</span><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`
+          : `<span class="arch-action-cue-inspect inline-flex items-center gap-1 text-[9.5px] sm:text-[10px] font-mono text-[var(--arch-muted)] shrink-0"><span class="hidden sm:inline">Inspect Details</span><span class="sm:hidden">Inspect</span><svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>`;
 
         card.innerHTML = `
-          <div class="flex items-start justify-between gap-3 mb-2">
-            <h3 class="arch-node-title text-base sm:text-lg font-bold leading-tight flex-1">
+          <div class="flex items-start justify-between gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+            <h3 class="arch-node-title text-sm sm:text-lg font-bold leading-tight flex-1">
               ${node.title}
             </h3>
-            ${badgesHtml ? `<div class="flex items-center gap-1.5 shrink-0 mt-0.5">${badgesHtml}</div>` : ''}
+            <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
+              ${subsystemBadgeHtml}
+              ${badgesHtml}
+            </div>
           </div>
-          <p class="arch-node-subtitle text-xs sm:text-[13px] leading-relaxed mb-4 flex-1">
+          <p class="arch-node-subtitle hidden sm:block text-xs sm:text-[13px] leading-relaxed mb-4 flex-1">
             ${node.subtitle}
           </p>
-          <div class="pt-3 border-t border-[var(--arch-border-subtle)] flex items-center justify-between gap-2 mt-auto">
-            <div class="flex flex-wrap gap-1.5">${tagsHtml}</div>
+          <div class="pt-2 sm:pt-3 border-t border-[var(--arch-border-subtle)] flex items-center justify-between gap-2 mt-auto">
+            <div class="flex flex-wrap gap-1 sm:gap-1.5">${tagsHtml}</div>
             ${cueHtml}
           </div>
         `;
@@ -1458,27 +1476,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       detailsHtml += `</div>`;
       drawerBody.innerHTML = detailsHtml;
 
-      drawer.hidden = false;
-      drawer.classList.remove('translate-x-full');
+      drawer.classList.add('is-open');
+      drawer.classList.remove('pointer-events-none');
+      drawer.setAttribute('aria-hidden', 'false');
       if (drawerBackdrop) {
         drawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
-        drawerBackdrop.classList.add('opacity-100');
+        drawerBackdrop.classList.add('opacity-100', 'pointer-events-auto');
       }
-      document.body.style.overflow = 'hidden';
     }
 
     function closeDrawer() {
-      drawer.classList.add('translate-x-full');
+      if (!drawer) return;
+      drawer.classList.remove('is-open');
+      drawer.classList.add('pointer-events-none');
+      drawer.setAttribute('aria-hidden', 'true');
       if (drawerBackdrop) {
+        drawerBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
         drawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
-        drawerBackdrop.classList.remove('opacity-100');
       }
-      document.body.style.overflow = '';
-      setTimeout(() => {
-        if (drawer.classList.contains('translate-x-full')) {
-          drawer.hidden = true;
-        }
-      }, 300);
     }
 
     // Bind Hover on initial SSR cards
@@ -1532,9 +1547,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     drawerClose.addEventListener('click', closeDrawer);
     drawerBackdrop?.addEventListener('click', closeDrawer);
+    drawerBackdrop?.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
     document.addEventListener('pointerdown', (e) => {
-      if (!drawer.hidden && !drawer.classList.contains('translate-x-full')) {
+      if (drawer && drawer.classList.contains('is-open')) {
         if (!drawer.contains(e.target) && !e.target.closest('[data-node-id]') && !e.target.closest('#arch-drawer-backdrop')) {
           closeDrawer();
         }
@@ -1543,7 +1561,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (!drawer.hidden && !drawer.classList.contains('translate-x-full')) {
+        if (drawer && drawer.classList.contains('is-open')) {
           closeDrawer();
         } else if (currentViewId !== 'overview') {
           renderView('overview');
