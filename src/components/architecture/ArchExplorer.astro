@@ -370,6 +370,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
                 background-color 0.2s ease !important;
     touch-action: pan-x pan-y;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   .arch-node:hover {
     border-color: var(--arch-card-border-hover) !important;
@@ -1524,16 +1527,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       });
     }
 
-    // Click Event Delegation with touch-scroll detection
+    // Long Press (Mobile Hover) & Click Delegation with touch-scroll detection
     let touchMoved = false;
     let touchStartX = 0;
     let touchStartY = 0;
+    let longPressTimer = null;
+    let isLongPress = false;
+
+    function clearLongPress() {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }
 
     board.addEventListener('touchstart', (e) => {
       touchMoved = false;
+      isLongPress = false;
+      clearLongPress();
+
       if (e.touches && e.touches[0]) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+
+        const card = e.target.closest('[data-node-id]');
+        if (card) {
+          const nodeId = card.dataset.nodeId;
+          longPressTimer = setTimeout(() => {
+            if (!touchMoved) {
+              isLongPress = true;
+              setFocusNode(nodeId);
+              if (navigator.vibrate) {
+                try { navigator.vibrate(30); } catch (_) {}
+              }
+            }
+          }, 320);
+        }
       }
     }, { passive: true });
 
@@ -1543,15 +1572,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         const dy = Math.abs(e.touches[0].clientY - touchStartY);
         if (dx > 8 || dy > 8) {
           touchMoved = true;
+          clearLongPress();
         }
       }
     }, { passive: true });
 
+    board.addEventListener('touchend', () => {
+      clearLongPress();
+    }, { passive: true });
+
+    board.addEventListener('touchcancel', () => {
+      clearLongPress();
+      touchMoved = false;
+      isLongPress = false;
+    }, { passive: true });
+
+    // Prevent browser default context menu / magnifier on mobile long press
+    board.addEventListener('contextmenu', (e) => {
+      if (e.target.closest('[data-node-id]')) {
+        e.preventDefault();
+      }
+    });
+
     board.addEventListener('click', (e) => {
+      clearLongPress();
+
       if (touchMoved) {
         touchMoved = false;
         return;
       }
+
+      // If concluding a long press, keep the hover state visible and skip drawer/navigation
+      if (isLongPress) {
+        isLongPress = false;
+        return;
+      }
+
       const card = e.target.closest('[data-node-id]');
       if (!card) {
         setFocusNode(null);
@@ -1571,6 +1627,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         openNodeDrawer(node);
       }
     });
+
+    if (archViewport) {
+      archViewport.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-node-id]')) {
+          setFocusNode(null);
+        }
+      });
+    }
 
     drawerBody.addEventListener('click', (e) => {
       const drillBtn = e.target.closest('[data-drilldown]');
