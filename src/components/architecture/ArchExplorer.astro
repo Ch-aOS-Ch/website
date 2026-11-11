@@ -380,7 +380,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     outline-offset: 2px;
   }
   .arch-node.dim {
-    opacity: 0.45 !important;
+    opacity: 0.25 !important;
     transform: scale(0.99) !important;
     pointer-events: auto !important;
   }
@@ -1029,6 +1029,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     /* ---------- Hover Dimming & Dynamic Label Gliding Effect ---------- */
     function setFocusNode(id) {
+      if (focusedNodeId === id) return;
       focusedNodeId = id;
       const view = arch.views[currentViewId];
       if (!view) return;
@@ -1109,25 +1110,32 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     }
 
     function bindCardHover(card) {
-      if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(hover: hover)').matches) {
-        return;
-      }
-      card.addEventListener('pointerenter', () => {
+      const handleEnter = () => {
         const id = card.dataset.nodeId;
         if (id) setFocusNode(id);
-      });
-      card.addEventListener('pointerleave', (e) => {
-        const nextCard = e.relatedTarget?.closest?.('[data-node-id]');
+      };
+
+      const handleLeave = (e) => {
+        const nextCard = e?.relatedTarget?.closest?.('[data-node-id]');
         if (!nextCard) {
           setFocusNode(null);
         }
+      };
+
+      // Standard desktop hover
+      card.addEventListener('mouseenter', handleEnter);
+      card.addEventListener('mouseleave', handleLeave);
+
+      // Pointer events for mouse/pen input
+      card.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'touch') handleEnter();
       });
-      card.addEventListener('focus', () => {
-        if (card.matches && card.matches(':focus-visible')) {
-          const id = card.dataset.nodeId;
-          if (id) setFocusNode(id);
-        }
+      card.addEventListener('pointerleave', (e) => {
+        if (e.pointerType !== 'touch') handleLeave(e);
       });
+
+      // Keyboard navigation
+      card.addEventListener('focus', handleEnter);
       card.addEventListener('blur', () => {
         setFocusNode(null);
       });
@@ -1192,7 +1200,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
               ${node.title}
             </h3>
             <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
-              ${subsystemBadgeHtml}
               ${badgesHtml}
             </div>
           </div>
@@ -1377,6 +1384,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     }
 
     function openNodeDrawer(node) {
+      if (node?.id) setFocusNode(node.id);
       if (drawerPill) drawerPill.textContent = node.pill || 'Component Specification';
 
       let detailsHtml = `
@@ -1503,6 +1511,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         drawerBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
         drawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
       }
+      setFocusNode(null);
     }
 
     // Bind Hover on initial SSR cards
@@ -1520,7 +1529,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     let touchStartX = 0;
     let touchStartY = 0;
 
-    board.addEventListener('touchstart', (e: TouchEvent) => {
+    board.addEventListener('touchstart', (e) => {
       touchMoved = false;
       if (e.touches && e.touches[0]) {
         touchStartX = e.touches[0].clientX;
@@ -1528,7 +1537,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
     }, { passive: true });
 
-    board.addEventListener('touchmove', (e: TouchEvent) => {
+    board.addEventListener('touchmove', (e) => {
       if (e.touches && e.touches[0]) {
         const dx = Math.abs(e.touches[0].clientX - touchStartX);
         const dy = Math.abs(e.touches[0].clientY - touchStartY);
@@ -1544,12 +1553,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         return;
       }
       const card = e.target.closest('[data-node-id]');
-      if (!card) return;
+      if (!card) {
+        setFocusNode(null);
+        return;
+      }
 
       const nodeId = card.dataset.nodeId;
       const view = arch.views[currentViewId];
       const node = view?.nodes.find(n => n.id === nodeId);
       if (!node) return;
+
+      setFocusNode(nodeId);
 
       if (node.go) {
         renderView(node.go);
